@@ -111,6 +111,14 @@
 %%\citestyle{acmauthoryear}
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}[section]
+\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
+\SetKw{True}{true}
+\SetKw{False}{false}
+\SetKwData{typeInt}{Int}
+\SetKwData{typeRat}{Rat}
+\SetKwData{Defined}{Defined}
+\SetKwFunction{parseStatement}{parseStatement}
+
 %%
 %% end of the preamble, start of the body of the document source.
 \begin{document}
@@ -501,35 +509,44 @@ It is trivial to see that $I_C(DB)$ is monotone, and given that both the $EDB$ a
 at some point $I_C(DB) = DB$, since there won't be new facts to be inferred. This point is the \textit{least fixed point} of $I_c(DB)$\cite{datalog},
 and happens to be the \textit{minimal} model.
 \begin{exmp}{Repeated application of $I_c$}\label{ex5}
-	\[
-		P = \{ Edge(?x, ?y) \rightarrow TC(?x, ?y), TC(?x, ?y), TC(?y, ?z) \rightarrow TC(?x, ?z) \}
-		EDB = \{ Edge(1, 2), Edge(2, 3), Edge(3, 4) \}
-
-		DB = EDB
-		DB = I_C(DB)
-		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4) \}
-		DB = I_C(DB)
-		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4) \}
-		DB = I_C(DB)
-		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}
-		DB = I_C(DB)
-		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}
-
+	\begin{align*}
+		P = \{ Edge(?x, ?y) \rightarrow TC(?x, ?y), TC(?x, ?y), TC(?y, ?z) \rightarrow TC(?x, ?z) \} \\
+		EDB = \{ Edge(1, 2), Edge(2, 3), Edge(3, 4) \}                                               \\
+		DB = EDB                                                                                     \\
+		DB = I_C(DB)                                                                                 \\
+		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4) \}                                            \\
+		DB = I_C(DB)                                                                                 \\
+		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4) \}                        \\
+		DB = I_C(DB)                                                                                 \\
+		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}              \\
+		DB = I_C(DB)                                                                                 \\
+		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}              \\
 		IDB = DB \setminus EDB
-	\]
+	\end{align*}
 \end{exmp}
-The aforementioned form of evaluation, with a walkthrough given on example \ref{ex5}, is called \textit{naive}, meanwhile, the ubiquitous evaluation
-mechanism, as of the date of writing this paper, is the \textit{semi-naive} one. The only difference is that \textit{semi-naive} evaluation does not
+The introduced form of evaluation, with a walkthrough given on example \ref{ex5}, is called \textit{naive}, meanwhile, the ubiquitous evaluation
+mechanism, as of the date of writing this paper, is the \textit{semi-naive} one. The only difference is that \textit{semi-naive} does not
 repeatedly union the $EDB$ with the entire $IDB$, but does so only with the difference of the previous immediate consequence with the $IDB$. This can
 be hinted from the example, where each next application of $I_c$ only renders new facts from the previous newly derived ones.
 
 \subsection{Infer}
+The most relevant performance-oriented aspect of both of the introduced evaluation mechanisms is the implementation of $I_c$ itself. The two
+most high-profile methods to do so are either purely evaluating the rules, or rewriting them in some other imperative formalism, and executing it.
 
-The most important performance-oriented aspect of both of the introduced evaluation mechanisms is the implementation of $I_c$ itself.
+The Infer\cite{datalog} algorithm is the simplest example of the former, and relies on substitutions. A substitution $S$ is a homomorphism
+$[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is a constant. Given a not-ground fact,
+such as $TC(?x, 4)$, \textit{applying} the substitution $[?x \rightarrow 1]$ to it will yield the ground fact $TC(1, 4)$.
 
-%% Infer algorithm
+Infer relies on attempting to build and extend substitutions for each fact in each rule body over every single $DB$ fact. Once
+all substitutions are made, they are applied to the heads of each rule. Every result of this application that is ground belongs
+to the immediate consequence, and therefore is the output.
 
 \subsection{Relational Algebra}
+Relational Algebra is an imperative language, that explicitly denotes operations over sets of tuples with fixed arity, relations. It is
+the most popular database formalism that there is, with virtually every single major database system being a relational database\cite{pg,mysql,sqlserver}
+that translate SQL to relational algebra equations.
+
+Due to the extensive amount of shared-memory relational systems, and distributed frameworks
 
 %% Rethink the translation algorithm here, and add an example
 %% I'm pretty sure that I could gain a lot of citations just by outlying the algorithm here In a more readable format.
