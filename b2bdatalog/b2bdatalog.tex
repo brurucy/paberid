@@ -367,8 +367,7 @@ providing performant and open-source implementations of single-threaded, paralle
 \begin{itemize}
 	\item \textbf{Techniques and Guidelines.} We study the challenge of building a reasoner from scratch,
 	      with no underlying framework, and ponder over all decisions necessary in order to materialize that,
-	      alongside with relevant recent literature. We also investigate the actual performance cost of supporting
-	      common extensions such as non-recursive aggregation, stratified negation, and existential variables.
+	      alongside with relevant recent literature.
 	\item \textbf{New Data Structure.} We introduce the Spine, a simple and clever alternative to the B-Tree that
 	      exhibits competitive performance in all benchmarked datalog workloads.
 	\item \textbf{Implementation.} All code outputs of this article are coalesced in a rust library named shapiro,
@@ -380,7 +379,7 @@ providing performant and open-source implementations of single-threaded, paralle
 	\item \textbf{Benchmarking.} We perform two thorough benchmark suites. One evaluates the performance of the developed
 	      relational reasoner with multiple different index data structures, and another that compares the performance
 	      of the distributed reasoner against four state-of-the-art distributed reasoners. The selected datasets are either
-	      from the program analysis community, heavy users of not-distributed datalog, or from the semantic web community
+	      from the program analysis, heavy users of not-distributed datalog, or from the semantic web community
 	      , which has multiple popular infinitely-scalable benchmarks, and are the main proponents of existential datalog.
 \end{itemize}
 
@@ -539,17 +538,169 @@ such as $TC(?x, 4)$, \textit{applying} the substitution $[?x \rightarrow 1]$ to 
 
 Infer relies on attempting to build and extend substitutions for each fact in each rule body over every single $DB$ fact. Once
 all substitutions are made, they are applied to the heads of each rule. Every result of this application that is ground belongs
-to the immediate consequence, and therefore is the output.
+to the immediate consequence.
 
 \subsection{Relational Algebra}
-Relational Algebra is an imperative language, that explicitly denotes operations over sets of tuples with fixed arity, relations. It is
-the most popular database formalism that there is, with virtually every single major database system being a relational database\cite{pg,mysql,sqlserver}
-that translate SQL to relational algebra equations.
+Relational Algebra\cite{codd_1970} is an imperative language, that explicitly denotes operations over sets of tuples with fixed arity, relations. It is
+the most popular database formalism that there is, with virtually every single major database system adhering to the relational model\cite{pg,mysql,sqlserver}
+and supporting relational algebra as the SQL compilation target.
 
-Due to the extensive amount of shared-memory relational systems, and distributed frameworks
+Let $R$ and $T$ be relations with arity $r$ and $t$, $\theta$ be a binary operation with a boolean output, $R(i)$ be the i-th column in $R$, and
+$R[h, ..., k]$ be the subset of $R$ such that only the columns $h, ..., k$ remain, and Const the set of all constant terms. The following
+are the most relevant relational algebra operators and their semantics:
+\begin{itemize}
+	\item Selection by column $\sigma_{i=j)}(R) = \{ a \in R | a(i) == a(j) \}$
+	\item Selection by value $\sigma_{i=k}(R) = \{a \in R | a(i) == k \}$
+	\item Projection $\pi_{h, ..., k}(R) = \{(R(i), ..., R(j), \overrightarrow{C}) |  i, j >= 1 \wedge i, j <= r\ \wedge \forall c \in C. c \in \text{Const}$
+	\item Product $\times(R, T) = \{(a, b) | a \in R \wedge b \in T \}$
+	\item Join $\Join_{i=j} = \{(a, b) | a \in R \wedge b \in T \wedge a(i) == b(j)\}$
+\end{itemize}
 
-%% Rethink the translation algorithm here, and add an example
-%% I'm pretty sure that I could gain a lot of citations just by outlying the algorithm here In a more readable format.
+Rewriting datalog into some form of relational algebra has been the most successful strategy employed by the vast majority of all current state-of-the-art
+reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle} mostly due to the extensive industrial and academic research into developing data processing frameworks that
+process very large amounts of data, and the techniques that have arisen from these.
+
+In spite of this, there is no open-source library that provides a stand-alone datalog to relational algebra translator, therefore every single
+datalog evaluator has to repeat this effort. Moreover, datalog rules translate to a specific form of relational algebra expressions, the
+select-project-join $\mathcal{SPJ}$ form.
+
+A relational algebra expression is in the $\mathcal{SPJ}$ form if it consists solely of select, project and join operators. This form
+is very often seen in practice, being equivalent to \verb|SELECT ... FROM ... WHERE ...| SQL queries, and highly benefits from being
+equivalent to conjunctive queries, that are equivalent to single-rule and non-recursive datalog programs.
+
+We propose a straightforward not-recursive pseudocode algorithm to translate a datalog rule into a $SPJ$ expression tree. Nodes in
+a $SPJ$ expression tree are relational operators and leaves are relations.
+\begin{algorithm} [!h]
+	\scriptsize
+	\KwIn{A datalog rule $\mathcal{R}$}
+	\KwResult{A relational algebra expression $\mathcal{R}_a$}
+	\SetKwData{s}{s}
+	\BlankLine
+	\SetKwProg{Fn}{Function}{ is}{end}
+	\SetKwProg{For}{For}{:}{end}
+
+	\Fn{toIncompleteExpression($r$ : Datalog Rule)}{
+		let $t$ be a fresh tree
+
+		\For{For every fact $a_i$ in the rule body $b$} {
+			create a relation node $r_i$ with the same arity as $a_i$, and its terms representing columns. variable terms
+			are column identifiers, and constant terms are temporary-lived proxies for selections.
+			\If {$i < len(b) - 1$ } {
+				add a product node $p_i$ to $t$.
+				set $r_i$ as the left child of $p_i$.
+			}\Else {
+				\If {$len(b) > 1$} {
+					set $r_i$ as the right child of $p_{i - 1}$
+				}
+			}
+			\If {$i > 0$} {
+				set $p_i$ as the right child of $p_{i - 1}$
+			}
+		}
+		\textbf{return} $t$
+	}
+	\Fn{constantToSelection($e$ : Expression)}{
+		let $t$ be a copy of $e$
+
+		let $C$ be a map $C : \text{Const} \rightarrow \text{Var}$
+
+		\For {every relation $r_i$ in $t$} {
+			\For {every constant $c_j$ in $r_i$}{
+				add a selection by value node $s_j$ to $t$ with column index $j$ and value $c_j$
+
+				set $s_j$'s parent to $r_i$'s, and $r_i$ as its left child
+
+				\If {$\neg (c_j \in C)$}{
+					create a fresh variable term $v_j$ and store it in $C$ with $c_j$ as the key}
+				\Else{replace $c_j$ for the value in $C$ under $c_j$}
+			}
+		}
+		\textbf{return} $t$
+	}
+	\Fn{equalityToSelection($e$ : Expression)}{
+		let $t$ be a copy of $e$
+
+		let $V$ be a map $V : \text{Var} \rightarrow \mathbb{Z}$
+
+		let $t_{p}$ be a pre-order traversal of $t$
+
+		\For {every relation $r_i$ in $t_{p}$} {
+			\For {every variable $v_j$ in $r_i$}{
+				\If{$\neg (v_j \in V)$}{
+					add $v_j$ to $V$ with $j$ as the value
+				}\Else{let $k$ be the value of $v_j$ in $V$
+					let $p_i$ be the first product to the left of $r_i$ in $t_{p}$
+
+					add a selection by column node $s_j$ to $t$ with left column index $k$ and right column index $j$
+
+					set $s_j$'s parent to $p_i$'s, and $p_i$ as its left child
+				}
+			}
+		}
+		\textbf{return} $t$
+	}
+	\Fn{projectHead($e$ : Expression, $r$ : Datalog Rule)}{
+		let $n$ be 0
+
+		let $t$ be a copy of $e$
+
+		let $h$ be the head of $r$
+
+		let $t_{p}$ be a pre-order traversal of $t$
+
+		let $V$ be a map $V : \text{Var} \rightarrow \mathbb{Z}$
+
+		\For {every relation $r_i$ in $t_{p}$}{
+			\For {every term $x$ in $r_i$}{
+				\If {$x$ is a variable} {
+					add $x$ to $V$ with $n$ as value
+				}\Else{
+					continue
+				}
+				$n$ += 1
+
+				add projection node $z$ to $t$ and set it as root with an empty list
+
+				\For {every term $x$ in $h$}{
+					\If {$x$ is a constant}{
+						push $x$ into $z$
+					}\Else {
+						let $k$ be the value of $x$ in $V$
+
+						push $k$ into $z$
+					}
+				}
+			}
+		}
+
+		\textbf{return} $t$
+	}
+	\Fn{productToJoin($e$ : Expression)}{
+		let $t$ be a copy of $e$
+
+		let $t_{p}$ be a pre-order traversal of $t$
+
+		\For {every selection by column $s_i$ in $t_{p}$}{
+			find the first product $p_j$ after $s_i$ in $t_{p}$
+
+			remove $s_i$ from $t$, swap $p_j$ for a join $g_j$ in $t$ with left and right column indexes by those of $s_i$
+		}
+		\textbf{return} t
+	}
+	$\mathcal{R}_a$ = toIncompleteExpression($\mathcal{R}$)
+
+	$\mathcal{R}_a$ = constantToSelection(expression, $\mathcal{R}$)
+
+	$\mathcal{R}_a$ = equalityToSelection(expression, $\mathcal{R}$)
+
+	$\mathcal{R}_a$ = projectHead(expression, $\mathcal{R}$)
+
+	$\mathcal{R}_a$ = productToJoin(expression, $\mathcal{R}$)
+
+	\textbf{return} $\mathcal{R}_a$
+	\caption{An algorithm to translate a datalog rule into relational algebra}
+	\label{alg:datalog_to_relalg}
+\end{algorithm}
 
 \section{Shapiro}
 
@@ -567,25 +718,6 @@ their semantics do not fit datalog like a glove
 Differential dataflow however, does. It substantially improves semi-naive evaluation by automatically parallelizing it.
 
 Make a graphic example showing how
-
-\subsection{Extensions}
-
-\subsubsection{Non-recursive aggregation}
-
-Trivial to implement
-
-\subsubsection{Negation}
-
-a lot of reasoners implement negation, yet curiously do not
-benchmark queries that even use it. the cost of stratified
-negation is that it prevents the very efficient and obvious
-parallelization scheme.
-
-\subsubsection{Existential Variables}
-
-Description logics bla bla bla are too expressive for datalog
-however adding skolemized existential variables allows for some
-of them to be sort of implemented
 
 \section{Experiments}
 
