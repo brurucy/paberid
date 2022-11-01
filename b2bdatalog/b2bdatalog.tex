@@ -568,8 +568,10 @@ A relational algebra expression is in the $\mathcal{SPJ}$ form if it consists so
 is very often seen in practice, being equivalent to \verb|SELECT ... FROM ... WHERE ...| SQL queries, and highly benefits from being
 equivalent to conjunctive queries, that are equivalent to single-rule and non-recursive datalog programs.
 
-We propose a straightforward not-recursive pseudocode algorithm to translate a datalog rule into a $SPJ$ expression tree. Nodes in
-a $SPJ$ expression tree are relational operators and leaves are relations.
+We propose a straightforward not-recursive pseudocode algorithm to translate a datalog rule into a $SPJ$ expression tree, in which
+relational operators are nodes and leaves are relations. The value proposition of the algorithm is for the resulting tree to be ready
+to be recursively executed, alongside having two essential relational optimizations, selection by value pushdown, and melding selection
+by column with products into joins, the most important relational operator.
 \begin{algorithm} [!h]
 	\scriptsize
 	\KwIn{A datalog rule $\mathcal{R}$}
@@ -701,6 +703,9 @@ a $SPJ$ expression tree are relational operators and leaves are relations.
 	\caption{An algorithm to translate a datalog rule into relational algebra}
 	\label{alg:datalog_to_relalg}
 \end{algorithm}
+
+The canonical algorithms for translating datalog to relational algebra\cite{opt_sys_alg_ev_dat}\cite{} are recursive, complex,
+and do not assume the output to be an tree, being mostly symbolic.
 
 \section{Shapiro}
 
