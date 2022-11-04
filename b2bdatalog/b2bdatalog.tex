@@ -108,7 +108,12 @@
 %% citations and references.
 %% Uncommenting
 %% the next command will enable that style.
-%%\citestyle{acmauthoryear}
+%% \citestyle{acmauthoryear}
+\usepackage{microtype}  %towards typographic perfection...
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta, shapes.misc, positioning}
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}[section]
 \usepackage[ruled, vlined, linesnumbered]{algorithm2e}
@@ -703,22 +708,207 @@ by column with products into joins, the most important relational operator.
 	\caption{An algorithm to translate a datalog rule into relational algebra}
 	\label{alg:datalog_to_relalg}
 \end{algorithm}
-
-The canonical algorithms for translating datalog to relational algebra\cite{opt_sys_alg_ev_dat}\cite{} are recursive, complex,
-and do not assume the output to be an tree, being mostly symbolic.
+The canonical algorithms for translating datalog to relational algebra\cite{opt_sys_alg_ev_dat, log_dab} are recursive, complex,
+and do not assume the output to be a tree, instead being mostly symbolic.
 
 \section{Shapiro}
+In order to coalesce all contributions in this paper, an extensible reasoning system was designed, from scratch. No frameworks
+were used, nor any code related to any other reasoner has been reutilized, furthermore, a modern, performant and safe programming
+language was used, Rust\cite{rust_lang}.
 
-\subsection{Single-Threaded and Parallel}
+The main rationale for this choice is twofold: garbage-collected languages such as java are hard to benchmark, and tuning
+performance, alongside reasoning about it, often requires the developer to either learn highly specific minutiae relating
+to the compiler or interpreter, and, or, the garbage collector.
 
-\subsubsection{The Spine}
+All most performant shared-memory reasoners are unsurpisingly all implemented in C++\cite{rdfox, vadalog, souffle}, since
+it provides manual memory management and is the \textit{de facto} language for high-performance computing. Rust is a
+recent language, approximately 10 years old, that exhibits similar or faster performance than C++, with its \textit{raison d'etre}
+being that, unlike C++, it is memory-safe and thread-safe\cite{rust2014,rustbelt,rustsafety}; both of these guarantees are
+of incredible immediate benefit to writing a reasoner.
 
-\subsection{Distributed}
+Shapiro, the developed system, is fully modular and offers a heap of independent components and interfaces.
+
+\begin{figure} [htb!]
+	\centering
+	\begin{tikzpicture}
+		\begin{scope}
+			\node (traits) at (0, 0) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm] {};
+			\node (traits_title) at (traits.north east) [draw, anchor = north east] {Traits};
+
+			\node (ev_mec) at (traits.east) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=west] {};
+			\node (ev_mec_title) at (ev_mec.north east) [draw, anchor=north east] {Evaluation Mechanisms};
+
+			\node (ds) at (traits.south) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=north] {};
+			\node (ds_title) at (ds.north east) [draw, anchor=north east] {Data Structures};
+
+			\node (engines) at (ds.east) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=west] {};
+			\node (engines_title) at (engines.north east) [draw, anchor=north east] {Engines};
+		\end{scope}
+
+		% Traits
+		\begin{scope}
+			\node (insta) [draw, below = 3mm of traits.north] {RuleEvaluator};
+			\node (bupe) [draw, below of = insta] {BottomUpEvaluator};
+			\node (tode) at (traits) [draw, below of = bupe] {TopDownEvaluator};
+			\node (idx) at (traits) [draw, below of = tode] {IndexBacking};
+			\node (ty) at (traits.south) [draw, below of = idx] {Ty};
+		\end{scope}
+
+		% Data Structures
+
+		\begin{scope}
+			\node (btset) [draw, below = 10mm of ds.north] {BTreeSet};
+			\node (hashm) at (ds) [draw, below of = btset] {HashMap};
+			\node (vecto) at (ds) [draw, below of = hashm] {Vec};
+			\node (spine) at (ds) [draw, below of = vecto] {Spine};
+		\end{scope}
+
+		% Evaluation Mechanisms
+
+		\begin{scope}
+			\node (relal) [draw, below = 10mm of ev_mec.north] {RelationalAlgebra};
+			\node (subst) at (ds) [draw, below of = relal] {Substitution};
+		\end{scope}
+
+		% Engines
+
+		\begin{scope}
+			\node (chibi) [draw, below = 10mm of engines.north] {Chibi};
+			\node (relational) at (engines) [draw, below of = chibi] {Relational};
+			\node (differential) at (engines) [draw, below of = relational] {Differential};
+		\end{scope}
+
+	\end{tikzpicture}
+	\caption{Shapiro Components}
+	\label{fig:shapiro_comp}
+\end{figure}
+On figure \ref{fig:shapiro_comp} we can see the most relevant modules. The northwestern quadrant, Traits, refers to Rust Traits, constructs that
+define \textit{behavior}, and that can be passed to functions. It is important to take note that Rust favors \textit{composition} over inheritance, unlike Java.
+Nevertheless, all other quadrants are built upon these traits, and are therefore generic over any type that implements them.
+
+A \verb|Rule Evaluator| represents $\textbf{T}_p$, requiring only that types implement a function \verb|evaluate|, that accepts an instance,
+and produces another instance. The evaluation mechanisms \verb|Relational Algebra| and \verb|Substitution| both implement this trait,
+evaluating datalog rules by either using the aforegiven translation algorithm, or using Infer. We also provide naive parallel evaluation of rules,
+in which each rule, in both mechanisms, are sent to be executed in a threadpool. We leverage the highly efficient, and easy to use, requiring
+only one additional line of code, rayon\cite{rayon} library. This should suffice as a transparent baseline from which other parallelization
+strategies could be compared to.
+
+The concept of fixpoint evaluation is a Struct, that consists of the ground fact database, $EDB$, a \verb|Rule Evaluator|, and an array of
+instances. It is assumed that the datalog program is in the instance itself. Semi-naive evaluation is a method of fixpoint evaluation that takes
+no arguments, and instead uses two additional instances, one to keep the current delta, and the previous one. This is succintly implemented in rust
+in the same manner as this description.
+
+\verb|BottomUpEvaluator| and \verb|TopDownEvaluator| both respectively denote the two kinds of evaluation, respectively, the explicit
+materialization of the program, and the answering to a query with respect to a program. The former requires the implementation of a function that takes
+in only a program as an argument, and the latter, a program and a goal.
+
+The three engines, \verb|Chibi|, \verb|Relational| and \verb|Differential| all implement only \verb|BottomUpEvaluator|. In order to be able to
+evaluate a program, it is required to have access to an instance. An instance is defined in code as it is in literature, a set of relations. Taking
+inspiration from the highly successful open-source project DataScript\cite{datascript}, we implement relations as hashmaps, with generic hashing
+functions. The point of using a hashmap is that it allows for one to easily disregard duplicates altogether, further simplifying the implementation.
+
+Indexes on the other hand, are a vital optimization aspect. A considerable amount of recent datalog research has dealt with speeding up relational joins
+with respect to datalog, such as in attempting to specialize data structures to it\cite{souffle_btree}, and rminimizing the number of necessary
+joins to evaluate a $SPJ$ expression\cite{primitive_search}. Thus, a trait \verb|IndexBacking| is defined, whose requirements are two methods, one
+that takes in a row for insertion, and another that requires a join implementation.
+
+We implement the \verb|IndexBacking| trait for implementations of all most used data structures for datalog indexes, such as the Rust standard
+library BTree\cite{rust_btree} and HashMap, persistent implementations of both them, a regular vector, that naively sorts itself before a
+join, and the Spine, an experimental data structure, that empirically shows good performance characteristics in datalog workflows.
+
+\subsection{The Spine}
+The Spine is a simple two-level pointer-free data structure comprised of an array of arrays, and an index. Sorted Arrays are the fastest data structure for
+binary search lookups. Compared to search trees, they are much more cache efficient, since every single piece of data is in one contiguous region
+in memory, and no pointer indirection is needed in every binary search iteration.
+
+Insertion in sorted arrays is commonly implemented throgh an emulated binary insertion sort, where the position of the to-be-inserted element
+is first found through a binary search, and then all elements to the right of its supposed position are shifted. The complexity of this
+operation is $O(n)$, therefore being exponentially slower than search trees, rendering it unusuable in dynamic cases, such as in datalog
+evaluation, in which possibly costly bulk insertions occur at a very fast pace.
+
+In modern CPU architectures, there are multiple levels of memory, going from CPU registers, L-caches, up to disk. Accessing one element
+cached in low-level memory can be hundreds of thousands of times faster than doing so in the disk, therefore it is possible, in practice, for
+asymptotic linear-time access to be faster than logarithmic.
+
+The Spine is a naive attempt to take advantage of that, by keeping a totally ordered set of fixed-capacity $B$ sorted arrays, ordered by their
+maximum, with $B$ being determined empirically to be the value such that the performance ratio of insertion and search is as desired. Moreover, given
+that the most efficient data structure for datalog indexing, BTree, also relies on sorted data, it often occurs that operations benefit from both
+spatial and temporal cache locality.
+
+Souffle's datalog-tailored B-Tree\cite{souffle_btree} has a simple yet effective \textit{hint} mechanism for speeding up searches and insertions, by
+taking advantage of locality. Whenever a new row is inserted, its traversal is kept as a \textit{hint}, therefore if the next row to be inserted
+falls within the same \textit{range} as the previous, the \textit{range} itself can be searched, possibly entirely avoiding a traversal, and only
+searching in the child node. This same mechanism is implemented in the Spine, with the help of its index.
+
+Fenwick Trees\cite{fenwick_tree} are highly specialized data structures used for dynamic cumulative sum. Given a fixed-length array of counts, the
+fenwick tree allows for calculating the prefix sum in $O(\log_2{n})$ time, while also providing adjustments to counts in the same bounds. We
+leverage the \cite{fenwick_tree} in order to maintain an index that will keep track of the size of each internal array. The cost of updating
+the fenwick tree is minimal, in the context of the Spine, taking $O(\log_2(B))$ time with $B \ll n$.
+
+In order to ensure that all sorted sub-arrays have at most $B$ elements, a \textit{maintenance} operation must occur. Whenever a sub-array \textit{overflows},
+it is split in half, with all arrays to the right of the overflown one shifted one place, and a new array being created, moving all elements that belonged
+to the upper half. The cost of this operation, alongside the respawning of the Fenwick Tree, is $O(B)$, which is, in practice, negligible to most
+workloads.
+
+The Spine leverages the Fenwick Tree in order to support $O(\log_2(B))$-time accesses by position. In order to locate the sorted array in which the element
+in the global $i$-th position among the union of all sorted arrays is, naively, one can run a binary search over the fenwick tree, calling prefix sum on
+each iteration. Given that, as previously mentioned, prefix sum takes $O(\log_2(N))$ time, a binary search that calls prefix sum on each iteration would
+take $O(\log^2_2(N))$. It is possible to leverage the structure of the fenwick tree, and calculate that, in a very efficient manner, taking only $O(\log_2{N})$ time.
+
+The algorithm to do so is as follows:
+
+\begin{algorithm} [!h]
+	\scriptsize
+	\KwIn{a fenwick tree $\mathcal{F}$, a desired position $i$-th}
+	\KwResult{the count inside $F$ in which $i$-th would be in}
+	\SetKwData{s}{s}
+	\BlankLine
+	\SetKwProg{Fn}{Function}{ is}{end}
+	\SetKwProg{While}{While}{:}{end}
+
+	let length = $\mathcal{F}$.length()
+
+	let prefix_sum = $i$
+
+	let mut idx = 0;
+
+	let mut $x$ = most significant bit of length * 2
+
+	\While {$x \ge 0$}{
+		let lsb = least significant bit of x
+
+		\If{$x \leq$ length, $\mathcal{F}[x - 1] \le$ prefix_sum} {
+			idx = x
+
+			prefix_sum = prefix_sum - $\mathcal{F}[x - 1]$
+
+			x = x + lsb / 2;
+		}\Else{
+			\If {lsb is even} {
+				break
+			}
+			x = lsb / 2 - lsb
+		}
+	}
+
+
+	\textbf{return} idx
+	\caption{An algorithm to binary search a fenwick tree in logarithmic time}
+	\label{alg:fen_tree}
+\end{algorithm}
+
+Being logarithmic with respect to $B$ access time, we can have an improved version of hints. In the original proposal, the cost of hint is to retain a pointer
+to the leaf node that it is in. Let there be a search, with a query point $k$ and a hint $h$. When a search starts, in case the element isn't in the leaf
+child of the hint pointer, then a traversal starts from zero, this implies the worst-case cost will be $O(\log(N))$. On the Spine in the other hand, first $k$
+is compared with $h$, and then a binary search is started. if $k > h$, then $h$ is the lower bound, if else, then $k$ is the upper bound. This provides
+significantly more value than the simple child lookup in souffle's B-Tree.
+
+% Fenwick Tree Binary Search 
+
+\subsection{Differential Dataflow}
 
 most of the distributed datalog engines are built on top of either graph-processing or map-reduce frameworks
-their semantics do not fit datalog like a glove
-
-\subsubsection{Differential Dataflow}
+their semantics do not fit datalog properly like a glove
 
 Differential dataflow however, does. It substantially improves semi-naive evaluation by automatically parallelizing it.
 
@@ -726,7 +916,7 @@ Make a graphic example showing how
 
 \section{Experiments}
 
-// No libraries for relational algebra
+I actually did some of the experiments. results were promising, trust me :D
 
 
 ACM's consolidated article template, introduced in 2017, provides a
