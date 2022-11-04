@@ -1,0 +1,106 @@
+This is BibTeX, Version 0.99d (TeX Live 2021/nixos.org)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: b2bdatalog.aux
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: software.bib
+Warning--I didn't find a database entry for "datalog"
+Warning--I didn't find a database entry for "rdfox"
+Warning--I didn't find a database entry for "others?"
+Warning--I didn't find a database entry for "bigdatalog"
+Warning--I didn't find a database entry for "cog"
+Warning--I didn't find a database entry for "cog2"
+Warning--I didn't find a database entry for "logica"
+Warning--I didn't find a database entry for "yedalog"
+Warning--I didn't find a database entry for "vadalog"
+Warning--I didn't find a database entry for "datalog_plus_minus"
+Warning--I didn't find a database entry for "sticky"
+Warning--I didn't find a database entry for "warded"
+Warning--I didn't find a database entry for "monadic"
+Warning--I didn't find a database entry for "datascript"
+Warning--I didn't find a database entry for "opa"
+Warning--I didn't find a database entry for "datomic"
+Warning--I didn't find a database entry for "COST"
+Warning--I didn't find a database entry for "blogdynamicdatalog"
+Warning--I didn't find a database entry for "blogvldbsigmod"
+Warning--I didn't find a database entry for "differential_dataflow"
+Warning--I didn't find a database entry for "recstep"
+Warning--I didn't find a database entry for "dcdatalog"
+Warning--I didn't find a database entry for "deals"
+Warning--I didn't find a database entry for "spark"
+Warning--I didn't find a database entry for "flink"
+Warning--I didn't find a database entry for "nexus"
+Warning--I didn't find a database entry for "bddbddb"
+Warning--I didn't find a database entry for "microzee"
+Warning--I didn't find a database entry for "souffle_btree"
+Warning--I didn't find a database entry for "all_you_ever_wanted_to_ask"
+Warning--I didn't find a database entry for "codd_1970"
+Warning--I didn't find a database entry for "pg"
+Warning--I didn't find a database entry for "mysql"
+Warning--I didn't find a database entry for "sqlserver"
+Warning--I didn't find a database entry for "souffle"
+Warning--I didn't find a database entry for "opt_sys_alg_ev_dat"
+Warning--I didn't find a database entry for "log_dab"
+Warning--I didn't find a database entry for "rust_lang"
+Warning--I didn't find a database entry for "rust2014"
+Warning--I didn't find a database entry for "rustbelt"
+Warning--I didn't find a database entry for "rustsafety"
+Warning--I didn't find a database entry for "rayon"
+Warning--I didn't find a database entry for "primitive_search"
+Warning--I didn't find a database entry for "rust_btree"
+Warning--I didn't find a database entry for "fenwick_tree"
+Warning--I didn't find a database entry for "dd"
+Warning--I didn't find a database entry for "dred"
+Warning--I didn't find a database entry for "timely"
+Warning--I didn't find a database entry for "lsm"
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--no number and no volume in key
+Warning--page numbers missing in both pages and numpages fields in key
+You've used 1 entry,
+            5981 wiz_defined-function locations,
+            1524 strings with 18355 characters,
+and the built_in function-call counts, 1138 in all, are:
+= -- 167
+> -- 31
+< -- 0
++ -- 13
+- -- 14
+* -- 66
+:= -- 110
+add.period$ -- 5
+call.type$ -- 1
+change.case$ -- 6
+chr.to.int$ -- 1
+cite$ -- 3
+duplicate$ -- 83
+empty$ -- 61
+format.name$ -- 18
+if$ -- 276
+int.to.chr$ -- 2
+int.to.str$ -- 1
+missing$ -- 4
+newline$ -- 48
+num.names$ -- 7
+pop$ -- 38
+preamble$ -- 1
+purify$ -- 14
+quote$ -- 0
+skip$ -- 26
+stack$ -- 0
+substring$ -- 56
+swap$ -- 4
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 16
+warning$ -- 2
+while$ -- 7
+width$ -- 0
+write$ -- 57
+(There were 51 warnings)

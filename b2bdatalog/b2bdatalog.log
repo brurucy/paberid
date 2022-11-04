@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/nixos.org) (preloaded format=pdflatex 1980.1.1)  4 NOV 2022 22:43
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/nixos.org) (preloaded format=pdflatex 1980.1.1)  4 NOV 2022 23:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1514,7 +1514,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
 (Font)              scaled to size 9.0pt on input line 292.
-<sampleteaser.pdf, id=47, 2055.68pt x 511.9125pt>
+<sampleteaser.pdf, id=59, 2055.68pt x 511.9125pt>
 File: sampleteaser.pdf Graphic file (type pdf)
 <use sampleteaser.pdf>
 Package pdftex.def Info: sampleteaser.pdf  used on input line 292.
@@ -1551,10 +1551,6 @@ LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
 (Font)              scaled to size 8.0pt on input line 292.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 (Font)              scaled to size 8.0pt on input line 292.
-
-
-LaTeX Warning: Reference `TotPages' on page 1 undefined on input line 292.
-
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/b/n' will be
 (Font)              scaled to size 9.0pt on input line 294.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
@@ -1563,8 +1559,8 @@ LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 (Font)              scaled to size 9.0pt on input line 295.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
 (Font)              scaled to size 6.0pt on input line 302.
-[1.1{/nix/store/dryz6jxrnq7fkbwnvvabfidkhy4mg16f-texlive-combined-full-2021-fin
-al/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./sampleteaser.pdf>]
+ [1.1{/nix/store/dryz6jxrnq7fkbwnvvabfidkhy4mg16f-texlive-combined-full-2021-fi
+nal/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./sampleteaser.pdf>]
 
 Package natbib Warning: Citation `datalog' on page 2 undefined on input line 30
 6.
@@ -1580,10 +1576,6 @@ Package natbib Warning: Citation `datalog' on page 2 undefined on input line 31
 
 Package natbib Warning: Citation `rdfox' on page 2 undefined on input line 314.
 
-
-
-Package natbib Warning: Citation `others?' on page 2 undefined on input line 31
-4.
 
 
 Package natbib Warning: Citation `bigdatalog' on page 2 undefined on input line
@@ -2251,6 +2243,10 @@ icity)[]\T1/LinuxLibertineT-TLF/m/n/9 (-20) ,
 
 Package natbib Warning: Citation `lsm' on page 11 undefined on input line 964.
 
+(./b2bdatalog.bbl
+LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
+(Font)              scaled to size 7.0pt on input line 45.
+ [11.11])
 
 Package natbib Warning: There were undefined citations.
 
@@ -2268,30 +2264,18 @@ Class acmart Warning: Some images may lack descriptions.
 
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 971.
+surrounding objects on input line 974.
 
-[11.11] [12.12] [13.13] [14.14] (./b2bdatalog.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `b2bdatalog.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `b2bdatalog.out':
-(rerunfilecheck)             Before: 548B71BF43F51BC75333BCD88CE41986;1080
-(rerunfilecheck)             After:  290019291E659002E57737CBE1A53112;1381.
+[12.12] [13.13] [14.14] (./b2bdatalog.aux)
+Package rerunfilecheck Info: File `b2bdatalog.out' has not changed.
+(rerunfilecheck)             Checksum: 308282E55836784B3A7602CDD15A4324;1476.
  ) 
 Here is how much of TeX's memory you used:
- 33209 strings out of 478278
- 635349 string characters out of 5819600
- 965938 words of memory out of 5000000
- 49952 multiletter control sequences out of 15000+600000
- 690395 words of font info for 468 fonts, out of 8000000 for 9000
+ 33249 strings out of 478278
+ 636038 string characters out of 5819600
+ 962626 words of memory out of 5000000
+ 49973 multiletter control sequences out of 15000+600000
+ 696817 words of font info for 476 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
  84i,25n,131p,1047b,842s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/nix/store/dryz6jxrnq7fkbwnvvabfidkhy4mg16f-texlive-combined-full-2021-final
@@ -2335,10 +2319,10 @@ xlive-combined-full-2021-final/share/texmf/fonts/type1/public/txfonts/txsyb.pfb
 share/texmf/fonts/type1/public/txfonts/txsyc.pfb></nix/store/dryz6jxrnq7fkbwnvv
 abfidkhy4mg16f-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/
 newtx/txsys.pfb>
-Output written on b2bdatalog.pdf (14 pages, 964588 bytes).
+Output written on b2bdatalog.pdf (14 pages, 965348 bytes).
 PDF statistics:
- 351 PDF objects out of 1000 (max. 8388607)
- 289 compressed objects within 3 object streams
- 124 named destinations out of 1000 (max. 500000)
- 127594 words of extra memory for PDF output out of 128383 (max. 10000000)
+ 367 PDF objects out of 1000 (max. 8388607)
+ 304 compressed objects within 4 object streams
+ 127 named destinations out of 1000 (max. 500000)
+ 131714 words of extra memory for PDF output out of 154059 (max. 10000000)
 

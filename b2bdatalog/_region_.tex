@@ -1,132 +1,6 @@
-%%
-%% This is file `sample-manuscript.tex',
-%% generated with the docstrip utility.
-%%
-%% The original source files were:
-%%
-%% samples.dtx  (with options: `manuscript')
-%% 
-%% IMPORTANT NOTICE:
-%% 
-%% For the copyright see the source file.
-%% 
-%% Any modified versions of this file must be renamed
-%% with new filenames distinct from sample-manuscript.tex.
-%% 
-%% For distribution of the original source see the terms
-%% for copying and modification in the file samples.dtx.
-%% 
-%% This generated file may be distributed as long as the
-%% original source files, as listed above, are part of the
-%% same distribution. (The sources need not necessarily be
-%% in the same archive or directory.)
-%%
-%% Commands for TeXCount
-%TC:macro \cite [option:text,text]
-%TC:macro \citep [option:text,text]
-%TC:macro \citet [option:text,text]
-%TC:envir table 0 1
-%TC:envir table* 0 1
-%TC:envir tabular [ignore] word
-%TC:envir displaymath 0 word
-%TC:envir math 0 word
-%TC:envir comment 0 0
-%%
-%%
-%% The first command in your LaTeX source must be the \documentclass command.
-%%%% Small single column format, used for CIE, CSUR, DTRAP, JACM, JDIQ, JEA, JERIC, JETC, PACMCGIT, TAAS, TACCESS, TACO, TALG, TALLIP (formerly TALIP), TCPS, TDSCI, TEAC, TECS, TELO, THRI, TIIS, TIOT, TISSEC, TIST, TKDD, TMIS, TOCE, TOCHI, TOCL, TOCS, TOCT, TODAES, TODS, TOIS, TOIT, TOMACS, TOMM (formerly TOMCCAP), TOMPECS, TOMS, TOPC, TOPLAS, TOPS, TOS, TOSEM, TOSN, TQC, TRETS, TSAS, TSC, TSLP, TWEB.
-% \documentclass[acmsmall]{acmart}
+\message{ !name(b2bdatalog.tex)}
+\message{ !name(b2bdatalog.tex) !offset(125) }
 
-%%%% Large single column format, used for IMWUT, JOCCH, PACMPL, POMACS, TAP, PACMHCI
-% \documentclass[acmlarge,screen]{acmart}
-
-%%%% Large double column format, used for TOG
-% \documentclass[acmtog, authorversion]{acmart}
-
-%%%% Generic manuscript mode, required for submission
-%%%% and peer review
-\documentclass[manuscript,screen,review]{acmart}
-%% Fonts used in the template cannot be substituted; margin 
-%% adjustments are not allowed.
-%%
-%% \BibTeX command to typeset BibTeX logo in the docs
-\AtBeginDocument{%
-\providecommand\BibTeX{{%
-\normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
-
-%% Rights management information.  This information is sent to you
-%% when you complete the rights form.  These commands have SAMPLE
-%% values in them; it is your responsibility as an author to replace
-%% the commands and values with those provided to you when you
-%% complete the rights form.
-\setcopyright{acmcopyright}
-\copyrightyear{2018}
-\acmYear{2018}
-\acmDOI{XXXXXXX.XXXXXXX}
-
-%% These commands are for a PROCEEDINGS abstract or paper.
-\acmConference[Conference acronym 'XX]{Make sure to enter the correct
-	conference title from your rights confirmation emai}{June 03--05,
-	2018}{Woodstock, NY}
-%
-%  Uncomment \acmBooktitle if th title of the proceedings is different
-%  from ``Proceedings of ...''!
-%
-\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
-	June 03--05, 2018, Woodstock, NY}
-\acmPrice{15.00}
-\acmISBN{978-1-4503-XXXX-X/18/06}
-
-
-%%
-%% Submission ID.
-%% Use this when submitting an article to a sponsored event. You'll
-%% receive a unique submission ID from the organizers
-%% of the event, and this ID should be used as the parameter to this command.
-%%\acmSubmissionID{123-A56-BU3}
-
-%%
-%% For managing citations, it is recommended to use bibliography
-%% files in BibTeX format.
-%%
-%% You can then either use BibTeX with the ACM-Reference-Format style,
-%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
-%% support for advanced citation of software artefact from the
-%% biblatex-software package, also separately available on CTAN.
-%%
-%% Look at the sample-*-biblatex.tex files for templates showcasing
-%% the biblatex styles.
-%%
-
-%%
-%% The majority of ACM publications use numbered citations and
-%% references.  The command \citestyle{authoryear} switches to the
-%% "author year" style.
-%%
-%% If you are preparing content for an event
-%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
-%% citations and references.
-%% Uncommenting
-%% the next command will enable that style.
-%% \citestyle{acmauthoryear}
-\usepackage{microtype}  %towards typographic perfection...
-\usepackage{tikz}
-\usepackage{tikz-qtree}
-\usetikzlibrary{positioning}
-\usetikzlibrary{arrows.meta, shapes.misc, positioning}
-\theoremstyle{definition}
-\newtheorem{exmp}{Example}[section]
-\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
-\SetKw{True}{true}
-\SetKw{False}{false}
-\SetKwData{typeInt}{Int}
-\SetKwData{typeRat}{Rat}
-\SetKwData{Defined}{Defined}
-\SetKwFunction{parseStatement}{parseStatement}
-
-%%
-%% end of the preamble, start of the body of the document source.
-\begin{document}
 
 %%
 %% The "title" command has an optional parameter,
@@ -292,7 +166,7 @@
 \maketitle
 
 \section{Introduction}
-\textbf{Motivation.} SQL\cite{key} has been the \textit{de facto} universal relational
+\textbf{Motivation.} SQL has been the \textit{de facto} universal relational
 database interface for querying and management since its inception,
 with all other alternatives having had experienced disproportionately
 little interest. The reasons for this are many, out of which only one
@@ -311,7 +185,7 @@ of the program being run.
 A notable issue with respect to real-world adoption of datalog is in
 tractability. The combined complexity of evaluating a program is
 $\text{EXPTIME}$\cite{datalog}, while SQL queries are $\text{AC}^0$. It was
-not until recently\cite{rdfox} that scalable implementations were
+not until recently\cite{rdfox, others?} that scalable implementations were
 developed.
 
 Digital analytics has been one of the main drivers of the recent datalog renaissance,
@@ -732,244 +606,601 @@ Shapiro, the developed system, is fully modular and offers a heap of independent
 	\centering
 	\begin{tikzpicture}
 		\begin{scope}
-			\node (traits) at (0, 0) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm] {};
-			\node (traits_title) at (traits.north east) [draw, anchor = north east] {Traits};
-
-			\node (ev_mec) at (traits.east) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=west] {};
-			\node (ev_mec_title) at (ev_mec.north east) [draw, anchor=north east] {Evaluation Mechanisms};
-
-			\node (ds) at (traits.south) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=north] {};
-			\node (ds_title) at (ds.north east) [draw, anchor=north east] {Data Structures};
-
-			\node (engines) at (ds.east) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=west] {};
-			\node (engines_title) at (engines.north east) [draw, anchor=north east] {Engines};
+			\node[draw] at (-1.15, 2.5) {Interfaces};
+			\draw[dotted] (-5, -1) rectangle (1, 3);
 		\end{scope}
-
-		% Traits
-		\begin{scope}
-			\node (insta) [draw, below = 3mm of traits.north] {RuleEvaluator};
-			\node (bupe) [draw, below of = insta] {BottomUpEvaluator};
-			\node (tode) at (traits) [draw, below of = bupe] {TopDownEvaluator};
-			\node (idx) at (traits) [draw, below of = tode] {IndexBacking};
-			\node (ty) at (traits.south) [draw, below of = idx] {Ty};
-		\end{scope}
-
-		% Data Structures
 
 		\begin{scope}
-			\node (btset) [draw, below = 10mm of ds.north] {BTreeSet};
-			\node (hashm) at (ds) [draw, below of = btset] {HashMap};
-			\node (vecto) at (ds) [draw, below of = hashm] {Vec};
-			\node (spine) at (ds) [draw, below of = vecto] {Spine};
+			\node[draw] at (5.10, 2.5) {Evaluation Mechanisms};
+			\draw[dotted] (7, -1) rectangle (1, 3);
 		\end{scope}
-
-		% Evaluation Mechanisms
 
 		\begin{scope}
-			\node (relal) [draw, below = 10mm of ev_mec.north] {RelationalAlgebra};
-			\node (subst) at (ds) [draw, below of = relal] {Substitution};
+			\node[draw] at (-1.15, -12.5) {Data Structures};
+			\draw[dotted] (-5, -1) rectangle (1, -13);
 		\end{scope}
-
-		% Engines
 
 		\begin{scope}
-			\node (chibi) [draw, below = 10mm of engines.north] {Chibi};
-			\node (relational) at (engines) [draw, below of = chibi] {Relational};
-			\node (differential) at (engines) [draw, below of = relational] {Differential};
+			\node[draw] at (5.10, -12.5) {Engines};
+			\draw[dotted] (7, -1) rectangle (1, -13);
 		\end{scope}
-
 	\end{tikzpicture}
-	\caption{Shapiro Components}
-	\label{fig:shapiro_comp}
+	\caption{Rule Dependency Graph of RDFS and RDFSE}
+	\label{fig:rdgrr}
 \end{figure}
-On figure \ref{fig:shapiro_comp} we can see the most relevant modules. The northwestern quadrant, Traits, refers to Rust Traits, constructs that
-define \textit{behavior}, and that can be passed to functions. It is important to take note that Rust favors \textit{composition} over inheritance, unlike Java.
-Nevertheless, all other quadrants are built upon these traits, and are therefore generic over any type that implements them.
 
-A \verb|Rule Evaluator| represents $\textbf{T}_p$, requiring only that types implement a function \verb|evaluate|, that accepts an instance,
-and produces another instance. The evaluation mechanisms \verb|Relational Algebra| and \verb|Substitution| both implement this trait,
-evaluating datalog rules by either using the aforegiven translation algorithm, or using Infer. We also provide naive parallel evaluation of rules,
-in which each rule, in both mechanisms, are sent to be executed in a threadpool. We leverage the highly efficient, and easy to use, requiring
-only one additional line of code, rayon\cite{rayon} library. This should suffice as a transparent baseline from which other parallelization
-strategies could be compared to.
-
-The concept of fixpoint evaluation is a Struct, that consists of the ground fact database, $EDB$, a \verb|Rule Evaluator|, and an array of
-instances. It is assumed that the datalog program is in the instance itself. Semi-naive evaluation is a method of fixpoint evaluation that takes
-no arguments, and instead uses two additional instances, one to keep the current delta, and the previous one. This is succintly implemented in rust
-in the same manner as this description.
-
-\verb|BottomUpEvaluator| and \verb|TopDownEvaluator| both respectively denote the two kinds of evaluation, respectively, the explicit
-materialization of the program, and the answering to a query with respect to a program. The former requires the implementation of a function that takes
-in only a program as an argument, and the latter, a program and a goal.
-
-The three engines, \verb|Chibi|, \verb|Relational| and \verb|Differential| all implement only \verb|BottomUpEvaluator|. In order to be able to
-evaluate a program, it is required to have access to an instance. An instance is defined in code as it is in literature, a set of relations. Taking
-inspiration from the highly successful open-source project DataScript\cite{datascript}, we implement relations as hashmaps, with generic hashing
-functions. The point of using a hashmap is that it allows for one to easily disregard duplicates altogether, further simplifying the implementation.
-
-Indexes on the other hand, are a vital optimization aspect. A considerable amount of recent datalog research has dealt with speeding up relational joins
-with respect to datalog, such as in attempting to specialize data structures to it\cite{souffle_btree}, and rminimizing the number of necessary
-joins to evaluate a $SPJ$ expression\cite{primitive_search}. Thus, a trait \verb|IndexBacking| is defined, whose requirements are two methods, one
-that takes in a row for insertion, and another that requires a join implementation.
-
-We implement the \verb|IndexBacking| trait for implementations of all most used data structures for datalog indexes, such as the Rust standard
-library BTree\cite{rust_btree} and HashMap, persistent implementations of both them, a regular vector, that naively sorts itself before a
-join, and the Spine, an experimental data structure, that empirically shows good performance characteristics in datalog workflows.
+\subsection{Single-Threaded and Parallel Engines}
 
 \subsection{The Spine}
-The Spine is a simple two-level pointer-free data structure comprised of an array of arrays, and an index. Sorted Arrays are the fastest data structure for
-binary search lookups. Compared to search trees, they are much more cache efficient, since every single piece of data is in one contiguous region
-in memory, and no pointer indirection is needed in every binary search iteration.
-
-Insertion in sorted arrays is commonly implemented throgh an emulated binary insertion sort, where the position of the to-be-inserted element
-is first found through a binary search, and then all elements to the right of its supposed position are shifted. The complexity of this
-operation is $O(n)$, therefore being exponentially slower than search trees, rendering it unusuable in dynamic cases, such as in datalog
-evaluation, in which possibly costly bulk insertions occur at a very fast pace.
-
-In modern CPU architectures, there are multiple levels of memory, going from CPU registers, L-caches, up to disk. Accessing one element
-cached in low-level memory can be hundreds of thousands of times faster than doing so in the disk, therefore it is possible, in practice, for
-asymptotic linear-time access to be faster than logarithmic.
-
-The Spine is a naive attempt to take advantage of that, by keeping a totally ordered set of fixed-capacity $B$ sorted arrays, ordered by their
-maximum, with $B$ being determined empirically to be the value such that the performance ratio of insertion and search is as desired. Moreover, given
-that the most efficient data structure for datalog indexing, BTree, also relies on sorted data, it often occurs that operations benefit from both
-spatial and temporal cache locality.
-
-Souffle's datalog-tailored B-Tree\cite{souffle_btree} has a simple yet effective \textit{hint} mechanism for speeding up searches and insertions, by
-taking advantage of locality. Whenever a new row is inserted, its traversal is kept as a \textit{hint}, therefore if the next row to be inserted
-falls within the same \textit{range} as the previous, the \textit{range} itself can be searched, possibly entirely avoiding a traversal, and only
-searching in the child node. This same mechanism is implemented in the Spine, with the help of its index.
-
-Fenwick Trees\cite{fenwick_tree} are highly specialized data structures used for dynamic cumulative sum. Given a fixed-length array of counts, the
-fenwick tree allows for calculating the prefix sum in $O(\log_2{n})$ time, while also providing adjustments to counts in the same bounds. We
-leverage the \cite{fenwick_tree} in order to maintain an index that will keep track of the size of each internal array. The cost of updating
-the fenwick tree is minimal, in the context of the Spine, taking $O(\log_2(B))$ time with $B \ll n$.
-
-In order to ensure that all sorted sub-arrays have at most $B$ elements, a \textit{maintenance} operation must occur. Whenever a sub-array \textit{overflows},
-it is split in half, with all arrays to the right of the overflown one shifted one place, and a new array being created, moving all elements that belonged
-to the upper half. The cost of this operation, alongside the respawning of the Fenwick Tree, is $O(B)$, which is, in practice, negligible to most
-workloads.
-
-The Spine leverages the Fenwick Tree in order to support $O(\log_2(B))$-time accesses by position. In order to locate the sorted array in which the element
-in the global $i$-th position among the union of all sorted arrays is, naively, one can run a binary search over the fenwick tree, calling prefix sum on
-each iteration. Given that, as previously mentioned, prefix sum takes $O(\log_2(N))$ time, a binary search that calls prefix sum on each iteration would
-take $O(\log^2_2(N))$. It is possible to leverage the structure of the fenwick tree, and calculate that, in a very efficient manner, taking only $O(\log_2{N})$ time.
-
-The algorithm to do so is as follows:
-
-\begin{algorithm} [!h]
-	\scriptsize
-	\KwIn{a fenwick tree $\mathcal{F}$, a desired position $i$-th}
-	\KwResult{the count inside $F$ in which $i$-th would be in}
-	\SetKwData{s}{s}
-	\BlankLine
-	\SetKwProg{Fn}{Function}{ is}{end}
-	\SetKwProg{While}{While}{:}{end}
-
-	let length = $\mathcal{F}$.length()
-
-	let prefix\_sum = $i$
-
-	let mut idx = 0;
-
-	let mut $x$ = most significant bit of length * 2
-
-	\While {$x \ge 0$}{
-		let lsb = least significant bit of x
-
-		\If{$x \leq$ length, $\mathcal{F}[x - 1] \le$ prefix\_sum} {
-			idx = x
-
-			prefix\_sum = prefix\_sum - $\mathcal{F}[x - 1]$
-
-			x = x + lsb / 2;
-		}\Else{
-			\If {lsb is even} {
-				break
-			}
-			x = lsb / 2 - lsb
-		}
-	}
-
-
-	\textbf{return} idx
-	\caption{An algorithm to binary search a fenwick tree in logarithmic time}
-	\label{alg:fen_tree}
-\end{algorithm}
-
-Being logarithmic with respect to $B$ access time, we can have an improved version of hints. In the original proposal, the cost of hint is to retain a pointer
-to the leaf node that it is in. Let there be a search, with a query point $k$ and a hint $h$. When a search starts, in case the element isn't in the leaf
-child of the hint pointer, then a traversal starts from zero, this implies the worst-case cost will be $O(\log(N))$. On the Spine in the other hand, first $k$
-is compared with $h$, and then a binary search is started. if $k > h$, then $h$ is the lower bound, if else, then $k$ is the upper bound. This provides
-significantly more value than the simple child lookup in souffle's B-Tree.
-
-% Fenwick Tree Binary Search 
 
 \subsection{Differential Dataflow}
 
-The \verb|Differential| engine is an attempt at implementing a substitution-based engine on top of the distribution framework that addresses datalog's
-evaluation inefficiencies in a manner that no other currently available framework does, differential dataflow\cite{dd}. Most of the distributed datalog engines are
-built on top of either graph-processing or map-reduce frameworks, both kinds of projects that were not specifically made with expressive query answering in mind, but
-more with efficiently handling complex non-recursive queries over large amounts of data.
+most of the distributed datalog engines are built on top of either graph-processing or map-reduce frameworks
+their semantics do not fit datalog properly like a glove
 
-One of the biggest challenges in efficiently evaluating datalog is in the deletion of data. Incremental bottom-up processing of additions is already the
-manner in which semi-naive evaluation works, and is relatively efficient. The other direction is significantly more complex. In order to delete a fact,
-one has to take into account that it might have influenced the inferrence of other facts, which imply having to look over the whole data, while the opposite
-direction does not require that, therefore incurring possibly very large performance differences between both directions.
+Differential dataflow however, does. It substantially improves semi-naive evaluation by automatically parallelizing it.
 
-Similarly to how semi-naive evaluation is the \textit{de facto} method for incremental bottom-up evaluation, the Delete-Rederive\cite{dred} algorithm holds
-the same regard with respect to the incremental maintenance of bottom-up evaluation with respect to deletions. There are two stages to it, the first, Deletion,
-naively overdeletes all facts that could have been derived from it, but at the same time, keeps track of possible facts that could have had alternative
-derivations. The second stage, rederive, restarts the evaluation process.
-
-Differential dataflow directly addresses this issue by evaluating both additions and deletions in the same manner, while at the same time efficiently parallelizing
-semi-naive evaluation, however, it is first necessary to digress over Timely Dataflow~\cite{timely}, the underlying networked computation system in which differential
-is built upon.
-
-Timely is a high-throughput, low-latency streaming-and-distributed model that extends dataflow. The timely in its name refers to it thoroughly establishing
-the semantics of each aspect of communication notification, taking the parallelization blueprint and making its execution transparent to the user. A notification
-sent between operators is assigned a timestamp, that needs only to be partially ordered, with no assumptions being made with respect to insertion. The goal is to use
-them to correctly reason about the data with respect to the local operator states' of computation completion, in order to cleverly know with certainty when not only
-whether should work be done asynchronously or with sharding, but whether there is data yet to be processed or not.
-
-Differential Dataflow, a generalization of incremental processing, is an extension to the Timely Dataflow model. While the shape of the data that flows in the latter is
-in the form of \verb|(data, timestamp)|, the former's is \verb|(data, timestamp, multiplicity)|, therefore restricting its bag-of-data semantics to multisets, with
-the multiplicity element representing a difference, for instance, $+1$ representing the addition of $1$ datapoint arriving at a specific timestamp, or $-1$, a deletion. The
-key difference between both models is that similarly to how timely makes distribution transparent, differential does the same with incremental computation, by providing to the
-user the possibility of not only adding to a stream, the only possible action in timely dataflow, but allow it to respond to arbitrary additions and retractions at any timestamp.
-
-Similarly to how timestamps in timely are the key element to the efficient parallelization of iterative dataflows, they can also be used in incremental scenarios in order to
-overcome their inherently sequential nature. This is of paramount importance to the performance of datalog evaluation.
-
-Let's assume that there is some dataflow that computes the transitive closure of some graph $d_0$, and one update consisted of four edge differences, labeled as $\delta$, arrives, with
-the resulting updated graph being $d_1$. In a regular incremental system, each triple would increment the iteration counter by $1$, and even though the relational operations inside
-the dataflow might happen in parallel, $\delta_1$, $\delta_2$, $\delta_3$ and $\delta_4$ will only be evaluated after $\delta_0$ and each of its sequent difference's iteration finishes.
-
-If that dataflow were to be executed with differential dataflow, inside the iteration scope there would be a product timestamp $\langle a, b \rangle$, with $a$ representing the time
-in which some initial triple was fed into the computation, and $b$ denoting the iteration count, therefore tracking the transitive chain length, respecting the
-following partial order: \[\langle a_i, b_1 \rangle \leq \langle a_j, b_j \rangle \iff a_i \leq a_j \wedge b_i \leq b_j\]
-
-If we take that $\delta_0$, $\delta_3$, $\delta_1$ and $\delta_2$ are differences with the following respective timestamps: $\langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 1, 2 \rangle$ it
-is noticiable that $\delta_0$ and $\delta_3$ are comparable, but both of them, and vice-versa, are incomparable with respect to $\delta_1$ and $\delta_2$. This, in turn, means that, as it can
-these pairs of differences, despite notifying change on the same iteration operator, could safely be executed in parallel in differential dataflow, but not in a regular
-incremental system that uses totally-ordered timestamps.
-
-The most notable difference between iterative and incremental processing is that in the latter computation advances by, ideally, making adjustments proportional to the newly
-received data, referred to as difference. Naturally, this could result in massively reduced latency, however, in order to support this in the first place, incremental
-systems have to maintain indexes of all updates, be it an addition or a retraction, that could impact the calculation.
-
-The differential dataflow implementation, built on top of timely dataflow's rust one, utilizes a novel method to maintain indexes such that they are not restricted
-to each individual operator, and could also be shared between multiple readers. This method utilizes shared arrangements, out of which its core concept, collection
-trace, is a structure that represents the state of a collection since the latest frontier, as explained in the timely dataflow section, as an append-only ordered sequence
-of batches of updates, with each batch possibly being merged with other batches, that make up an LSM-Tree~\cite{lsm}, therefore benefitting from its compaction mechanism
-to ensure that only a logarithmic number of batches exist.
+Make a graphic example showing how
 
 \section{Experiments}
 
-I actually did some of the experiments. results were promising, trust me :D this will revolutise the field!
+// No libraries for relational algebra
 
+
+ACM's consolidated article template, introduced in 2017, provides a
+consistent \LaTeX\ style for use across ACM publications, and
+incorporates accessibility and metadata-extraction functionality
+necessary for future Digital Library endeavors. Numerous ACM and
+SIG-specific \LaTeX\ templates have been examined, and their unique
+features incorporated into this single new template.
+
+If you are new to publishing with ACM, this document is a valuable
+guide to the process of preparing your work for publication. If you
+have published with ACM before, this document provides insight and
+instruction into more recent changes to the article template.
+
+The ``\verb|acmart|'' document class can be used to prepare articles
+for any ACM publication --- conference or journal, and for any stage
+of publication, from review to final ``camera-ready'' copy, to the
+author's own version, with {\itshape very} few changes to the source.
+
+\section{Template Overview}
+As noted in the introduction, the ``\verb|acmart|'' document class can
+be used to prepare many different kinds of documentation --- a
+double-blind initial submission of a full-length technical paper, a
+two-page SIGGRAPH Emerging Technologies abstract, a ``camera-ready''
+journal article, a SIGCHI Extended Abstract, and more --- all by
+selecting the appropriate {\itshape template style} and {\itshape
+		template parameters}.
+
+This document will explain the major features of the document
+class. For further information, the {\itshape \LaTeX\ User's Guide} is
+available from
+\url{https://www.acm.org/publications/proceedings-template}.
+
+\subsection{Template Styles}
+
+The primary parameter given to the ``\verb|acmart|'' document class is
+the {\itshape template style} which corresponds to the kind of publication
+or SIG publishing the work. This parameter is enclosed in square
+brackets and is a part of the {\verb|documentclass|} command:
+\begin{verbatim}
+  \documentclass[STYLE]{acmart}
+\end{verbatim}
+
+Journals use one of three template styles. All but three ACM journals
+use the {\verb|acmsmall|} template style:
+\begin{itemize}
+	\item {\verb|acmsmall|}: The default journal template style.
+	\item {\verb|acmlarge|}: Used by JOCCH and TAP.
+	\item {\verb|acmtog|}: Used by TOG.
+\end{itemize}
+
+The majority of conference proceedings documentation will use the {\verb|acmconf|} template style.
+\begin{itemize}
+	\item {\verb|acmconf|}: The default proceedings template style.
+	      \item{\verb|sigchi|}: Used for SIGCHI conference articles.
+	      \item{\verb|sigchi-a|}: Used for SIGCHI ``Extended Abstract'' articles.
+	      \item{\verb|sigplan|}: Used for SIGPLAN conference articles.
+\end{itemize}
+
+\subsection{Template Parameters}
+
+In addition to specifying the {\itshape template style} to be used in
+formatting your work, there are a number of {\itshape template parameters}
+which modify some part of the applied template style. A complete list
+of these parameters can be found in the {\itshape \LaTeX\ User's Guide.}
+
+Frequently-used parameters, or combinations of parameters, include:
+\begin{itemize}
+	\item {\verb|anonymous,review|}: Suitable for a ``double-blind''
+	      conference submission. Anonymizes the work and includes line
+	      numbers. Use with the \verb|\acmSubmissionID| command to print the
+	      submission's unique ID on each page of the work.
+	      \item{\verb|authorversion|}: Produces a version of the work suitable
+	      for posting by the author.
+	      \item{\verb|screen|}: Produces colored hyperlinks.
+\end{itemize}
+
+This document uses the following string as the first command in the
+source file:
+\begin{verbatim}
+\documentclass[sigconf,authordraft]{acmart}
+\end{verbatim}
+
+\section{Modifications}
+
+Modifying the template --- including but not limited to: adjusting
+margins, typeface sizes, line spacing, paragraph and list definitions,
+and the use of the \verb|\vspace| command to manually adjust the
+vertical spacing between elements of your work --- is not allowed.
+
+	{\bfseries Your document will be returned to you for revision if
+		modifications are discovered.}
+
+\section{Typefaces}
+
+The ``\verb|acmart|'' document class requires the use of the
+``Libertine'' typeface family. Your \TeX\ installation should include
+this set of packages. Please do not substitute other typefaces. The
+``\verb|lmodern|'' and ``\verb|ltimes|'' packages should not be used,
+as they will override the built-in typeface families.
+
+\section{Title Information}
+
+The title of your work should use capital letters appropriately -
+\url{https://capitalizemytitle.com/} has useful rules for
+capitalization. Use the {\verb|title|} command to define the title of
+your work. If your work has a subtitle, define it with the
+	{\verb|subtitle|} command.  Do not insert line breaks in your title.
+
+If your title is lengthy, you must define a short version to be used
+in the page headers, to prevent overlapping text. The \verb|title|
+command has a ``short title'' parameter:
+\begin{verbatim}
+  \title[short title]{full title}
+\end{verbatim}
+
+\section{Authors and Affiliations}
+
+Each author must be defined separately for accurate metadata
+identification. Multiple authors may share one affiliation. Authors'
+names should not be abbreviated; use full first names wherever
+possible. Include authors' e-mail addresses whenever possible.
+
+Grouping authors' names or e-mail addresses, or providing an ``e-mail
+alias,'' as shown below, is not acceptable:
+\begin{verbatim}
+  \author{Brooke Aster, David Mehldau}
+  \email{dave,judy,steve@university.edu}
+  \email{firstname.lastname@phillips.org}
+\end{verbatim}
+
+The \verb|authornote| and \verb|authornotemark| commands allow a note
+to apply to multiple authors --- for example, if the first two authors
+of an article contributed equally to the work.
+
+If your author list is lengthy, you must define a shortened version of
+the list of authors to be used in the page headers, to prevent
+overlapping text. The following command should be placed just after
+the last \verb|\author{}| definition:
+\begin{verbatim}
+  \renewcommand{\shortauthors}{McCartney, et al.}
+\end{verbatim}
+Omitting this command will force the use of a concatenated list of all
+of the authors' names, which may result in overlapping text in the
+page headers.
+
+The article template's documentation, available at
+\url{https://www.acm.org/publications/proceedings-template}, has a
+complete explanation of these commands and tips for their effective
+use.
+
+Note that authors' addresses are mandatory for journal articles.
+
+\section{Rights Information}
+
+Authors of any work published by ACM will need to complete a rights
+form. Depending on the kind of work, and the rights management choice
+made by the author, this may be copyright transfer, permission,
+license, or an OA (open access) agreement.
+
+Regardless of the rights management choice, the author will receive a
+copy of the completed rights form once it has been submitted. This
+form contains \LaTeX\ commands that must be copied into the source
+document. When the document source is compiled, these commands and
+their parameters add formatted text to several areas of the final
+document:
+\begin{itemize}
+	\item the ``ACM Reference Format'' text on the first page.
+	\item the ``rights management'' text on the first page.
+	\item the conference information in the page header(s).
+\end{itemize}
+
+Rights information is unique to the work; if you are preparing several
+works for an event, make sure to use the correct set of commands with
+each of the works.
+
+The ACM Reference Format text is required for all articles over one
+page in length, and is optional for one-page articles (abstracts).
+
+\section{CCS Concepts and User-Defined Keywords}
+
+Two elements of the ``acmart'' document class provide powerful
+taxonomic tools for you to help readers find your work in an online
+search.
+
+The ACM Computing Classification System ---
+\url{https://www.acm.org/publications/class-2012} --- is a set of
+classifiers and concepts that describe the computing
+discipline. Authors can select entries from this classification
+system, via \url{https://dl.acm.org/ccs/ccs.cfm}, and generate the
+commands to be included in the \LaTeX\ source.
+
+User-defined keywords are a comma-separated list of words and phrases
+of the authors' choosing, providing a more flexible way of describing
+the research being presented.
+
+CCS concepts and user-defined keywords are required for for all
+articles over two pages in length, and are optional for one- and
+two-page articles (or abstracts).
+
+\section{Sectioning Commands}
+
+Your work should use standard \LaTeX\ sectioning commands:
+\verb|section|, \verb|subsection|, \verb|subsubsection|, and
+\verb|paragraph|. They should be numbered; do not remove the numbering
+from the commands.
+
+Simulating a sectioning command by setting the first word or words of
+a paragraph in boldface or italicized text is {\bfseries not allowed.}
+
+\section{Tables}
+
+The ``\verb|acmart|'' document class includes the ``\verb|booktabs|''
+package --- \url{https://ctan.org/pkg/booktabs} --- for preparing
+high-quality tables.
+
+Table captions are placed {\itshape above} the table.
+
+Because tables cannot be split across pages, the best placement for
+them is typically the top of the page nearest their initial cite.  To
+ensure this proper ``floating'' placement of tables, use the
+environment \textbf{table} to enclose the table's contents and the
+table caption.  The contents of the table itself must go in the
+\textbf{tabular} environment, to be aligned properly in rows and
+columns, with the desired horizontal and vertical rules.  Again,
+detailed instructions on \textbf{tabular} material are found in the
+\textit{\LaTeX\ User's Guide}.
+
+Immediately following this sentence is the point at which
+Table~\ref{tab:freq} is included in the input file; compare the
+placement of the table here with the table in the printed output of
+this document.
+
+\begin{table}
+	\caption{Frequency of Special Characters}
+	\label{tab:freq}
+	\begin{tabular}{ccl}
+		\toprule
+		Non-English or Math & Frequency   & Comments          \\
+		\midrule
+		\O                  & 1 in 1,000  & For Swedish names \\
+		$\pi$               & 1 in 5      & Common in math    \\
+		\$                  & 4 in 5      & Used in business  \\
+		$\Psi^2_1$          & 1 in 40,000 & Unexplained usage \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+To set a wider table, which takes up the whole width of the page's
+live area, use the environment \textbf{table*} to enclose the table's
+contents and the table caption.  As with a single-column table, this
+wide table will ``float'' to a location deemed more
+desirable. Immediately following this sentence is the point at which
+Table~\ref{tab:commands} is included in the input file; again, it is
+instructive to compare the placement of the table here with the table
+in the printed output of this document.
+
+\begin{table*}
+	\caption{Some Typical Commands}
+	\label{tab:commands}
+	\begin{tabular}{ccl}
+		\toprule
+		Command                    & A Number & Comments         \\
+		\midrule
+		\texttt{{\char'134}author} & 100      & Author           \\
+		\texttt{{\char'134}table}  & 300      & For tables       \\
+		\texttt{{\char'134}table*} & 400      & For wider tables \\
+		\bottomrule
+	\end{tabular}
+\end{table*}
+
+Always use midrule to separate table header rows from data rows, and
+use it only for this purpose. This enables assistive technologies to
+recognise table headers and support their users in navigating tables
+more easily.
+
+\section{Math Equations}
+You may want to display math equations in three distinct styles:
+inline, numbered or non-numbered display.  Each of the three are
+discussed in the next sections.
+
+\subsection{Inline (In-text) Equations}
+A formula that appears in the running text is called an inline or
+in-text formula.  It is produced by the \textbf{math} environment,
+which can be invoked with the usual
+\texttt{{\char'134}begin\,\ldots{\char'134}end} construction or with
+the short form \texttt{\$\,\ldots\$}. You can use any of the symbols
+and structures, from $\alpha$ to $\omega$, available in
+\LaTeX~\cite{Lamport:LaTeX}; this section will simply show a few
+examples of in-text equations in context. Notice how this equation:
+\begin{math}
+	\lim_{n\rightarrow \infty}x=0
+\end{math},
+set here in in-line math style, looks slightly different when
+set in display style.  (See next section).
+
+\subsection{Display Equations}
+A numbered display equation---one set off by vertical space from the
+text and centered horizontally---is produced by the \textbf{equation}
+environment. An unnumbered display equation is produced by the
+\textbf{displaymath} environment.
+
+Again, in either environment, you can use any of the symbols and
+structures available in \LaTeX\@; this section will just give a couple
+of examples of display equations in context.  First, consider the
+equation, shown as an inline equation above:
+\begin{equation}
+	\lim_{n\rightarrow \infty}x=0
+\end{equation}
+Notice how it is formatted somewhat differently in
+the \textbf{displaymath}
+environment.  Now, we'll enter an unnumbered equation:
+\begin{displaymath}
+	\sum_{i=0}^{\infty} x + 1
+\end{displaymath}
+and follow it with another numbered equation:
+\begin{equation}
+	\sum_{i=0}^{\infty}x_i=\int_{0}^{\pi+2} f
+\end{equation}
+just to demonstrate \LaTeX's able handling of numbering.
+
+\section{Figures}
+
+The ``\verb|figure|'' environment should be used for figures. One or
+more images can be placed within a figure. If your figure contains
+third-party material, you must clearly identify it as such, as shown
+in the example below.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{sample-franklin}
+	\caption{1907 Franklin Model D roadster. Photograph by Harris \&
+		Ewing, Inc. [Public domain], via Wikimedia
+		Commons. (\url{https://goo.gl/VLCRBB}).}
+	\Description{A woman and a girl in white dresses sit in an open car.}
+\end{figure}
+
+Your figures should contain a caption which describes the figure to
+the reader.
+
+Figure captions are placed {\itshape below} the figure.
+
+Every figure should also have a figure description unless it is purely
+decorative. These descriptions convey what’s in the image to someone
+who cannot see it. They are also used by search engine crawlers for
+indexing images, and when images cannot be loaded.
+
+A figure description must be unformatted plain text less than 2000
+characters long (including spaces).  {\bfseries Figure descriptions
+		should not repeat the figure caption – their purpose is to capture
+		important information that is not already provided in the caption or
+		the main text of the paper.} For figures that convey important and
+complex new information, a short text description may not be
+adequate. More complex alternative descriptions can be placed in an
+appendix and referenced in a short figure description. For example,
+provide a data table capturing the information in a bar chart, or a
+structured list representing a graph.  For additional information
+regarding how best to write figure descriptions and why doing this is
+so important, please see
+\url{https://www.acm.org/publications/taps/describing-figures/}.
+
+\subsection{The ``Teaser Figure''}
+
+A ``teaser figure'' is an image, or set of images in one figure, that
+are placed after all author and affiliation information, and before
+the body of the article, spanning the page. If you wish to have such a
+figure in your article, place the command immediately before the
+\verb|\maketitle| command:
+\begin{verbatim}
+  \begin{teaserfigure}
+    \includegraphics[width=\textwidth]{sampleteaser}
+    \caption{figure caption}
+    \Description{figure description}
+  \end{teaserfigure}
+\end{verbatim}
+
+\section{Citations and Bibliographies}
+
+The use of \BibTeX\ for the preparation and formatting of one's
+references is strongly recommended. Authors' names should be complete
+--- use full first names (``Donald E. Knuth'') not initials
+(``D. E. Knuth'') --- and the salient identifying features of a
+reference should be included: title, year, volume, number, pages,
+article DOI, etc.
+
+The bibliography is included in your source document with these two
+commands, placed just before the \verb|\end{document}| command:
+\begin{verbatim}
+  \bibliographystyle{ACM-Reference-Format}
+  \bibliography{bibfile}
+\end{verbatim}
+where ``\verb|bibfile|'' is the name, without the ``\verb|.bib|''
+suffix, of the \BibTeX\ file.
+
+Citations and references are numbered by default. A small number of
+ACM publications have citations and references formatted in the
+``author year'' style; for these exceptions, please include this
+command in the {\bfseries preamble} (before the command
+``\verb|\begin{document}|'') of your \LaTeX\ source:
+\begin{verbatim}
+  \citestyle{acmauthoryear}
+\end{verbatim}
+
+Some examples.  A paginated journal article \cite{Abril07}, an
+enumerated journal article \cite{Cohen07}, a reference to an entire
+issue \cite{JCohen96}, a monograph (whole book) \cite{Kosiur01}, a
+monograph/whole book in a series (see 2a in spec. document)
+\cite{Harel79}, a divisible-book such as an anthology or compilation
+\cite{Editor00} followed by the same example, however we only output
+the series if the volume number is given \cite{Editor00a} (so
+Editor00a's series should NOT be present since it has no vol. no.),
+a chapter in a divisible book \cite{Spector90}, a chapter in a
+divisible book in a series \cite{Douglass98}, a multi-volume work as
+book \cite{Knuth97}, a couple of articles in a proceedings (of a
+conference, symposium, workshop for example) (paginated proceedings
+article) \cite{Andler79, Hagerup1993}, a proceedings article with
+all possible elements \cite{Smith10}, an example of an enumerated
+proceedings article \cite{VanGundy07}, an informally published work
+\cite{Harel78}, a couple of preprints \cite{Bornmann2019,
+	AnzarootPBM14}, a doctoral dissertation \cite{Clarkson85}, a
+master's thesis: \cite{anisi03}, an online document / world wide web
+resource \cite{Thornburg01, Ablamowicz07, Poker06}, a video game
+(Case 1) \cite{Obama08} and (Case 2) \cite{Novak03} and \cite{Lee05}
+and (Case 3) a patent \cite{JoeScientist001}, work accepted for
+publication \cite{rous08}, 'YYYYb'-test for prolific author
+\cite{SaeediMEJ10} and \cite{SaeediJETC10}. Other cites might
+contain 'duplicate' DOI and URLs (some SIAM articles)
+\cite{Kirschmer:2010:AEI:1958016.1958018}. Boris / Barbara Beeton:
+multi-volume works as books \cite{MR781536} and \cite{MR781537}. A
+couple of citations with DOIs:
+\cite{2004:ITE:1009386.1010128,Kirschmer:2010:AEI:1958016.1958018}. Online
+citations: \cite{TUGInstmem, Thornburg01, CTANacmart}. Artifacts:
+\cite{R} and \cite{UMassCitations}.
+
+\section{Acknowledgments}
+
+Identification of funding sources and other support, and thanks to
+individuals and groups that assisted in the research and the
+preparation of the work should be included in an acknowledgment
+section, which is placed just before the reference section in your
+document.
+
+This section has a special environment:
+\begin{verbatim}
+  \begin{acks}
+  ...
+  \end{acks}
+\end{verbatim}
+so that the information contained therein can be more easily collected
+during the article metadata extraction phase, and to ensure
+consistency in the spelling of the section heading.
+
+Authors should not prepare this section as a numbered or unnumbered {\verb|\section|}; please use the ``{\verb|acks|}'' environment.
+
+\section{Appendices}
+
+If your work needs an appendix, add it before the
+``\verb|\end{document}|'' command at the conclusion of your source
+document.
+
+Start the appendix with the ``\verb|appendix|'' command:
+\begin{verbatim}
+  \appendix
+\end{verbatim}
+and note that in the appendix, sections are lettered, not
+numbered. This document has two appendices, demonstrating the section
+and subsection identification method.
+
+\section{Multi-language papers}
+
+Papers may be written in languages other than English or include
+titles, subtitles, keywords and abstracts in different languages (as a
+rule, a paper in a language other than English should include an
+English title and an English abstract).  Use \verb|language=...| for
+every language used in the paper.  The last language indicated is the
+main language of the paper.  For example, a French paper with
+additional titles and abstracts in English and German may start with
+the following command
+\begin{verbatim}
+\documentclass[sigconf, language=english, language=german,
+               language=french]{acmart}
+\end{verbatim}
+
+The title, subtitle, keywords and abstract will be typeset in the main
+language of the paper.  The commands \verb|\translatedXXX|, \verb|XXX|
+begin title, subtitle and keywords, can be used to set these elements
+in the other languages.  The environment \verb|translatedabstract| is
+used to set the translation of the abstract.  These commands and
+environment have a mandatory first argument: the language of the
+second argument.  See \verb|sample-sigconf-i13n.tex| file for examples
+of their usage.
+
+\section{SIGCHI Extended Abstracts}
+
+The ``\verb|sigchi-a|'' template style (available only in \LaTeX\ and
+not in Word) produces a landscape-orientation formatted article, with
+a wide left margin. Three environments are available for use with the
+``\verb|sigchi-a|'' template style, and produce formatted output in
+the margin:
+\begin{itemize}
+	\item {\verb|sidebar|}:  Place formatted text in the margin.
+	\item {\verb|marginfigure|}: Place a figure in the margin.
+	\item {\verb|margintable|}: Place a table in the margin.
+\end{itemize}
+
+%%
+%% The acknowledgments section is defined using the "acks" environment
+%% (and NOT an unnumbered section). This ensures the proper
+%% identification of the section in the article metadata, and the
+%% consistent spelling of the heading.
+\begin{acks}
+	To Robert, for the bagels and explaining CMYK and color spaces.
+\end{acks}
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
 \bibliographystyle{ACM-Reference-Format}
-\bibliography{software}
+\bibliography{sample-base}
+
+%%
+%% If your work has an appendix, this is the place to put it.
+\appendix
+
+\section{Research Methods}
+
+\subsection{Part One}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
+malesuada, quam in pulvinar varius, metus nunc fermentum urna, id
+sollicitudin purus odio sit amet enim. Aliquam ullamcorper eu ipsum
+vel mollis. Curabitur quis dictum nisl. Phasellus vel semper risus, et
+lacinia dolor. Integer ultricies commodo sem nec semper.
+
+\subsection{Part Two}
+
+Etiam commodo feugiat nisl pulvinar pellentesque. Etiam auctor sodales
+ligula, non varius nibh pulvinar semper. Suspendisse nec lectus non
+ipsum convallis congue hendrerit vitae sapien. Donec at laoreet
+eros. Vivamus non purus placerat, scelerisque diam eu, cursus
+ante. Etiam aliquam tortor auctor efficitur mattis.
+
+\section{Online Resources}
+
+Nam id fermentum dui. Suspendisse sagittis tortor a nulla mollis, in
+pulvinar ex pretium. Sed interdum orci quis metus euismod, et sagittis
+enim maximus. Vestibulum gravida massa ut felis suscipit
+congue. Quisque mattis elit a risus ultrices commodo venenatis eget
+dui. Etiam sagittis eleifend elementum.
+
+Nam interdum magna at lectus dignissim, ac dignissim lorem
+rhoncus. Maecenas eu arcu ac neque placerat aliquam. Nunc pulvinar
+massa et mattis lacinia.
 
 \end{document}
 \endinput
+%%
+%% End of file `sample-authordraft.tex'.
+
+\message{ !name(b2bdatalog.tex) !offset(-1206) }
