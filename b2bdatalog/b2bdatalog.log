@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/nixos.org) (preloaded format=pdflatex 1980.1.1)  1 DEC 2022 21:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/nixos.org) (preloaded format=pdflatex 1980.1.1)  1 DEC 2022 21:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -2126,95 +2126,20 @@ Package natbib Warning: Citation `rust_btree' on page 9 undefined on input line
  843.
 
 
-Package natbib Warning: Citation `souffle_btree' on page 9 undefined on input l
-ine 865.
-
-[9.9]
-
-Package natbib Warning: Citation `fenwick_tree' on page 10 undefined on input l
-ine 870.
+Package natbib Warning: Citation `dd' on page 9 undefined on input line 849.
 
 
-Package natbib Warning: Citation `fenwick_tree' on page 10 undefined on input l
-ine 872.
+Package natbib Warning: Citation `dred' on page 9 undefined on input line 858.
 
 
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 896.
+Package natbib Warning: Citation `timely' on page 9 undefined on input line 864
+.
 
 
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 898.
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 900.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 902.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 920.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 922.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-Package natbib Warning: Citation `dd' on page 10 undefined on input line 938.
-
-
-Package natbib Warning: Citation `dred' on page 10 undefined on input line 947.
-
-
-[10.10]
-
-Package natbib Warning: Citation `timely' on page 11 undefined on input line 95
-3.
-
-
-Overfull \hbox (47.29227pt too wide) in paragraph at lines 962--967
+ [9.9]
+Overfull \hbox (47.29227pt too wide) in paragraph at lines 873--878
 \T1/LinuxLibertineT-TLF/m/n/9 (-20) the shape of the data that flows in the lat
 -ter is in the form of [][]\T1/zi4/m/n/9 (data, timestamp)[]\T1/LinuxLibertineT
 -TLF/m/n/9 (-20) , the for-mer's is [][]\T1/zi4/m/n/9 (data, timestamp, multipl
@@ -2222,13 +2147,9 @@ icity)[]\T1/LinuxLibertineT-TLF/m/n/9 (-20) ,
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Package natbib Warning: Citation `lsm' on page 10 undefined on input line 902.
 
- [11.11]
-
-Package natbib Warning: Citation `lsm' on page 12 undefined on input line 991.
-
-(./b2bdatalog.bbl
+[10.10] (./b2bdatalog.bbl
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 (Font)              scaled to size 7.0pt on input line 45.
 )
@@ -2249,65 +2170,83 @@ Class acmart Warning: Some images may lack descriptions.
 
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 1001.
+surrounding objects on input line 912.
 
-[12.12] [13.13] [14.14] (./b2bdatalog.aux)
-Package rerunfilecheck Info: File `b2bdatalog.out' has not changed.
-(rerunfilecheck)             Checksum: 308282E55836784B3A7602CDD15A4324;1476.
+[11.11] [12.12] (./b2bdatalog.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `b2bdatalog.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `b2bdatalog.out':
+(rerunfilecheck)             Before: 308282E55836784B3A7602CDD15A4324;1476
+(rerunfilecheck)             After:  29DA3D4CD90C280FC0DAC88432214ECD;1347.
  ) 
 Here is how much of TeX's memory you used:
- 33259 strings out of 478278
- 636320 string characters out of 5819600
- 963020 words of memory out of 5000000
+ 33229 strings out of 478278
+ 635795 string characters out of 5819600
+ 958777 words of memory out of 5000000
  49973 multiletter control sequences out of 15000+600000
- 697881 words of font info for 483 fonts, out of 8000000 for 9000
+ 696495 words of font info for 475 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
  84i,25n,131p,1056b,842s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final
-/share/texmf/fonts/enc/dvips/inconsolata/i4-t1-4.enc}{/nix/store/i0cbdkq85sfl53
+pdfTeX warning (dest): name{page.14} has been referenced but does not exist, 
+replaced by a fixed one
+
+pdfTeX warning (dest): name{section*.7} has been referenced but does not exist,
+ replaced by a fixed one
+
+pdfTeX warning (dest): name{subsection.4.2} has been referenced but does not ex
+ist, replaced by a fixed one
+
+{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
+hare/texmf/fonts/enc/dvips/inconsolata/i4-t1-4.enc}{/nix/store/i0cbdkq85sfl53m8
+ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvips/l
+ibertine/lbtn_oexx6f.enc}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-c
+ombined-full-2021-final/share/texmf/fonts/enc/dvips/libertine/lbtn_7grukw.enc}{
+/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/sh
+are/texmf/fonts/enc/dvips/libertine/lbtn_nh77jq.enc}{/nix/store/i0cbdkq85sfl53m
+8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvips/
+libertine/lbtn_naooyc.enc}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-
+combined-full-2021-final/share/texmf/fonts/enc/dvips/libertine/lbtn_afusau.enc}
+{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
+hare/texmf/fonts/enc/dvips/libertine/lbtn_25tcsq.enc}{/nix/store/i0cbdkq85sfl53
 m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvips
-/libertine/lbtn_oexx6f.enc}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive
--combined-full-2021-final/share/texmf/fonts/enc/dvips/libertine/lbtn_7grukw.enc
-}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/
-share/texmf/fonts/enc/dvips/libertine/lbtn_nh77jq.enc}{/nix/store/i0cbdkq85sfl5
-3m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvip
-s/libertine/lbtn_naooyc.enc}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texliv
-e-combined-full-2021-final/share/texmf/fonts/enc/dvips/libertine/lbtn_afusau.en
-c}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final
-/share/texmf/fonts/enc/dvips/libertine/lbtn_25tcsq.enc}{/nix/store/i0cbdkq85sfl
-53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvi
-ps/libertine/lbtn_76gpa5.enc}</nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texli
-ve-combined-full-2021-final/share/texmf/fonts/type1/public/inconsolata/Inconsol
-ata-zi4r.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full
--2021-final/share/texmf/fonts/type1/public/newtx/LibertineMathMI.pfb></nix/stor
-e/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf
-/fonts/type1/public/newtx/LibertineMathMI5.pfb></nix/store/i0cbdkq85sfl53m8ax25
-wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/ne
-wtx/LibertineMathMI7.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-c
-ombined-full-2021-final/share/texmf/fonts/type1/public/libertine/LinBiolinumT.p
-fb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-fina
-l/share/texmf/fonts/type1/public/libertine/LinBiolinumTB.pfb></nix/store/i0cbdk
-q85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/t
-ype1/public/libertine/LinLibertineT.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpz
-lpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/libertine
-/LinLibertineTB.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combin
-ed-full-2021-final/share/texmf/fonts/type1/public/libertine/LinLibertineTI.pfb>
-</nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
-hare/texmf/fonts/type1/public/newtx/NewTXMI.pfb></nix/store/i0cbdkq85sfl53m8ax2
-5wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/n
-ewtx/NewTXMI7.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined
--full-2021-final/share/texmf/fonts/type1/public/newtx/txexs.pfb></nix/store/i0c
-bdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/font
-s/type1/public/newtx/txmiaX.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-te
-xlive-combined-full-2021-final/share/texmf/fonts/type1/public/txfonts/txsyb.pfb
+/libertine/lbtn_76gpa5.enc}</nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive
+-combined-full-2021-final/share/texmf/fonts/type1/public/inconsolata/Inconsolat
+a-zi4r.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2
+021-final/share/texmf/fonts/type1/public/newtx/LibertineMathMI.pfb></nix/store/
+i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/f
+onts/type1/public/newtx/LibertineMathMI5.pfb></nix/store/i0cbdkq85sfl53m8ax25wq
+ikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/newt
+x/LibertineMathMI7.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-com
+bined-full-2021-final/share/texmf/fonts/type1/public/libertine/LinBiolinumT.pfb
 ></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/
-share/texmf/fonts/type1/public/txfonts/txsyc.pfb></nix/store/i0cbdkq85sfl53m8ax
-25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/
-newtx/txsys.pfb>
-Output written on b2bdatalog.pdf (14 pages, 968214 bytes).
+share/texmf/fonts/type1/public/libertine/LinBiolinumTB.pfb></nix/store/i0cbdkq8
+5sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/typ
+e1/public/libertine/LinLibertineT.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlp
+ngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/libertine/L
+inLibertineTB.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined
+-full-2021-final/share/texmf/fonts/type1/public/libertine/LinLibertineTI.pfb></
+nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/sha
+re/texmf/fonts/type1/public/newtx/NewTXMI.pfb></nix/store/i0cbdkq85sfl53m8ax25w
+qikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/new
+tx/NewTXMI7.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-f
+ull-2021-final/share/texmf/fonts/type1/public/newtx/txexs.pfb></nix/store/i0cbd
+kq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/
+type1/public/newtx/txmiaX.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texl
+ive-combined-full-2021-final/share/texmf/fonts/type1/public/txfonts/txsyb.pfb><
+/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/sh
+are/texmf/fonts/type1/public/txfonts/txsyc.pfb></nix/store/i0cbdkq85sfl53m8ax25
+wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/ne
+wtx/txsys.pfb>
+Output written on b2bdatalog.pdf (12 pages, 958190 bytes).
 PDF statistics:
- 367 PDF objects out of 1000 (max. 8388607)
- 304 compressed objects within 4 object streams
- 127 named destinations out of 1000 (max. 500000)
+ 338 PDF objects out of 1000 (max. 8388607)
+ 278 compressed objects within 3 object streams
+ 109 named destinations out of 1000 (max. 500000)
  131714 words of extra memory for PDF output out of 154059 (max. 10000000)
 
