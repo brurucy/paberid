@@ -131,7 +131,7 @@
 %%
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
-\title{A Back-to-basics empirical study of Datalog}
+\title{A Back-to-basics Empirical Study of Datalog Materialization}
 
 %%
 %% The "author" command and its associated commands are used to define
@@ -296,9 +296,7 @@
 database interface for querying and management since its inception,
 with all other alternatives having had experienced disproportionately
 little interest. The reasons for this are many, out of which only one
-is relevant to this narrative; performance. Curiously, there doesn't seem to exist
-a seminal article that investigates this event either from the
-technological or antropological viewpoint.
+is relevant to this narrative; performance.
 
 The runner-ups of popularity were languages used for machine reasoning,
 a subset of the Artificial Intelligence field that attempts to attain
@@ -309,7 +307,7 @@ is in the support for recursion while still ensuring termination irrespective
 of the program being run.
 
 A notable issue with respect to real-world adoption of datalog is in
-tractability. The combined complexity of evaluating a program is
+performance. The combined complexity of evaluating a program is
 $\text{EXPTIME}$\cite{datalog}, while SQL queries are $\text{AC}^0$. It was
 not until recently\cite{rdfox} that scalable implementations were
 developed.
@@ -321,32 +319,63 @@ aid of the most high-profile technology companies\cite{logica,yedalog,vadalog}.
 
 Another strong source of research interest has been from the knowledge graph community. A
 knowledge graph \textit{KG} is a regular relational database \textit{I} that contains
-\textit{ground truths}, and rules. The most important operation is called \textit{materialization},
-the derivation of all truths that follow from the application of rules over the relational database,
-with the most straightforward goal being to ensure queries to have the lowest latency.
+\textit{ground truths}, and rules.
 
-\textbf{Problem.} Seeking ways to introduce tuple-generating dependencies to datalog
-programs, with evaluation remaining tractable, has been one of the most active research
-directions, with highly-influential papers establishing new families of datalog languages\cite{datalog_plus_minus}
-and thoroughly exploring their complexity classes alongside further expansions\cite{sticky,warded,monadic}.
+The most important datalog operation is called \textit{materialization}, the derivation of all
+truths that follow from the application of rules over the relational database, with the most
+straightforward goal being to ensure queries do not need any reasoning.
 
-These advancements have been somewhat tested in practice, albeit with no full reference implementation having
-been specified. The most comprehensive, and recent, is closed-source\cite{vadalog}. The
-leading datalog engine in general, is also closed-source\cite{rdfox}, with no open-source
-implementation having had attained any level of popularity, despite the relative simplicity
-of the language itself.
+\textbf{Problem.} The maintenance of materialization is possibly the most important issue
+that plagues the real-world usage of datalog, and has been a source of much research interest,
+most commonly under the guise of incremental view maintenance.
 
-The two most popular datalog-related projects are DataScript\cite{datascript} and
-Open Policy Agent\cite{opa}, with the former being a top-down engine whose novelty lies in
-covering much functionality from a proprietary project, Datomic\cite{datomic}, while being
-implemented on top of a simple in-memory B-Tree. The latter is also a top-down evaluator,
-with severely limited usage of recursion. Neither of these projects have an intrinsic didactic
-nor scientific value.
+The handling of additions is efficiently done with the semi-naive evaluation method\cite{sne},
+that can be notoriously efficient for a special class of programs that are popular in practice.
+Deletions on the other hand, are possibly much less efficient, since the retraction of a \textit{ground truth}
+naively implies the deletion of all data derived from it.
+
+The quintessential algorithm for computing the materialization adjustment with respect to a
+deletion is the delete-rederive\cite{dred} method, that generates new datalog programs to
+compute the deletions necessary to ensure correctness, doing so by first computing all possible
+deletions, and then all possible alternative derivations, with the adjusment being the difference
+between both of these sets.
+
+The fact that two different algorithms are used implies that there are two different performance
+characteristics for additions and deletions, in spite of dred utilizing semi-naive evaluation as well,
+therefore there being possibly-severe biases in performance. To this date, there hasn't been
+a study that evaluated a datalog engine performance in properly dynamic scenarios.
+
+A promising computation framework that could be well-suited to this problem is differential
+dataflow\cite{differential_dataflow}. Timely dataflow is a high-throughput, low-latency
+streaming-and-distributed computational model that extends the dataflow paradigm. The timely
+in its name refers to it thoroughly establishing the semantics of each aspect of communication
+notification, taking the parallelization blueprint and making its execution transparent to the user.
+
+A notification sent between operators is assigned a timestamp, that needs only to be partially
+ordered, with no assumptions being made with respect to insertion. The goal is to use these to
+correctly reason about the data with respect to the local operator states' of computation completion, in
+order to cleverly know with certainty when not only whether should work be done asynchronously
+or with sharding, but whether there is data yet to be processed or not.
+
+Differential Dataflow, a generalization of incremental processing, is an extension to the
+Timely Dataflow model. While the shape of the data that flows in the latter is in the form
+of \verb|(data, timestamp)|, the former's is \verb|(data, timestamp, multiplicity)|, therefore
+restricting its bag-of-data semantics to multisets, with the multiplicity element representing a
+difference, for instance, $+1$ representing the addition of $1$ datapoint arriving at a
+specific timestamp, or $-1$, a deletion.
+
+The key difference between both models is that similarly to how timely makes distribution
+transparent, differential does the same with incremental computation, by providing to the user the
+possibility of not only adding to a stream, the only possible action in timely dataflow, but
+allow it to respond to arbitrary additions and retractions at any timestamp.  There is one
+reasoner that uses differential dataflow\cite{ddlog}, however, it has no storage layer, instead
+it compiles fixed datalog programs into fixed differential dataflow programs, that can only run in one computer.
 
 The lack of a canonical open-source implementation of datalog makes attempts at making
-empirical statements about performance-impacting theoretical developments brittle and
-difficult, since there is no point of reference to compare and validate, and comparisons
-against commercial implementations are not reliable, since optimizations might be trade secrets.
+empirical statements about performance-impacting theoretical developments, such as the usage of
+differential dataflow, brittle and difficult, since there is no point of reference to
+compare and validate, and comparisons against commercial implementations are not
+reliable, since optimizations might be trade secrets.
 
 A notorious exploration that highlights this issue is the COST, Configuration That Outperforms
 a Single Thread, article\cite{COST}, in which the author posits that multiple published
@@ -354,28 +383,26 @@ graph-processing engines are likely never able to outperform simple single-threa
 Some high-profile datalog implementations were built upon systems mentioned on that article.
 Later on, the author made multiple pieces of informal writing in which the most performant datalog
 engines were investigated for COST\cite{blogdynamicdatalog, blogvldbsigmod}, with results that
-showed a very different picture than the ones depicted by the original article's.
+showed a very different picture than the ones depicted by the original articles.
 
 \textbf{Methodology.} To address the aforementioned problem, we conduct a back-to-basics
-empirical study of datalog evaluation, revisiting and measuring the core assumptions that go
-into the implementation of an evaluator. Straightforward single-threaded, parallel and distributed
-implementations of both substitution-based and relational-algebra interpretations are realized alongside common
-well-known optimizations. Due to the popularity of the relational approach, we give special focus
-to the problem of choosing an indexing data structure, and investigate several alternatives, including
-a novel one, to the ubiquitous BTree.
+empirical study of datalog program materialization, revisiting and measuring the core assumptions that go
+into the implementation of a reasoner. We coalesce this knowledge into a framework that provides multiple shared components for reasoning research. Straightforward single-threaded, parallel and distributed
+implementations, with the last being done with differential dataflow, of both substitution-based
+and relational-algebra interpretations are realized alongside common well-known optimizations.
 
-%% Rethink :)
 \textbf{Contributions.} In this article we make several contributions to clarifying, benchmarking
 and easing pushing the boundaries of datalog evaluation engineering research further by
 providing performant and open-source implementations of single-threaded, parallel and distributed evaluators.
 
 \begin{itemize}
 	\item \textbf{Techniques and Guidelines.} We study the challenge of building a reasoner from scratch,
-	      with no underlying framework, and ponder over all decisions necessary in order to materialize that,
+	      with no underlying framework, and ponder over all decisions necessary in order to bring that to fruition,
 	      alongside with relevant recent literature.
-	\item \textbf{New Data Structure.} We introduce the Spine, a simple and clever alternative to the B-Tree that
-	      exhibits competitive performance in all benchmarked datalog workloads.
-	\item \textbf{Implementation.} All code outputs of this article are coalesced in a rust library named shapiro,
+	\item \textbf{Differential Dataflow.} We accurately investigate the suitability of differential
+	      dataflow for datalog, and showcase how does it fare against the ubiquitous DRED and semi-naive
+	      evaluation based reasoners with the same language, base and with the same data format.
+	\item \textbf{Framework.} All code outputs of this article are coalesced in a rust library named shapiro,
 	      consisted of a datalog to relational algebra rewriter, a relational algebra evaluator, and two datalog engines,
 	      one that is parallel-capable and supports both substitution-based and relational algebra methods, and other that
 	      relies on the state-of-the-art differential dataflow\cite{differential_dataflow} distribution computation framework.
