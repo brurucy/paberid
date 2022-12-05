@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/nixos.org) (preloaded format=pdflatex 1980.1.1)  1 DEC 2022 21:17
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/nixos.org) (preloaded format=pdflatex 1980.1.1)  5 DEC 2022 21:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1456,11 +1456,10 @@ tim
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
- Excluding 'CCSXML' comment.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 292.
+(Font)              scaled to size 12.0pt on input line 175.
 LaTeX Font Info:    Trying to load font information for T1+LinuxBiolinumT-TLF o
-n input line 292.
+n input line 175.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/libertine/T1LinuxBiolinumT-TLF.fd
@@ -1468,27 +1467,47 @@ File: T1LinuxBiolinumT-TLF.fd 2017/03/20 (autoinst) Font definitions for T1/Lin
 uxBiolinumT-TLF.
 )
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 292.
+(Font)              scaled to size 12.0pt on input line 175.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxBiolinumT-TLF' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 292.
+(Font)              scaled to size 12.0pt on input line 175.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 292.
+(Font)              scaled to size 10.95pt on input line 175.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 292.
+(Font)              scaled to size 10.95pt on input line 175.
+LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
+(Font)              scaled to size 9.0pt on input line 175.
+LaTeX Font Info:    Trying to load font information for TS1+LinuxLibertineT-TLF
+ on input line 175.
+
+(/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
+hare/texmf/tex/latex/libertine/TS1LinuxLibertineT-TLF.fd
+File: TS1LinuxLibertineT-TLF.fd 2017/03/20 (autoinst) Font definitions for TS1/
+LinuxLibertineT-TLF.
+)
+LaTeX Font Info:    Font shape `TS1/LinuxLibertineT-TLF/m/n' will be
+(Font)              scaled to size 7.0pt on input line 175.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `LinuxLibertineT-TLF' (encoding: TS1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
+(Font)              scaled to size 8.0pt on input line 175.
+LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
+(Font)              scaled to size 8.0pt on input line 175.
+LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
+(Font)              scaled to size 8.0pt on input line 175.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 292.
+(Font)              scaled to size 8.0pt on input line 175.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxLibertineT-TLF' (encoding: OT1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 292.
-LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.1pt on input line 292.
+(Font)              scaled to size 6.2pt on input line 175.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/microtype/mt-msa.cfg
@@ -1498,138 +1517,82 @@ File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 hare/texmf/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-LaTeX Font Info:    Trying to load font information for TS1+LinuxBiolinumT-TLF 
-on input line 292.
-
-(/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
-hare/texmf/tex/latex/libertine/TS1LinuxBiolinumT-TLF.fd
-File: TS1LinuxBiolinumT-TLF.fd 2017/03/20 (autoinst) Font definitions for TS1/L
-inuxBiolinumT-TLF.
-)
-LaTeX Font Info:    Font shape `TS1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 292.
-Package microtype Info: Loading generic protrusion settings for font family
-(microtype)             `LinuxBiolinumT-TLF' (encoding: TS1).
-(microtype)             For optimal results, create family-specific settings.
-(microtype)             See the microtype manual for details.
-LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 292.
-<sampleteaser.pdf, id=59, 2055.68pt x 511.9125pt>
-File: sampleteaser.pdf Graphic file (type pdf)
-<use sampleteaser.pdf>
-Package pdftex.def Info: sampleteaser.pdf  used on input line 292.
-(pdftex.def)             Requested size: 430.00462pt x 107.07518pt.
-LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 292.
-LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 5.5pt on input line 292.
-LaTeX Font Info:    Trying to load font information for TS1+LinuxLibertineT-TLF
- on input line 292.
-
-(/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
-hare/texmf/tex/latex/libertine/TS1LinuxLibertineT-TLF.fd
-File: TS1LinuxLibertineT-TLF.fd 2017/03/20 (autoinst) Font definitions for TS1/
-LinuxLibertineT-TLF.
-)
-LaTeX Font Info:    Font shape `TS1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 5.5pt on input line 292.
-Package microtype Info: Loading generic protrusion settings for font family
-(microtype)             `LinuxLibertineT-TLF' (encoding: TS1).
-(microtype)             For optimal results, create family-specific settings.
-(microtype)             See the microtype manual for details.
-LaTeX Font Info:    Font shape `TS1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 7.0pt on input line 292.
-LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 292.
-LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.2pt on input line 292.
-LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.2pt on input line 292.
-LaTeX Font Info:    Font shape `TS1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 292.
-LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 8.0pt on input line 292.
-LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 8.0pt on input line 292.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/b/n' will be
-(Font)              scaled to size 9.0pt on input line 294.
+(Font)              scaled to size 9.0pt on input line 177.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 9.0pt on input line 295.
+(Font)              scaled to size 9.0pt on input line 178.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 9.0pt on input line 295.
-LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.0pt on input line 301.
- [1.1{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-fi
-nal/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./sampleteaser.pdf>]
+(Font)              scaled to size 9.0pt on input line 178.
 
-Package natbib Warning: Citation `datalog' on page 2 undefined on input line 30
+
+Package natbib Warning: Citation `datalog' on page 1 undefined on input line 18
+7.
+
+LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
+(Font)              scaled to size 9.0pt on input line 194.
+LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
+(Font)              scaled to size 7.3pt on input line 194.
+LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
+(Font)              scaled to size 5.5pt on input line 194.
+
+Package natbib Warning: Citation `datalog' on page 1 undefined on input line 19
 4.
 
-LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 311.
-LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 7.3pt on input line 311.
 
-Package natbib Warning: Citation `datalog' on page 2 undefined on input line 31
-1.
-
-
-Package natbib Warning: Citation `rdfox' on page 2 undefined on input line 312.
+Package natbib Warning: Citation `rdfox' on page 1 undefined on input line 195.
 
 
 
-Package natbib Warning: Citation `bigdatalog' on page 2 undefined on input line
- 317.
+Package natbib Warning: Citation `bigdatalog' on page 1 undefined on input line
+ 200.
 
 
-Package natbib Warning: Citation `cog' on page 2 undefined on input line 317.
+Package natbib Warning: Citation `cog' on page 1 undefined on input line 200.
 
 
-Package natbib Warning: Citation `cog2' on page 2 undefined on input line 317.
+Package natbib Warning: Citation `cog2' on page 1 undefined on input line 200.
 
 
-Package natbib Warning: Citation `logica' on page 2 undefined on input line 318
+Package natbib Warning: Citation `logica' on page 1 undefined on input line 201
 .
 
 
-Package natbib Warning: Citation `yedalog' on page 2 undefined on input line 31
-8.
+Package natbib Warning: Citation `yedalog' on page 1 undefined on input line 20
+1.
 
 
-Package natbib Warning: Citation `vadalog' on page 2 undefined on input line 31
-8.
+Package natbib Warning: Citation `vadalog' on page 1 undefined on input line 20
+1.
+
+LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
+(Font)              scaled to size 6.0pt on input line 211.
+[1.1{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-fin
+al/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+
+Package natbib Warning: Citation `sne' on page 2 undefined on input line 215.
 
 
-Package natbib Warning: Citation `sne' on page 2 undefined on input line 332.
-
-
-Package natbib Warning: Citation `dred' on page 2 undefined on input line 338.
+Package natbib Warning: Citation `dred' on page 2 undefined on input line 221.
 
 
 Package natbib Warning: Citation `differential_dataflow' on page 2 undefined on
- input line 349.
+ input line 232.
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 7.0pt on input line 360.
- [2.2]
-LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 36
-2.
+LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 24
+5.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/inconsolata/t1zi4.fd
 File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 362.
+(Font)              scaled to size 9.0pt on input line 245.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `zi4' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-Overfull \hbox (47.29227pt too wide) in paragraph at lines 360--366
+Overfull \hbox (47.29227pt too wide) in paragraph at lines 243--249
 \T1/LinuxLibertineT-TLF/m/n/9 (-20) the shape of the data that flows in the lat
 -ter is in the form of [][]\T1/zi4/m/n/9 (data, timestamp)[]\T1/LinuxLibertineT
 -TLF/m/n/9 (-20) , the for-mer's is [][]\T1/zi4/m/n/9 (data, timestamp, multipl
@@ -1637,519 +1600,522 @@ icity)[]\T1/LinuxLibertineT-TLF/m/n/9 (-20) ,
  []
 
 
-Package natbib Warning: Citation `ddlog' on page 3 undefined on input line 371.
+Package natbib Warning: Citation `ddlog' on page 2 undefined on input line 254.
 
 
 
-Package natbib Warning: Citation `COST' on page 3 undefined on input line 381.
+Package natbib Warning: Citation `COST' on page 2 undefined on input line 264.
 
 
-Package natbib Warning: Citation `blogdynamicdatalog' on page 3 undefined on in
-put line 385.
+Package natbib Warning: Citation `blogdynamicdatalog' on page 2 undefined on in
+put line 268.
 
 
-Package natbib Warning: Citation `blogvldbsigmod' on page 3 undefined on input 
-line 385.
+Package natbib Warning: Citation `blogvldbsigmod' on page 2 undefined on input 
+line 268.
 
+LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
+(Font)              scaled to size 7.0pt on input line 270.
+[2.2]
 
 Package natbib Warning: Citation `differential_dataflow' on page 3 undefined on
- input line 408.
+ input line 293.
 
 
-Underfull \vbox (badness 3690) has occurred while \output is active []
-
- [3.3]
-
-Package natbib Warning: Citation `rdfox' on page 4 undefined on input line 421.
+Package natbib Warning: Citation `rdfox' on page 3 undefined on input line 306.
 
 
 
-Package natbib Warning: Citation `recstep' on page 4 undefined on input line 42
-2.
+Package natbib Warning: Citation `recstep' on page 3 undefined on input line 30
+7.
 
 
-Package natbib Warning: Citation `dcdatalog' on page 4 undefined on input line 
-423.
+Package natbib Warning: Citation `dcdatalog' on page 3 undefined on input line 
+308.
 
 
-Package natbib Warning: Citation `deals' on page 4 undefined on input line 424.
-
-
-
-Package natbib Warning: Citation `bigdatalog' on page 4 undefined on input line
- 427.
-
-
-Package natbib Warning: Citation `spark' on page 4 undefined on input line 428.
+Package natbib Warning: Citation `deals' on page 3 undefined on input line 309.
 
 
 
-Package natbib Warning: Citation `cog' on page 4 undefined on input line 429.
+Package natbib Warning: Citation `bigdatalog' on page 3 undefined on input line
+ 312.
 
 
-Package natbib Warning: Citation `flink' on page 4 undefined on input line 429.
-
-
-
-Package natbib Warning: Citation `nexus' on page 4 undefined on input line 432.
+Package natbib Warning: Citation `spark' on page 3 undefined on input line 313.
 
 
 
-Package natbib Warning: Citation `bddbddb' on page 4 undefined on input line 43
-9.
+Package natbib Warning: Citation `cog' on page 3 undefined on input line 314.
 
 
-Package natbib Warning: Citation `microzee' on page 4 undefined on input line 4
-39.
+Package natbib Warning: Citation `flink' on page 3 undefined on input line 314.
+
+
+
+Package natbib Warning: Citation `nexus' on page 3 undefined on input line 317.
+
+
+[3.3]
+
+Package natbib Warning: Citation `bddbddb' on page 4 undefined on input line 32
+4.
+
+
+Package natbib Warning: Citation `microzee' on page 4 undefined on input line 3
+24.
 
 
 Package natbib Warning: Citation `souffle_btree' on page 4 undefined on input l
-ine 439.
+ine 324.
 
 
 Package natbib Warning: Citation `souffle_btree' on page 4 undefined on input l
-ine 441.
+ine 326.
 
 
 Package natbib Warning: Citation `all_you_ever_wanted_to_ask' on page 4 undefin
-ed on input line 450.
+ed on input line 335.
+
+
+Package natbib Warning: Citation `datalog' on page 4 undefined on input line 35
+4.
 
 [4.4]
 
-Package natbib Warning: Citation `datalog' on page 5 undefined on input line 46
-9.
-
-[5.5]
-
-Package natbib Warning: Citation `datalog' on page 6 undefined on input line 54
-0.
+Package natbib Warning: Citation `datalog' on page 5 undefined on input line 42
+5.
 
 
-Package natbib Warning: Citation `datalog' on page 6 undefined on input line 56
-7.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [5.5]
+
+Package natbib Warning: Citation `datalog' on page 6 undefined on input line 45
+2.
+
+
+Package natbib Warning: Citation `codd_1970' on page 6 undefined on input line 
+461.
+
+
+Package natbib Warning: Citation `pg' on page 6 undefined on input line 462.
+
+
+Package natbib Warning: Citation `mysql' on page 6 undefined on input line 462.
+
+
+
+Package natbib Warning: Citation `sqlserver' on page 6 undefined on input line 
+462.
 
 [6.6]
 
-Package natbib Warning: Citation `codd_1970' on page 7 undefined on input line 
-576.
-
-
-Package natbib Warning: Citation `pg' on page 7 undefined on input line 577.
-
-
-Package natbib Warning: Citation `mysql' on page 7 undefined on input line 577.
-
-
-
-Package natbib Warning: Citation `sqlserver' on page 7 undefined on input line 
-577.
-
-
 Package natbib Warning: Citation `bigdatalog' on page 7 undefined on input line
- 592.
+ 477.
 
 
-Package natbib Warning: Citation `cog' on page 7 undefined on input line 592.
+Package natbib Warning: Citation `cog' on page 7 undefined on input line 477.
 
 
-Package natbib Warning: Citation `nexus' on page 7 undefined on input line 592.
+Package natbib Warning: Citation `nexus' on page 7 undefined on input line 477.
 
 
 
-Package natbib Warning: Citation `recstep' on page 7 undefined on input line 59
-2.
+Package natbib Warning: Citation `recstep' on page 7 undefined on input line 47
+7.
 
 
 Package natbib Warning: Citation `dcdatalog' on page 7 undefined on input line 
-592.
+477.
 
 
-Package natbib Warning: Citation `souffle' on page 7 undefined on input line 59
-2.
+Package natbib Warning: Citation `souffle' on page 7 undefined on input line 47
+7.
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 6.0pt on input line 609.
+(Font)              scaled to size 6.0pt on input line 494.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.5pt on input line 609.
+(Font)              scaled to size 6.5pt on input line 494.
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 5.0pt on input line 636.
+(Font)              scaled to size 5.0pt on input line 521.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 6.0pt on input line 636.
+(Font)              scaled to size 6.0pt on input line 521.
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 636.
+(relsize)                Using 5.0pt instead on input line 521.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 654.
+(relsize)                Using 5.0pt instead on input line 539.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 676.
+(relsize)                Using 5.0pt instead on input line 561.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 712.
+(relsize)                Using 5.0pt instead on input line 597.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 724.
+(relsize)                Using 5.0pt instead on input line 609.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 724.
+(relsize)                Using 5.0pt instead on input line 609.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 724.
+(relsize)                Using 5.0pt instead on input line 609.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 724.
+(relsize)                Using 5.0pt instead on input line 609.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 724.
+(relsize)                Using 5.0pt instead on input line 609.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 724.
+(relsize)                Using 5.0pt instead on input line 609.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 724.
+(relsize)                Using 5.0pt instead on input line 609.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 724.
+(relsize)                Using 5.0pt instead on input line 609.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 726.
+(relsize)                Using 5.0pt instead on input line 611.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 728.
+(relsize)                Using 5.0pt instead on input line 613.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 730.
+(relsize)                Using 5.0pt instead on input line 615.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 732.
+(relsize)                Using 5.0pt instead on input line 617.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 734.
+(relsize)                Using 5.0pt instead on input line 619.
 
 
-LaTeX Warning: Float too large for page by 96.01555pt on input line 737.
+LaTeX Warning: Float too large for page by 96.01555pt on input line 622.
 
 
 Package natbib Warning: Citation `opt_sys_alg_ev_dat' on page 7 undefined on in
-put line 738.
+put line 623.
 
 
-Package natbib Warning: Citation `log_dab' on page 7 undefined on input line 73
-8.
+Package natbib Warning: Citation `log_dab' on page 7 undefined on input line 62
+3.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 Package natbib Warning: Citation `rust_lang' on page 7 undefined on input line 
-744.
+629.
 
 
-Underfull \vbox (badness 5105) has occurred while \output is active []
-
- [7.7]
-
-Package natbib Warning: Citation `rdfox' on page 8 undefined on input line 750.
+Package natbib Warning: Citation `rdfox' on page 7 undefined on input line 635.
 
 
 
-Package natbib Warning: Citation `vadalog' on page 8 undefined on input line 75
-0.
+Package natbib Warning: Citation `vadalog' on page 7 undefined on input line 63
+5.
 
 
-Package natbib Warning: Citation `souffle' on page 8 undefined on input line 75
-0.
+Package natbib Warning: Citation `souffle' on page 7 undefined on input line 63
+5.
 
 
-Package natbib Warning: Citation `rust2014' on page 8 undefined on input line 7
-53.
+Package natbib Warning: Citation `rust2014' on page 7 undefined on input line 6
+38.
 
 
-Package natbib Warning: Citation `rustbelt' on page 8 undefined on input line 7
-53.
+Package natbib Warning: Citation `rustbelt' on page 7 undefined on input line 6
+38.
 
 
-Package natbib Warning: Citation `rustsafety' on page 8 undefined on input line
- 753.
+Package natbib Warning: Citation `rustsafety' on page 7 undefined on input line
+ 638.
+
+LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
+(Font)              scaled to size 8.0pt on input line 694.
+
+Class acmart Warning: A possible image without description on input line 696.
 
 
-Class acmart Warning: A possible image without description on input line 811.
+Package natbib Warning: Citation `rayon' on page 7 undefined on input line 705.
 
 
-Package natbib Warning: Citation `rayon' on page 8 undefined on input line 820.
+[7.7]
+
+Package natbib Warning: Citation `datascript' on page 8 undefined on input line
+ 719.
 
 
-[8.8]
+Underfull \vbox (badness 1342) has occurred while \output is active []
 
-Package natbib Warning: Citation `datascript' on page 9 undefined on input line
- 834.
-
+ [8.8]
 
 Package natbib Warning: Citation `souffle_btree' on page 9 undefined on input l
-ine 838.
+ine 723.
 
 
 Package natbib Warning: Citation `primitive_search' on page 9 undefined on inpu
-t line 839.
+t line 724.
 
 
 Package natbib Warning: Citation `rust_btree' on page 9 undefined on input line
- 843.
+ 728.
 
 
-Package natbib Warning: Citation `dd' on page 9 undefined on input line 849.
+Package natbib Warning: Citation `dd' on page 9 undefined on input line 734.
 
 
-Package natbib Warning: Citation `dred' on page 9 undefined on input line 858.
+Package natbib Warning: Citation `dred' on page 9 undefined on input line 743.
 
 
-Package natbib Warning: Citation `timely' on page 9 undefined on input line 864
+Package natbib Warning: Citation `timely' on page 9 undefined on input line 749
 .
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [9.9]
-Overfull \hbox (47.29227pt too wide) in paragraph at lines 873--878
+Overfull \hbox (47.29227pt too wide) in paragraph at lines 758--763
 \T1/LinuxLibertineT-TLF/m/n/9 (-20) the shape of the data that flows in the lat
 -ter is in the form of [][]\T1/zi4/m/n/9 (data, timestamp)[]\T1/LinuxLibertineT
 -TLF/m/n/9 (-20) , the for-mer's is [][]\T1/zi4/m/n/9 (data, timestamp, multipl
 icity)[]\T1/LinuxLibertineT-TLF/m/n/9 (-20) ,
  []
 
+[9.9]
 
-Package natbib Warning: Citation `lsm' on page 10 undefined on input line 902.
+Package natbib Warning: Citation `lsm' on page 10 undefined on input line 787.
 
-[10.10] (./b2bdatalog.bbl
+(./b2bdatalog.bbl
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 (Font)              scaled to size 7.0pt on input line 45.
 )
@@ -2169,84 +2135,63 @@ File: se-utf8.def 2019/11/29 v1.12 stringenc: UTF-8
 Class acmart Warning: Some images may lack descriptions.
 
 
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 912.
+Class acmart Warning: CCS concepts are mandatory for papers over two pages.
 
-[11.11] [12.12] (./b2bdatalog.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `b2bdatalog.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `b2bdatalog.out':
-(rerunfilecheck)             Before: 308282E55836784B3A7602CDD15A4324;1476
-(rerunfilecheck)             After:  29DA3D4CD90C280FC0DAC88432214ECD;1347.
+[10.10] [11.11] (./b2bdatalog.aux)
+Package rerunfilecheck Info: File `b2bdatalog.out' has not changed.
+(rerunfilecheck)             Checksum: 5076C865782EDE51C1D564C2D2930E40;1347.
  ) 
 Here is how much of TeX's memory you used:
- 33229 strings out of 478278
- 635795 string characters out of 5819600
- 958777 words of memory out of 5000000
- 49973 multiletter control sequences out of 15000+600000
- 696495 words of font info for 475 fonts, out of 8000000 for 9000
+ 33077 strings out of 478278
+ 631918 string characters out of 5819600
+ 957197 words of memory out of 5000000
+ 49878 multiletter control sequences out of 15000+600000
+ 676990 words of font info for 426 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
  84i,25n,131p,1056b,842s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{page.14} has been referenced but does not exist, 
-replaced by a fixed one
-
-pdfTeX warning (dest): name{section*.7} has been referenced but does not exist,
- replaced by a fixed one
-
-pdfTeX warning (dest): name{subsection.4.2} has been referenced but does not ex
-ist, replaced by a fixed one
-
-{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
-hare/texmf/fonts/enc/dvips/inconsolata/i4-t1-4.enc}{/nix/store/i0cbdkq85sfl53m8
-ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvips/l
-ibertine/lbtn_oexx6f.enc}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-c
-ombined-full-2021-final/share/texmf/fonts/enc/dvips/libertine/lbtn_7grukw.enc}{
-/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/sh
-are/texmf/fonts/enc/dvips/libertine/lbtn_nh77jq.enc}{/nix/store/i0cbdkq85sfl53m
-8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvips/
-libertine/lbtn_naooyc.enc}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-
-combined-full-2021-final/share/texmf/fonts/enc/dvips/libertine/lbtn_afusau.enc}
-{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
-hare/texmf/fonts/enc/dvips/libertine/lbtn_25tcsq.enc}{/nix/store/i0cbdkq85sfl53
+{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final
+/share/texmf/fonts/enc/dvips/inconsolata/i4-t1-4.enc}{/nix/store/i0cbdkq85sfl53
 m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvips
-/libertine/lbtn_76gpa5.enc}</nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive
--combined-full-2021-final/share/texmf/fonts/type1/public/inconsolata/Inconsolat
-a-zi4r.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2
-021-final/share/texmf/fonts/type1/public/newtx/LibertineMathMI.pfb></nix/store/
-i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/f
-onts/type1/public/newtx/LibertineMathMI5.pfb></nix/store/i0cbdkq85sfl53m8ax25wq
-ikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/newt
-x/LibertineMathMI7.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-com
-bined-full-2021-final/share/texmf/fonts/type1/public/libertine/LinBiolinumT.pfb
-></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/
-share/texmf/fonts/type1/public/libertine/LinBiolinumTB.pfb></nix/store/i0cbdkq8
-5sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/typ
-e1/public/libertine/LinLibertineT.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlp
-ngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/libertine/L
-inLibertineTB.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined
--full-2021-final/share/texmf/fonts/type1/public/libertine/LinLibertineTI.pfb></
-nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/sha
-re/texmf/fonts/type1/public/newtx/NewTXMI.pfb></nix/store/i0cbdkq85sfl53m8ax25w
-qikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/new
-tx/NewTXMI7.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-f
-ull-2021-final/share/texmf/fonts/type1/public/newtx/txexs.pfb></nix/store/i0cbd
-kq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/
-type1/public/newtx/txmiaX.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texl
-ive-combined-full-2021-final/share/texmf/fonts/type1/public/txfonts/txsyb.pfb><
-/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/sh
-are/texmf/fonts/type1/public/txfonts/txsyc.pfb></nix/store/i0cbdkq85sfl53m8ax25
-wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/ne
-wtx/txsys.pfb>
-Output written on b2bdatalog.pdf (12 pages, 958190 bytes).
+/libertine/lbtn_naooyc.enc}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive
+-combined-full-2021-final/share/texmf/fonts/enc/dvips/libertine/lbtn_oexx6f.enc
+}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/
+share/texmf/fonts/enc/dvips/libertine/lbtn_7grukw.enc}{/nix/store/i0cbdkq85sfl5
+3m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvip
+s/libertine/lbtn_nh77jq.enc}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texliv
+e-combined-full-2021-final/share/texmf/fonts/enc/dvips/libertine/lbtn_25tcsq.en
+c}{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final
+/share/texmf/fonts/enc/dvips/libertine/lbtn_76gpa5.enc}</nix/store/i0cbdkq85sfl
+53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/p
+ublic/inconsolata/Inconsolata-zi4r.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzl
+pngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/newtx/Libe
+rtineMathMI.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-f
+ull-2021-final/share/texmf/fonts/type1/public/newtx/LibertineMathMI5.pfb></nix/
+store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/t
+exmf/fonts/type1/public/newtx/LibertineMathMI7.pfb></nix/store/i0cbdkq85sfl53m8
+ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/publi
+c/libertine/LinBiolinumT.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texli
+ve-combined-full-2021-final/share/texmf/fonts/type1/public/libertine/LinBiolinu
+mTB.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021
+-final/share/texmf/fonts/type1/public/libertine/LinLibertineT.pfb></nix/store/i
+0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fo
+nts/type1/public/libertine/LinLibertineTB.pfb></nix/store/i0cbdkq85sfl53m8ax25w
+qikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/lib
+ertine/LinLibertineTI.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-
+combined-full-2021-final/share/texmf/fonts/type1/public/newtx/NewTXMI.pfb></nix
+/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/
+texmf/fonts/type1/public/newtx/NewTXMI7.pfb></nix/store/i0cbdkq85sfl53m8ax25wqi
+kvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type1/public/newtx
+/txexs.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2
+021-final/share/texmf/fonts/type1/public/newtx/txmiaX.pfb></nix/store/i0cbdkq85
+sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type
+1/public/txfonts/txsyb.pfb></nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive
+-combined-full-2021-final/share/texmf/fonts/type1/public/txfonts/txsyc.pfb></ni
+x/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share
+/texmf/fonts/type1/public/newtx/txsys.pfb>
+Output written on b2bdatalog.pdf (11 pages, 507636 bytes).
 PDF statistics:
- 338 PDF objects out of 1000 (max. 8388607)
- 278 compressed objects within 3 object streams
- 109 named destinations out of 1000 (max. 500000)
- 131714 words of extra memory for PDF output out of 154059 (max. 10000000)
+ 314 PDF objects out of 1000 (max. 8388607)
+ 260 compressed objects within 3 object streams
+ 104 named destinations out of 1000 (max. 500000)
+ 111221 words of extra memory for PDF output out of 128383 (max. 10000000)
 
