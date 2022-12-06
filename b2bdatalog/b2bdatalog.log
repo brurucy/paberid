@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/nixos.org) (preloaded format=pdflatex 1980.1.1)  5 DEC 2022 21:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/nixos.org) (preloaded format=pdflatex 1980.1.1)  6 DEC 2022 23:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1230,9 +1230,9 @@ LaTeX Info: Redefining \smaller on input line 151.
 \algocf@algoframe=\box79
 \algocf@algobox=\box80
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 129.
-Package hyperref Info: Option `pdfdisplaydoctitle' set `true' on input line 129
-.
+Package hyperref Info: Option `colorlinks' set `true' on input line 73.
+Package hyperref Info: Option `pdfdisplaydoctitle' set `true' on input line 73.
+
 \c@theorem=\count339
  Include comment 'screenonly'
 Excluding comment 'printonly' Include comment 'anonsuppress'
@@ -1244,60 +1244,60 @@ File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
 ) (./b2bdatalog.aux)
 \openout1 = `b2bdatalog.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/nxlmi/m/it on input line 129.
+LaTeX Font Info:    Checking defaults for OML/nxlmi/m/it on input line 73.
 LaTeX Font Info:    Trying to load font information for OML+nxlmi on input line
- 129.
+ 73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/newtx/omlnxlmi.fd
 File: omlnxlmi.fd 2013/11/19 Fontinst v1.933 font definitions for OML/nxlmi.
 )
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 129.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 73.
 LaTeX Font Info:    Trying to load font information for U+ntxexa on input line 
-129.
+73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/newtx/untxexa.fd
 File: untxexa.fd 2012/04/16 Fontinst v1.933 font definitions for U/ntxexa.
 )
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 129.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 73.
 LaTeX Font Info:    Trying to load font information for LMS+ntxsy on input line
- 129.
+ 73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/newtx/lmsntxsy.fd
 File: lmsntxsy.fd 2016/07/02 Fontinst v1.933 font definitions for LMS/ntxsy.
 )
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 129.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 73.
 LaTeX Font Info:    Trying to load font information for LMX+ntxexx on input lin
-e 129.
+e 73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/newtx/lmxntxexx.fd
 File: lmxntxexx.fd 2016/07/03 Fontinst v1.933 font definitions for LMX/ntxexx.
 )
-LaTeX Font Info:    ... okay on input line 129.
+LaTeX Font Info:    ... okay on input line 73.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 7.0pt on input line 129.
+(Font)              scaled to size 7.0pt on input line 73.
 LaTeX Font Info:    Trying to load font information for OT1+LinuxLibertineT-TLF
- on input line 129.
+ on input line 73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/libertine/OT1LinuxLibertineT-TLF.fd
@@ -1305,58 +1305,58 @@ File: OT1LinuxLibertineT-TLF.fd 2017/03/20 (autoinst) Font definitions for OT1/
 LinuxLibertineT-TLF.
 )
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 7.3pt on input line 129.
+(Font)              scaled to size 7.3pt on input line 73.
 <<ot1.cmap>>
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 5.5pt on input line 129.
+(Font)              scaled to size 5.5pt on input line 73.
 <<oml.cmap>>
-LaTeX Font Info:    Trying to load font information for U+msa on input line 129
-.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 73.
+
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 129
-.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 73.
+
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for U+ntxmia on input line 
-129.
+73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/newtx/untxmia.fd
 File: untxmia.fd 2018/04/14 Fontinst v1.933 font definitions for U/ntxmia.
 )
 LaTeX Font Info:    Trying to load font information for U+ntxsym on input line 
-129.
+73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/newtx/untxsym.fd
 File: untxsym.fd 2015/03/20 Fontinst v1.933 font definitions for U/ntxsym.
 )
 LaTeX Font Info:    Trying to load font information for U+ntxsyc on input line 
-129.
+73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/newtx/untxsyc.fd
 File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
 )
-LaTeX Info: Redefining \microtypecontext on input line 129.
-Package microtype Info: Applying patch `item' on input line 129.
-Package microtype Info: Applying patch `toc' on input line 129.
-Package microtype Info: Applying patch `eqnum' on input line 129.
-Package microtype Info: Applying patch `footnote' on input line 129.
+LaTeX Info: Redefining \microtypecontext on input line 73.
+Package microtype Info: Applying patch `item' on input line 73.
+Package microtype Info: Applying patch `toc' on input line 73.
+Package microtype Info: Applying patch `eqnum' on input line 73.
+Package microtype Info: Applying patch `footnote' on input line 73.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 129.
+LaTeX Info: Redefining \showhyphens on input line 73.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -1364,7 +1364,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxLibertineT-TLF' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-Package hyperref Info: Link coloring ON on input line 129.
+Package hyperref Info: Link coloring ON on input line 73.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/hyperref/nameref.sty
@@ -1376,9 +1376,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count341
 )
-LaTeX Info: Redefining \ref on input line 129.
-LaTeX Info: Redefining \pageref on input line 129.
-LaTeX Info: Redefining \nameref on input line 129.
+LaTeX Info: Redefining \ref on input line 73.
+LaTeX Info: Redefining \pageref on input line 73.
+LaTeX Info: Redefining \nameref on input line 73.
  (./b2bdatalog.out)
 (./b2bdatalog.out)
 \@outlinefile=\write5
@@ -1457,9 +1457,9 @@ Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 175.
+(Font)              scaled to size 12.0pt on input line 119.
 LaTeX Font Info:    Trying to load font information for T1+LinuxBiolinumT-TLF o
-n input line 175.
+n input line 119.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/libertine/T1LinuxBiolinumT-TLF.fd
@@ -1467,21 +1467,21 @@ File: T1LinuxBiolinumT-TLF.fd 2017/03/20 (autoinst) Font definitions for T1/Lin
 uxBiolinumT-TLF.
 )
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 175.
+(Font)              scaled to size 12.0pt on input line 119.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxBiolinumT-TLF' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 175.
+(Font)              scaled to size 12.0pt on input line 119.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 175.
+(Font)              scaled to size 10.95pt on input line 119.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 175.
+(Font)              scaled to size 10.95pt on input line 119.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 175.
+(Font)              scaled to size 9.0pt on input line 119.
 LaTeX Font Info:    Trying to load font information for TS1+LinuxLibertineT-TLF
- on input line 175.
+ on input line 119.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/libertine/TS1LinuxLibertineT-TLF.fd
@@ -1489,25 +1489,25 @@ File: TS1LinuxLibertineT-TLF.fd 2017/03/20 (autoinst) Font definitions for TS1/
 LinuxLibertineT-TLF.
 )
 LaTeX Font Info:    Font shape `TS1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 7.0pt on input line 175.
+(Font)              scaled to size 7.0pt on input line 119.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxLibertineT-TLF' (encoding: TS1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 175.
+(Font)              scaled to size 8.0pt on input line 119.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 8.0pt on input line 175.
+(Font)              scaled to size 8.0pt on input line 119.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 8.0pt on input line 175.
+(Font)              scaled to size 8.0pt on input line 119.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 175.
+(Font)              scaled to size 8.0pt on input line 119.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxLibertineT-TLF' (encoding: OT1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.2pt on input line 175.
+(Font)              scaled to size 6.2pt on input line 119.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/microtype/mt-msa.cfg
@@ -1518,81 +1518,81 @@ hare/texmf/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/b/n' will be
-(Font)              scaled to size 9.0pt on input line 177.
+(Font)              scaled to size 9.0pt on input line 121.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 9.0pt on input line 178.
+(Font)              scaled to size 9.0pt on input line 122.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 9.0pt on input line 178.
+(Font)              scaled to size 9.0pt on input line 122.
 
 
-Package natbib Warning: Citation `datalog' on page 1 undefined on input line 18
-7.
+Package natbib Warning: Citation `datalog' on page 1 undefined on input line 13
+1.
 
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 194.
+(Font)              scaled to size 9.0pt on input line 138.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 7.3pt on input line 194.
+(Font)              scaled to size 7.3pt on input line 138.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 5.5pt on input line 194.
+(Font)              scaled to size 5.5pt on input line 138.
 
-Package natbib Warning: Citation `datalog' on page 1 undefined on input line 19
-4.
+Package natbib Warning: Citation `datalog' on page 1 undefined on input line 13
+8.
 
 
-Package natbib Warning: Citation `rdfox' on page 1 undefined on input line 195.
+Package natbib Warning: Citation `rdfox' on page 1 undefined on input line 139.
 
 
 
 Package natbib Warning: Citation `bigdatalog' on page 1 undefined on input line
- 200.
+ 144.
 
 
-Package natbib Warning: Citation `cog' on page 1 undefined on input line 200.
+Package natbib Warning: Citation `cog' on page 1 undefined on input line 144.
 
 
-Package natbib Warning: Citation `cog2' on page 1 undefined on input line 200.
+Package natbib Warning: Citation `cog2' on page 1 undefined on input line 144.
 
 
-Package natbib Warning: Citation `logica' on page 1 undefined on input line 201
+Package natbib Warning: Citation `logica' on page 1 undefined on input line 145
 .
 
 
-Package natbib Warning: Citation `yedalog' on page 1 undefined on input line 20
-1.
+Package natbib Warning: Citation `yedalog' on page 1 undefined on input line 14
+5.
 
 
-Package natbib Warning: Citation `vadalog' on page 1 undefined on input line 20
-1.
+Package natbib Warning: Citation `vadalog' on page 1 undefined on input line 14
+5.
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.0pt on input line 211.
+(Font)              scaled to size 6.0pt on input line 155.
 [1.1{/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-fin
 al/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 
-Package natbib Warning: Citation `sne' on page 2 undefined on input line 215.
+Package natbib Warning: Citation `sne' on page 2 undefined on input line 159.
 
 
-Package natbib Warning: Citation `dred' on page 2 undefined on input line 221.
+Package natbib Warning: Citation `dred' on page 2 undefined on input line 165.
 
 
 Package natbib Warning: Citation `differential_dataflow' on page 2 undefined on
- input line 232.
+ input line 176.
 
-LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 24
-5.
+LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 18
+8.
 
 (/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/s
 hare/texmf/tex/latex/inconsolata/t1zi4.fd
 File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 245.
+(Font)              scaled to size 9.0pt on input line 188.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `zi4' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-Overfull \hbox (47.29227pt too wide) in paragraph at lines 243--249
+Overfull \hbox (47.29227pt too wide) in paragraph at lines 186--192
 \T1/LinuxLibertineT-TLF/m/n/9 (-20) the shape of the data that flows in the lat
 -ter is in the form of [][]\T1/zi4/m/n/9 (data, timestamp)[]\T1/LinuxLibertineT
 -TLF/m/n/9 (-20) , the for-mer's is [][]\T1/zi4/m/n/9 (data, timestamp, multipl
@@ -1600,190 +1600,241 @@ icity)[]\T1/LinuxLibertineT-TLF/m/n/9 (-20) ,
  []
 
 
-Package natbib Warning: Citation `ddlog' on page 2 undefined on input line 254.
+Package natbib Warning: Citation `ddlog' on page 2 undefined on input line 197.
 
 
 
-Package natbib Warning: Citation `COST' on page 2 undefined on input line 264.
+Package natbib Warning: Citation `COST' on page 2 undefined on input line 207.
 
 
 Package natbib Warning: Citation `blogdynamicdatalog' on page 2 undefined on in
-put line 268.
+put line 211.
 
 
 Package natbib Warning: Citation `blogvldbsigmod' on page 2 undefined on input 
-line 268.
+line 211.
 
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 7.0pt on input line 270.
+(Font)              scaled to size 7.0pt on input line 213.
 [2.2]
 
 Package natbib Warning: Citation `differential_dataflow' on page 3 undefined on
- input line 293.
+ input line 236.
 
 
-Package natbib Warning: Citation `rdfox' on page 3 undefined on input line 306.
+Package natbib Warning: Citation `rdfox' on page 3 undefined on input line 249.
 
 
 
-Package natbib Warning: Citation `recstep' on page 3 undefined on input line 30
-7.
+Package natbib Warning: Citation `recstep' on page 3 undefined on input line 25
+0.
 
 
 Package natbib Warning: Citation `dcdatalog' on page 3 undefined on input line 
-308.
+251.
 
 
-Package natbib Warning: Citation `deals' on page 3 undefined on input line 309.
+Package natbib Warning: Citation `deals' on page 3 undefined on input line 252.
 
 
 
 Package natbib Warning: Citation `bigdatalog' on page 3 undefined on input line
- 312.
+ 255.
 
 
-Package natbib Warning: Citation `spark' on page 3 undefined on input line 313.
-
-
-
-Package natbib Warning: Citation `cog' on page 3 undefined on input line 314.
-
-
-Package natbib Warning: Citation `flink' on page 3 undefined on input line 314.
+Package natbib Warning: Citation `spark' on page 3 undefined on input line 256.
 
 
 
-Package natbib Warning: Citation `nexus' on page 3 undefined on input line 317.
+Package natbib Warning: Citation `cog' on page 3 undefined on input line 257.
+
+
+Package natbib Warning: Citation `flink' on page 3 undefined on input line 257.
+
+
+
+Package natbib Warning: Citation `nexus' on page 3 undefined on input line 260.
 
 
 [3.3]
 
-Package natbib Warning: Citation `bddbddb' on page 4 undefined on input line 32
-4.
+Package natbib Warning: Citation `bddbddb' on page 4 undefined on input line 26
+7.
 
 
-Package natbib Warning: Citation `microzee' on page 4 undefined on input line 3
-24.
-
-
-Package natbib Warning: Citation `souffle_btree' on page 4 undefined on input l
-ine 324.
+Package natbib Warning: Citation `microzee' on page 4 undefined on input line 2
+67.
 
 
 Package natbib Warning: Citation `souffle_btree' on page 4 undefined on input l
-ine 326.
+ine 267.
+
+
+Package natbib Warning: Citation `souffle_btree' on page 4 undefined on input l
+ine 269.
 
 
 Package natbib Warning: Citation `all_you_ever_wanted_to_ask' on page 4 undefin
-ed on input line 335.
+ed on input line 278.
 
 
-Package natbib Warning: Citation `datalog' on page 4 undefined on input line 35
-4.
+Package natbib Warning: Citation `datalog' on page 4 undefined on input line 29
+7.
 
 [4.4]
 
-Package natbib Warning: Citation `datalog' on page 5 undefined on input line 42
-5.
+Package natbib Warning: Citation `datalog' on page 5 undefined on input line 36
+8.
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [5.5]
 
-Package natbib Warning: Citation `datalog' on page 6 undefined on input line 45
-2.
+Package natbib Warning: Citation `datalog' on page 6 undefined on input line 39
+5.
 
 
 Package natbib Warning: Citation `codd_1970' on page 6 undefined on input line 
-461.
+404.
 
 
-Package natbib Warning: Citation `pg' on page 6 undefined on input line 462.
+Package natbib Warning: Citation `pg' on page 6 undefined on input line 405.
 
 
-Package natbib Warning: Citation `mysql' on page 6 undefined on input line 462.
+Package natbib Warning: Citation `mysql' on page 6 undefined on input line 405.
 
 
 
 Package natbib Warning: Citation `sqlserver' on page 6 undefined on input line 
-462.
+405.
 
-[6.6]
+
+Underfull \vbox (badness 1259) has occurred while \output is active []
+
+ [6.6]
 
 Package natbib Warning: Citation `bigdatalog' on page 7 undefined on input line
- 477.
+ 420.
 
 
-Package natbib Warning: Citation `cog' on page 7 undefined on input line 477.
+Package natbib Warning: Citation `cog' on page 7 undefined on input line 420.
 
 
-Package natbib Warning: Citation `nexus' on page 7 undefined on input line 477.
+Package natbib Warning: Citation `nexus' on page 7 undefined on input line 420.
 
 
 
-Package natbib Warning: Citation `recstep' on page 7 undefined on input line 47
-7.
+Package natbib Warning: Citation `recstep' on page 7 undefined on input line 42
+0.
 
 
 Package natbib Warning: Citation `dcdatalog' on page 7 undefined on input line 
-477.
+420.
 
 
-Package natbib Warning: Citation `souffle' on page 7 undefined on input line 47
-7.
+Package natbib Warning: Citation `souffle' on page 7 undefined on input line 42
+0.
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 6.0pt on input line 494.
+(Font)              scaled to size 6.0pt on input line 440.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.5pt on input line 494.
+(Font)              scaled to size 6.5pt on input line 440.
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 5.0pt on input line 521.
+(Font)              scaled to size 5.0pt on input line 467.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 6.0pt on input line 521.
+(Font)              scaled to size 6.0pt on input line 467.
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 521.
+(relsize)                Using 5.0pt instead on input line 467.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 467.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 501.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
@@ -1835,183 +1886,92 @@ Package relsize Warning: Font size 4.16667pt is too small.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 539.
+
+[7.7]
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 561.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 597.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 609.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 609.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 609.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 609.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 609.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 609.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 609.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 609.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 611.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 613.
-
-
-Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 615.
+(relsize)                Using 5.0pt instead on input line 591.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
@@ -2019,101 +1979,122 @@ Package relsize Warning: Font size 4.16667pt is too small.
 
 
 Package relsize Warning: Font size 4.16667pt is too small.
-(relsize)                Using 5.0pt instead on input line 619.
+(relsize)                Using 5.0pt instead on input line 617.
 
 
-LaTeX Warning: Float too large for page by 96.01555pt on input line 622.
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 617.
 
 
-Package natbib Warning: Citation `opt_sys_alg_ev_dat' on page 7 undefined on in
-put line 623.
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 617.
 
 
-Package natbib Warning: Citation `log_dab' on page 7 undefined on input line 62
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 617.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 617.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 617.
+
+
+Package relsize Warning: Font size 4.16667pt is too small.
+(relsize)                Using 5.0pt instead on input line 618.
+
+
+Package natbib Warning: Citation `opt_sys_alg_ev_dat' on page 8 undefined on in
+put line 625.
+
+
+Package natbib Warning: Citation `log_dab' on page 8 undefined on input line 62
+5.
+
+
+Package natbib Warning: Citation `rust_lang' on page 8 undefined on input line 
+631.
+
+
+Package natbib Warning: Citation `rdfox' on page 8 undefined on input line 633.
+
+
+
+Package natbib Warning: Citation `vadalog' on page 8 undefined on input line 63
 3.
 
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+Package natbib Warning: Citation `souffle' on page 8 undefined on input line 63
+3.
 
 
-Package natbib Warning: Citation `rust_lang' on page 7 undefined on input line 
-629.
+Package natbib Warning: Citation `rust2014' on page 8 undefined on input line 6
+36.
 
 
-Package natbib Warning: Citation `rdfox' on page 7 undefined on input line 635.
+Package natbib Warning: Citation `rustbelt' on page 8 undefined on input line 6
+36.
 
 
+Package natbib Warning: Citation `rustsafety' on page 8 undefined on input line
+ 636.
 
-Package natbib Warning: Citation `vadalog' on page 7 undefined on input line 63
-5.
-
-
-Package natbib Warning: Citation `souffle' on page 7 undefined on input line 63
-5.
-
-
-Package natbib Warning: Citation `rust2014' on page 7 undefined on input line 6
-38.
-
-
-Package natbib Warning: Citation `rustbelt' on page 7 undefined on input line 6
-38.
-
-
-Package natbib Warning: Citation `rustsafety' on page 7 undefined on input line
- 638.
-
+[8.8]
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 8.0pt on input line 694.
-
-Class acmart Warning: A possible image without description on input line 696.
+(Font)              scaled to size 8.0pt on input line 692.
 
 
-Package natbib Warning: Citation `rayon' on page 7 undefined on input line 705.
+Class acmart Warning: A possible image without description on input line 694.
 
 
-[7.7]
-
-Package natbib Warning: Citation `datascript' on page 8 undefined on input line
- 719.
+Package natbib Warning: Citation `rayon' on page 9 undefined on input line 703.
 
 
-Underfull \vbox (badness 1342) has occurred while \output is active []
+[9.9]
 
- [8.8]
-
-Package natbib Warning: Citation `souffle_btree' on page 9 undefined on input l
-ine 723.
+Package natbib Warning: Citation `datascript' on page 10 undefined on input lin
+e 717.
 
 
-Package natbib Warning: Citation `primitive_search' on page 9 undefined on inpu
-t line 724.
+Package natbib Warning: Citation `souffle_btree' on page 10 undefined on input 
+line 721.
 
 
-Package natbib Warning: Citation `rust_btree' on page 9 undefined on input line
- 728.
+Package natbib Warning: Citation `primitive_search' on page 10 undefined on inp
+ut line 722.
+
+[10.10]
+
+Package natbib Warning: Citation `rust_btree' on page 11 undefined on input lin
+e 726.
 
 
-Package natbib Warning: Citation `dd' on page 9 undefined on input line 734.
+Package natbib Warning: Citation `dd' on page 11 undefined on input line 732.
 
 
-Package natbib Warning: Citation `dred' on page 9 undefined on input line 743.
+Package natbib Warning: Citation `dred' on page 11 undefined on input line 741.
 
 
-Package natbib Warning: Citation `timely' on page 9 undefined on input line 749
-.
+
+Package natbib Warning: Citation `timely' on page 11 undefined on input line 74
+7.
 
 
-Overfull \hbox (47.29227pt too wide) in paragraph at lines 758--763
+Overfull \hbox (47.29227pt too wide) in paragraph at lines 756--761
 \T1/LinuxLibertineT-TLF/m/n/9 (-20) the shape of the data that flows in the lat
 -ter is in the form of [][]\T1/zi4/m/n/9 (data, timestamp)[]\T1/LinuxLibertineT
 -TLF/m/n/9 (-20) , the for-mer's is [][]\T1/zi4/m/n/9 (data, timestamp, multipl
 icity)[]\T1/LinuxLibertineT-TLF/m/n/9 (-20) ,
  []
 
-[9.9]
 
-Package natbib Warning: Citation `lsm' on page 10 undefined on input line 787.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [11.11]
+
+Package natbib Warning: Citation `lsm' on page 12 undefined on input line 785.
 
 (./b2bdatalog.bbl
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
@@ -2137,18 +2118,18 @@ Class acmart Warning: Some images may lack descriptions.
 
 Class acmart Warning: CCS concepts are mandatory for papers over two pages.
 
-[10.10] [11.11] (./b2bdatalog.aux)
+[12.12] (./b2bdatalog.aux)
 Package rerunfilecheck Info: File `b2bdatalog.out' has not changed.
-(rerunfilecheck)             Checksum: 5076C865782EDE51C1D564C2D2930E40;1347.
+(rerunfilecheck)             Checksum: 1FD74C1E7B07C00FFE67D05844C0A5DC;1347.
  ) 
 Here is how much of TeX's memory you used:
- 33077 strings out of 478278
- 631918 string characters out of 5819600
- 957197 words of memory out of 5000000
- 49878 multiletter control sequences out of 15000+600000
- 676990 words of font info for 426 fonts, out of 8000000 for 9000
+ 33087 strings out of 478278
+ 632024 string characters out of 5819600
+ 945503 words of memory out of 5000000
+ 49882 multiletter control sequences out of 15000+600000
+ 676847 words of font info for 425 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
- 84i,25n,131p,1056b,842s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 84i,24n,131p,1056b,841s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/nix/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final
 /share/texmf/fonts/enc/dvips/inconsolata/i4-t1-4.enc}{/nix/store/i0cbdkq85sfl53
 m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/enc/dvips
@@ -2188,10 +2169,10 @@ sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share/texmf/fonts/type
 -combined-full-2021-final/share/texmf/fonts/type1/public/txfonts/txsyc.pfb></ni
 x/store/i0cbdkq85sfl53m8ax25wqikvpzlpngs-texlive-combined-full-2021-final/share
 /texmf/fonts/type1/public/newtx/txsys.pfb>
-Output written on b2bdatalog.pdf (11 pages, 507636 bytes).
+Output written on b2bdatalog.pdf (12 pages, 512057 bytes).
 PDF statistics:
- 314 PDF objects out of 1000 (max. 8388607)
- 260 compressed objects within 3 object streams
- 104 named destinations out of 1000 (max. 500000)
+ 332 PDF objects out of 1000 (max. 8388607)
+ 277 compressed objects within 3 object streams
+ 112 named destinations out of 1000 (max. 500000)
  111221 words of extra memory for PDF output out of 128383 (max. 10000000)
 

@@ -1,64 +1,8 @@
-%%
-%% This is file `sample-manuscript.tex',
-%% generated with the docstrip utility.
-%%
-%% The original source files were:
-%%
-%% samples.dtx  (with options: `manuscript')
-%% 
-%% IMPORTANT NOTICE:
-%% 
-%% For the copyright see the source file.
-%% 
-%% Any modified versions of this file must be renamed
-%% with new filenames distinct from sample-manuscript.tex.
-%% 
-%% For distribution of the original source see the terms
-%% for copying and modification in the file samples.dtx.
-%% 
-%% This generated file may be distributed as long as the
-%% original source files, as listed above, are part of the
-%% same distribution. (The sources need not necessarily be
-%% in the same archive or directory.)
-%%
-%% Commands for TeXCount
-%TC:macro \cite [option:text,text]
-%TC:macro \citep [option:text,text]
-%TC:macro \citet [option:text,text]
-%TC:envir table 0 1
-%TC:envir table* 0 1
-%TC:envir tabular [ignore] word
-%TC:envir displaymath 0 word
-%TC:envir math 0 word
-%TC:envir comment 0 0
-%%
-%%
-%% The first command in your LaTeX source must be the \documentclass command.
-%%%% Small single column format, used for CIE, CSUR, DTRAP, JACM, JDIQ, JEA, JERIC, JETC, PACMCGIT, TAAS, TACCESS, TACO, TALG, TALLIP (formerly TALIP), TCPS, TDSCI, TEAC, TECS, TELO, THRI, TIIS, TIOT, TISSEC, TIST, TKDD, TMIS, TOCE, TOCHI, TOCL, TOCS, TOCT, TODAES, TODS, TOIS, TOIT, TOMACS, TOMM (formerly TOMCCAP), TOMPECS, TOMS, TOPC, TOPLAS, TOPS, TOS, TOSEM, TOSN, TQC, TRETS, TSAS, TSC, TSLP, TWEB.
-% \documentclass[acmsmall]{acmart}
-
-%%%% Large single column format, used for IMWUT, JOCCH, PACMPL, POMACS, TAP, PACMHCI
-% \documentclass[acmlarge,screen]{acmart}
-
-%%%% Large double column format, used for TOG
-% \documentclass[acmtog, authorversion]{acmart}
-
-%%%% Generic manuscript mode, required for submission
-%%%% and peer review
 \documentclass[manuscript,screen,review]{acmart}
-%% Fonts used in the template cannot be substituted; margin 
-%% adjustments are not allowed.
-%%
-%% \BibTeX command to typeset BibTeX logo in the docs
 \AtBeginDocument{%
 \providecommand\BibTeX{{%
 \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
 
-%% Rights management information.  This information is sent to you
-%% when you complete the rights form.  These commands have SAMPLE
-%% values in them; it is your responsibility as an author to replace
-%% the commands and values with those provided to you when you
-%% complete the rights form.
 \setcopyright{acmcopyright}
 \copyrightyear{2018}
 \acmYear{2018}
@@ -236,8 +180,7 @@ notification, taking the parallelization blueprint and making its execution tran
 
 A notification sent between operators is assigned a timestamp, that needs only to be partially
 ordered, with no assumptions being made with respect to insertion. The goal is to use these to
-correctly reason about the data with respect to the local operator states' of computation completion, in
-order to cleverly know with certainty when not only whether should work be done asynchronously
+correctly reason about the data with respect to the local operator states' of computation completion, in order to cleverly know with certainty when not only whether should work be done asynchronously
 or with sharding, but whether there is data yet to be processed or not.
 
 Differential Dataflow, a generalization of incremental processing, is an extension to the
@@ -333,7 +276,7 @@ In this section we review the basics of all concepts related to datalog evaluati
 \subsection{Datalog}
 
 \textit{Datalog}\cite{all_you_ever_wanted_to_ask} is a declarative programming language. A program $P$ is a set of
-rules $r$, with each $r$ being a restricted first-order formula of the following form: \[\bigwedge_{i=1}^kB_i(x_1, ..., x_j) \rightarrow \exists (y_1, ..., y_j)H(x_1, ..., x_j, y_1, ..., y_j)\]
+rules $r$, with each $r$ being a restriction of tuple-generating dependencies: \[\bigwedge_{i=1}^kB_i(x_1, ..., x_j) \rightarrow \exists (y_1, ..., y_j)H(x_1, ..., x_j, y_1, ..., y_j)\]
 with $k$, $j$ as finite integers, $x$ and $y$ as terms, and each $B_i$ and $H$ as predicates. A term can belong
 either to the set of variables, or constants, however, it is to be noted that all $y$ are existentially quantified.
 The set of all $B_i$ is called the \textit{body}, and $H$ the \textit{head}.
@@ -449,7 +392,7 @@ be hinted from the example, where each next application of $I_c$ only renders ne
 The most relevant performance-oriented aspect of both of the introduced evaluation mechanisms is the implementation of $I_c$ itself. The two
 most high-profile methods to do so are either purely evaluating the rules, or rewriting them in some other imperative formalism, and executing it.
 
-The Infer\cite{datalog} algorithm is the simplest example of the former, and relies on substitutions. A substitution $S$ is a homomorphism
+The Infer\cite{datalog} method is the simplest example of the former, and relies on substitutions. A substitution $S$ is a homomorphism
 $[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is a constant. Given a not-ground fact,
 such as $TC(?x, 4)$, \textit{applying} the substitution $[?x \rightarrow 1]$ to it will yield the ground fact $TC(1, 4)$.
 
@@ -458,11 +401,11 @@ all substitutions are made, they are applied to the heads of each rule. Every re
 to the immediate consequence.
 
 \subsection{Relational Algebra}
-Relational Algebra\cite{codd_1970} is an imperative language, that explicitly denotes operations over sets of tuples with fixed arity, relations. It is
+Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed arity, relations. It is
 the most popular database formalism that there is, with virtually every single major database system adhering to the relational model\cite{pg,mysql,sqlserver}
-and supporting relational algebra as the SQL compilation target.
+and using SQL as a declarative syntax for relational algebra.
 
-Let $R$ and $T$ be relations with arity $r$ and $t$, $\theta$ be a binary operation with a boolean output, $R(i)$ be the i-th column in $R$, and
+Let $R$ and $T$ be relations with arity $r$ and $t$, $\theta$ be a binary operation with a boolean output, $R(i)$ be the i-th column, all terms in the i-th position of every tuple in $R$, and
 $R[h, ..., k]$ be the subset of $R$ such that only the columns $h, ..., k$ remain, and Const the set of all constant terms. The following
 are the most relevant relational algebra operators and their semantics:
 \begin{itemize}
@@ -488,8 +431,11 @@ equivalent to conjunctive queries, that are equivalent to single-rule and non-re
 We propose a straightforward not-recursive pseudocode algorithm to translate a datalog rule into a $SPJ$ expression tree, in which
 relational operators are nodes and leaves are relations. The value proposition of the algorithm is for the resulting tree to be ready
 to be recursively executed, alongside having two essential relational optimizations, selection by value pushdown, and melding selection
-by column with products into joins, the most important relational operator.
-\begin{algorithm} [!h]
+by column with products into joins, the most important relational operator. This is paramount to understanding the performance of the relational reasoner.
+
+The algorithm has two parts, generating a semantically equivalent relational expression to the input rule, and then optimising all products out for joins, therefore turning it into a $\mathcal{SPJ}$ expression.
+
+\begin{algorithm}
 	\scriptsize
 	\KwIn{A datalog rule $\mathcal{R}$}
 	\KwResult{A relational algebra expression $\mathcal{R}_a$}
@@ -501,7 +447,7 @@ by column with products into joins, the most important relational operator.
 	\Fn{toIncompleteExpression($r$ : Datalog Rule)}{
 		let $t$ be a fresh tree
 
-		\For{For every fact $a_i$ in the rule body $b$} {
+		\For{every fact $a_i$ in the rule body $b$} {
 			create a relation node $r_i$ with the same arity as $a_i$, and its terms representing columns. variable terms
 			are column identifiers, and constant terms are temporary-lived proxies for selections.
 			\If {$i < len(b) - 1$ } {
@@ -518,6 +464,22 @@ by column with products into joins, the most important relational operator.
 		}
 		\textbf{return} $t$
 	}
+	\caption{toIncompleteExpression procedure}
+	\label{alg:to_incomplete_expression}
+\end{algorithm}
+
+Procedure \ref{alg:to_incomplete_expression} receives as input a rule, such as $TC(?x, z) \leftarrow TC(?x, y), TC(y, ?z)$, and outputs an
+incomplete expression tree representing a relational inclusion comprised solely of products: $(TC(?x, y) \times TC(y, ?z)) \subseteq TC$.
+
+\begin{algorithm}
+	\scriptsize
+	\KwIn{A datalog rule $\mathcal{R}$}
+	\KwResult{A relational algebra expression $\mathcal{R}_a$}
+	\SetKwData{s}{s}
+	\BlankLine
+	\SetKwProg{Fn}{Function}{ is}{end}
+	\SetKwProg{For}{For}{:}{end}
+
 	\Fn{constantToSelection($e$ : Expression)}{
 		let $t$ be a copy of $e$
 
@@ -536,6 +498,22 @@ by column with products into joins, the most important relational operator.
 		}
 		\textbf{return} $t$
 	}
+	\caption{constantToSelection procedure}
+	\label{alg:constant_to_selection}
+\end{algorithm}
+
+The next two steps handle the translation of datalog constant terms into selection operations. procedure \ref{alg:constant_to_selection} will swap out
+all constant terms in relations for selections by value, that will remain as close as possible to the relation node: $(\sigma_{1=y}TC(?x, ?y) \times \sigma_{0=y}TC(?y, ?z)) \subseteq TC$.
+
+\begin{algorithm}
+	\scriptsize
+	\KwIn{A datalog rule $\mathcal{R}$}
+	\KwResult{A relational algebra expression $\mathcal{R}_a$}
+	\SetKwData{s}{s}
+	\BlankLine
+	\SetKwProg{Fn}{Function}{ is}{end}
+	\SetKwProg{For}{For}{:}{end}
+
 	\Fn{equalityToSelection($e$ : Expression)}{
 		let $t$ be a copy of $e$
 
@@ -558,6 +536,22 @@ by column with products into joins, the most important relational operator.
 		}
 		\textbf{return} $t$
 	}
+	\caption{equalityToSelection procedure}
+	\label{alg:equality_to_selection}
+\end{algorithm}
+
+With constant terms being gone, it is necessary to remove variable terms altogether. This is done with procedure \ref{alg:equality_to_selection}, that
+whenever there are terms with the same symbol, a selection by column is added: $(\sigma_{1=2}(\sigma_{1=y}TC \times \sigma_{0=y}TC)) \subseteq TC$.
+
+\begin{algorithm}
+	\scriptsize
+	\KwIn{A datalog rule $\mathcal{R}$}
+	\KwResult{A relational algebra expression $\mathcal{R}_a$}
+	\SetKwData{s}{s}
+	\BlankLine
+	\SetKwProg{Fn}{Function}{ is}{end}
+	\SetKwProg{For}{For}{:}{end}
+
 	\Fn{projectHead($e$ : Expression, $r$ : Datalog Rule)}{
 		let $n$ be 0
 
@@ -594,6 +588,20 @@ by column with products into joins, the most important relational operator.
 
 		\textbf{return} $t$
 	}
+	\caption{projectHead procedure}
+	\label{alg:project_head}
+\end{algorithm}
+
+The last step in translation is the most straightforward one, to convert the head of the rule. This is directly done with procedure \ref{alg:project_head} by converting the head $TC(?x, ?z)$ into a relational projection node: $\pi_{[0, 2]}(\sigma_{1=2}(\sigma_{1=y}TC \times \sigma_{0=y}TC)) \subseteq TC$. Now, the output expression is semantically equivalent to the input rule.
+
+\begin{algorithm}
+	\scriptsize
+	\KwIn{A datalog rule $\mathcal{R}$}
+	\KwResult{A relational algebra expression $\mathcal{R}_a$}
+	\SetKwData{s}{s}
+	\BlankLine
+	\SetKwProg{Fn}{Function}{ is}{end}
+	\SetKwProg{For}{For}{:}{end}
 	\Fn{productToJoin($e$ : Expression)}{
 		let $t$ be a copy of $e$
 
@@ -606,20 +614,14 @@ by column with products into joins, the most important relational operator.
 		}
 		\textbf{return} t
 	}
-	$\mathcal{R}_a$ = toIncompleteExpression($\mathcal{R}$)
-
-	$\mathcal{R}_a$ = constantToSelection(expression, $\mathcal{R}$)
-
-	$\mathcal{R}_a$ = equalityToSelection(expression, $\mathcal{R}$)
-
-	$\mathcal{R}_a$ = projectHead(expression, $\mathcal{R}$)
-
-	$\mathcal{R}_a$ = productToJoin(expression, $\mathcal{R}$)
 
 	\textbf{return} $\mathcal{R}_a$
-	\caption{An algorithm to translate a datalog rule into relational algebra}
-	\label{alg:datalog_to_relalg}
+	\caption{productToJoin procedure}
+	\label{alg:product_to_join}
 \end{algorithm}
+
+The second part of the algorithm is brief, yet of paramount importance, as it optimises all products away into joins with procedure \ref{alg:product_to_join}: $\pi_{[0, 2]}(\sigma_{1=y}TC \Join_{1=2} \sigma_{0=y}TC) \subseteq TC$.
+
 The canonical algorithms for translating datalog to relational algebra\cite{opt_sys_alg_ev_dat, log_dab} are recursive, complex,
 and do not assume the output to be a tree, instead being mostly symbolic.
 
@@ -627,10 +629,6 @@ and do not assume the output to be a tree, instead being mostly symbolic.
 In order to coalesce all contributions in this paper, an extensible reasoning system was designed, from scratch. No frameworks
 were used, nor any code related to any other reasoner has been reutilized, furthermore, a modern, performant and safe programming
 language was used, Rust\cite{rust_lang}.
-
-The main rationale for this choice is twofold: garbage-collected languages such as java are hard to benchmark, and tuning
-performance, alongside reasoning about it, often requires the developer to either learn highly specific minutiae relating
-to the compiler or interpreter, and, or, the garbage collector.
 
 All most performant shared-memory reasoners are unsurpisingly all implemented in C++\cite{rdfox, vadalog, souffle}, since
 it provides manual memory management and is the \textit{de facto} language for high-performance computing. Rust is a
