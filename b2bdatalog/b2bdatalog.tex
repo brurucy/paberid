@@ -20,8 +20,6 @@
 	June 03--05, 2018, Woodstock, NY}
 \acmPrice{15.00}
 \acmISBN{978-1-4503-XXXX-X/18/06}
-
-
 %%
 %% Submission ID.
 %% Use this when submitting an article to a sponsored event. You'll
@@ -367,26 +365,27 @@ is the difference of the union of all previous $DB$ with the $EDB$.
 It is trivial to see that $I_C(DB)$ is monotone, and given that both the $EDB$ and $P$ are finite sets, and that $IDB = \emptyset$ at the start,
 at some point $I_C(DB) = DB$, since there won't be new facts to be inferred. This point is the \textit{least fixed point} of $I_c(DB)$\cite{datalog},
 and happens to be the \textit{minimal} model.
-\begin{exmp}{Repeated application of $I_c$}\label{ex5}
-	\begin{align*}
-		P = \{ Edge(?x, ?y) \rightarrow TC(?x, ?y), TC(?x, ?y), TC(?y, ?z) \rightarrow TC(?x, ?z) \} \\
-		EDB = \{ Edge(1, 2), Edge(2, 3), Edge(3, 4) \}                                               \\
-		DB = EDB                                                                                     \\
-		DB = I_C(DB)                                                                                 \\
-		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4) \}                                            \\
-		DB = I_C(DB)                                                                                 \\
-		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4) \}                        \\
-		DB = I_C(DB)                                                                                 \\
-		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}              \\
-		DB = I_C(DB)                                                                                 \\
-		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}              \\
+\begin{exmp}{Repeated application of $I_c$}
+	\begin{align}
+		P = \{ Edge(?x, ?y) \rightarrow TC(?x, ?y), TC(?x, ?y), TC(?y, ?z) \rightarrow TC(?x, ?z) \} \nonumber           \\
+		EDB = \{ Edge(1, 2), Edge(2, 3), Edge(3, 4) \}                                               \nonumber           \\
+		DB = EDB                                                                                     \nonumber           \\
+		DB = I_C(DB)                                                                                                     \\
+		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4) \}                                                      \nonumber \\
+		DB = I_C(DB)                                                                                           \nonumber \\
+		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4) \}                                  \nonumber \\
+		DB = I_C(DB)                                                                                                     \\
+		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}                        \nonumber \\
+		DB = I_C(DB)                                                                                                     \\
+		DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}                        \nonumber \\
 		IDB = DB \setminus EDB
-	\end{align*}
+	\end{align}
+	\label{ex5}
 \end{exmp}
-The introduced form of evaluation, with a walkthrough given on example \ref{ex5}, is called \textit{naive}, meanwhile, the ubiquitous evaluation
-mechanism, as of the date of writing this paper, is the \textit{semi-naive} one. The only difference is that \textit{semi-naive} does not
-repeatedly union the $EDB$ with the entire $IDB$, but does so only with the difference of the previous immediate consequence with the $IDB$. This can
-be hinted from the example, where each next application of $I_c$ only renders new facts from the previous newly derived ones.
+
+The walkthrough given on example \ref{ex5} is called \textit{naive} evaluation. Every number indicates one rendering of the immediate consequence. As it can be seen by 3 and 4, at some point $DB$ equals $I_C(DB)$, from which onwards no more new tuples will be inferred, therefore halting.
+
+The ubiquitous evaluation mechanism, as of the date of writing this paper, is the \textit{semi-naive} one. The difference is that \textit{semi-naive} does not repeatedly union the $EDB$ with the entire $IDB$, but does so only with the difference of the previous immediate consequence with the $IDB$. This can be hinted from the example, where each next application of $I_c$ only renders new facts from the previous newly derived ones.
 
 \subsection{Infer}
 The most relevant performance-oriented aspect of both of the introduced evaluation mechanisms is the implementation of $I_c$ itself. The two
@@ -625,8 +624,43 @@ The second part of the algorithm is brief, yet of paramount importance, as it op
 The canonical algorithms for translating datalog to relational algebra\cite{opt_sys_alg_ev_dat, log_dab} are recursive, complex,
 and do not assume the output to be a tree, instead being mostly symbolic.
 
+\section{DRED}
+
+The regular semi-naive evaluation method is already incremental, and easily handles the addition of data. One merely has to continue the evaluation with all previous data as the most recent delta.
+
+The most used method for handling deletions is a bottom-up algorithm\cite{dred} that uses semi-naive evaluation to evaluate two new programs, one that computes all possible deletions that could stem from the deletion of the facts being retracted, and then another that attempts to find alternative derivations to the overdeleted ones.
+
+Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the overdeletion program will generate one new $-$rule for each $b_j$ in each rule body $b(r_i)$, in order to represent that if such fact were to be deleted, then $h(r_i)$ would not hold true.
+
+\begin{exmp}{DRED Overdeletion program}
+	\begin{align}
+		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                \\
+		-r_0 = -TC(?x, ?y) \leftarrow -Edge(?x, ?y)                                                                                                           \\
+		-r_1 = -TC(?x, ?z) \leftarrow -Edge(?x, ?y), TC(?y, ?z)                                                                                     \nonumber \\
+		-r_2 = -TC(?x, ?z) \leftarrow Edge(?x, ?y), -TC(?y, ?z)
+	\end{align}
+	\label{ex6}
+\end{exmp}
+
+On example \ref{ex6} negative predicates represent overdeletion targets. For instance, if \verb|Edge(2, 3)| is being deleted, then \verb|TC(2, 3)| will be deleted, and any other inferred fact that depends on it. Given that it is a regular datalog program, it can be efficiently evaluated with semi-naive evaluation.
+
+The next step is to compute the alternative derivations of the deleted facts, since some overdeleted facts might still hold true. The alternative derivation program will generate one new $+$rule for each $r_i$ in $P$, with one extra $-$ head predicate per body, representing an overdeleted fact. The $+$ program requires the overdeleted facts to not be present.
+
+\begin{exmp}{DRED Overdeletion program}
+	\begin{align}
+		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                           \\
+		r_0 = +TC(?x, ?y) \leftarrow -TC(?x, ?y), Edge(?x, ?y)                                                                                                           \\
+		r_1 = +TC(?x, ?z) \leftarrow -TC(?x, ?z), Edge(?x, ?y), TC(?y, ?z)                                                                                     \nonumber \\
+	\end{align}
+	\label{ex7}
+\end{exmp}
+
+The output relations from example \ref{ex7} represent the data that has to be put back into the materialization. The rationale for alternative derivations is that, for $r_1$, for instance, if the edge \verb|TC(3, 4)| was overdeleted, because of there being \verb|Edge(1, 2)| and \verb|TC(2, 3)|, if \verb|Edge(3, 4)| was not deleted, by rule $r_0$, then there is an alternative derivation for \verb|TC(3, 4)|.
+
+As it can be seen, computing the maintenance of the materialization implies evaluating a program bigger than the materialization itself, however, due to the fact that it is evaluated with semi-naive evaluation in itself, the asymptotic complexity remains the same\cite{complexity_of_dred}. Nonetheless, in practice, deletion is often much slower than addition.
+
 \section{Shapiro}
-In order to coalesce all contributions in this paper, an extensible reasoning system was designed, from scratch. No frameworks
+The central contribution of this article is Shapiro, an extensible reasoning system designedfrom scratch. No frameworks
 were used, nor any code related to any other reasoner has been reutilized, furthermore, a modern, performant and safe programming
 language was used, Rust\cite{rust_lang}.
 
