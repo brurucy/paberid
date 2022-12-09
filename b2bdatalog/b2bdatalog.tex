@@ -56,6 +56,7 @@
 \usepackage{tikz-qtree}
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows.meta, shapes.misc, positioning}
+\usepackage{subfig}
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}[section]
 \usepackage[ruled, vlined, linesnumbered]{algorithm2e}
@@ -75,7 +76,6 @@
 %% allowing the author to define a "short title" to be used in page headers.
 \title{A Back-to-basics Empirical Study of Datalog Materialization}
 
-%%
 %% The "author" command and its associated commands are used to define
 %% the authors and their affiliations.
 %% Of note is the shared affiliation of the first two authors, and the
@@ -105,10 +105,22 @@
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-	The core reasoning task for datalog engines is materialization, the act of evaluating a program until no more data can be inferred from a database. Due to it being a costly operation, it is a must for datalog engines to provide incremental materialization, that is, to adjust the computation to new data, instead of restarting from scratch.
-	Deleting data is notoriously more involved than adding, since one has to take into account all possible data that has been inferred from what is being deleted, hence, it is likely that performance is not even across the direction of the update.
-	In this article we investigate the performance of materialization in both directions, with three reference datalog implementations, out of which one is built on top of a lightweight relational engine, and another that uses a promising distribution framework for incremental computation with first-class support for recursion, that efficiently handles addition and deletion of data in the same way.
-	To ensure a fair evaluation, the output of the paper is coalesced as an extensible reasoning framework, that shares as much code as it is sensible between the implementations, therefore providing strong evidence to the efficiency of each measure.
+	The core reasoning task for datalog engines is materialization, the
+	act of evaluating a program until no more data can be inferred from
+	a database. Due to it being a costly operation, it is a must for datalog
+	engines to provide incremental materialization, that is, to adjust the
+	computation to new data, instead of restarting from scratch. Deleting data
+	is notoriously more involved than adding, since one has to take into account
+	all possible data that has been inferred from what is being deleted, hence, it is
+	likely that performance is not even across the direction of the update. In this
+	article we investigate the performance of materialization in both directions, with
+	three reference datalog implementations, out of which one is built on top of a
+	lightweight relational engine, and another that uses a promising distribution framework
+	for incremental computation with first-class support for recursion, that efficiently
+	handles addition and deletion of data in the same way. To ensure a fair evaluation, the
+	output of the paper is coalesced as an extensible reasoning framework, that shares
+	as much code as it is sensible between the implementations, therefore providing strong
+	evidence to the efficiency of each measure.
 \end{abstract}
 
 
@@ -178,7 +190,8 @@ notification, taking the parallelization blueprint and making its execution tran
 
 A notification sent between operators is assigned a timestamp, that needs only to be partially
 ordered, with no assumptions being made with respect to insertion. The goal is to use these to
-correctly reason about the data with respect to the local operator states' of computation completion, in order to cleverly know with certainty when not only whether should work be done asynchronously
+correctly reason about the data with respect to the local operator states' of computation completion,
+in order to cleverly know with certainty when not only whether should work be done asynchronously
 or with sharding, but whether there is data yet to be processed or not.
 
 Differential Dataflow, a generalization of incremental processing, is an extension to the
@@ -367,7 +380,7 @@ at some point $I_C(DB) = DB$, since there won't be new facts to be inferred. Thi
 and happens to be the \textit{minimal} model.
 \begin{exmp}{Repeated application of $I_c$}
 	\begin{align}
-		P = \{ Edge(?x, ?y) \rightarrow TC(?x, ?y), TC(?x, ?y), TC(?y, ?z) \rightarrow TC(?x, ?z) \} \nonumber           \\
+		P = \{ Edge(?x, ?y) \leftarrow TC(?x, ?y), TC(?x, ?y), TC(?y, ?z) \leftarrow TC(?x, ?z) \} \nonumber             \\
 		EDB = \{ Edge(1, 2), Edge(2, 3), Edge(3, 4) \}                                               \nonumber           \\
 		DB = EDB                                                                                     \nonumber           \\
 		DB = I_C(DB)                                                                                                     \\
@@ -821,7 +834,111 @@ to ensure that only a logarithmic number of batches exist.
 
 \section{Experiments}
 
-I actually did some of the experiments. results were promising, trust me :D this will revolutise the field!
+The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
+programming language, and use the same elementary memory model, possibly strong empirical statements can be made with respect to the specificities of their implementation.
+
+\textbf{Setup.} The experiments were run on commodity hardware, a MacbookPro with an M1 Pro processor and 16GB of ram, and in no test did swap memory was reached for.
+Rust version 1.65 was used.
+
+\begin{table}[]
+	\begin{tabular}{llll}
+		Dataset    & Area             & Programs   \\
+		linux      & program analysis & CSPA, CSDA \\
+		postgresql & program analysis & CSPA, CSDA \\
+		httpd      & program analysis & CSPA, CSDA \\
+		LUBM       & semantic web     & RhoDFS
+	\end{tabular}
+	\label{table:datasets}
+\end{table}
+
+\textbf{Datasets.} On table \ref{table:datasets} all datasets and program names, or acronyms, are shown. There are two areas of interest. The first is program analysis, a highly active research
+field that has propelled significant advancements in datalog reasoners, such as \cite{incA}, an incremental datalog engine extended with lattices and recursive aggregates, and
+souffle\cite{souffle}, a priceless source of more than half a dozen papers on the engineering aspects of a reasoner. While the latter's point is to run pre-defined programs over
+large datasets, the former is meant for more dynamic scenarios, such as in running and maintaining program analyses.
+
+The semantic web has very unique use-cases for datalog, and are the leading source of research in extending datalog. Seeking ways to introduce tuple-generating dependencies to
+programs, with evaluation remaining tractable, has been one of the most active research directions, with highly-influential papers establishing new families of datalog
+languages\cite{datalog_plus_minus} and thoroughly exploring their complexity classes alongside further expansions\cite{sticky,warded,monadic}.
+
+These advancements have been somewhat tested in practice, albeit with no full reference implementation having been specified. The most comprehensive, and recent, is closed-source\cite{vadalog}.
+The leading datalog engine in general, is also closed-source\cite{rdfox}, and is tailored specifically to the semantic web.
+
+\begin{exmp}{Context-sensitive Points-to Analysis Program}
+	\begin{align}
+		valueFlow(?x, ?y) \leftarrow assign(?x, ?y)                                                 \\
+		valueFlow(?x, ?z) \leftarrow assign(?x, ?y), memoryAlias(?y, ?z)                            \\
+		valueFlow(?x, ?z) \leftarrow valueFlow(?x, ?y), valueFlow(?y, ?z)                           \\
+		memoryAlias(?x, ?w) \leftarrow dereference(?x, ?y), valueAlias(?y, ?z), dereference(?z, ?w) \\
+		valueAlias(?y, ?z) \leftarrow valueFlow(?x, ?y), valueFlow(?x, ?z)                          \\
+		valueAlias(?y, ?z) \leftarrow valueFlow(?x, ?y), memoryAlias(?x, ?w), valueFlow(?w, ?z)     \\
+		valueFlow(?x, ?x) \leftarrow assign(?x, ?y)                                                 \\
+		valueFlow(?x, ?x) \leftarrow assign(?y, ?x)                                                 \\
+		memoryAlias(?x, ?x) \leftarrow assign(?y, ?x)                                               \\
+		memoryAlias(?x, ?x) \leftarrow assign(?x, ?y)
+	\end{align}
+	\label{program:cspa}
+\end{exmp}
+
+\begin{exmp}{Context-sensitive Dataflow Analysis}
+	\begin{align}
+		null(?x, ?y) \leftarrow nullEdge(?x, ?y) \\
+		null(?x, ?y) \leftarrow null(?x, ?y), arc(?y, ?z)
+	\end{align}
+	\label{program:csda}
+\end{exmp}
+
+\begin{exmp}{RhoDFS inference rules}
+	\begin{align}
+		A(?y, rdf:type, ?x) \leftarrow T(?a, rdfs:domain, ?x), A(?y, ?a, ?z)                                  \\
+		A(?z, rdf:type, ?x) \leftarrow T(?a, rdfs:range, ?x), A(?y, ?a, ?z)                                   \\
+		T(?x, rdfs:subPropertyOf, ?z) \leftarrow T(?x, rdfs:subPropertyOf, ?y), T(?y, rdfs:subPropertyOf, ?z) \\
+		T(?x, rdfs:subClassOf, ?z) \leftarrow T(?x, rdfs:subClassOf, ?y), T(?y, rdfs:subClassOf, ?z)          \\
+		A(?z, rdf:type, ?y) \leftarrow T(?x, rdfs:subClassOf, ?y), A(?z, rdf:type, ?x)                        \\
+		A(?x, ?b, ?y) \leftarrow T(?a, rdfs:subPropertyOf, ?b), A(?x, ?a, ?y)
+	\end{align}
+	\label{program:rhodfs}
+\end{exmp}
+
+The first program, \ref{program:cspa}\cite{graspan}, expresses pointer analysis, whose goal is to establish which assignments yield value aliases and memory aliases as a reachability problem. Program \ref{program:csda} directly models checking a program's control-flow graph for null edges as a simple transitive-closure computation. The last program, \ref{program:rhodfs}, is used to materialize the non-trivial inference rules from RDFS\cite{rdfs}, a popular data modelling logic for adding semantics to RDF\cite{rdf} data.
+
+\subsection{COST}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.75\textwidth,height=\textheight,keepaspectratio]{COST}
+	\caption{The COST of differential reasoner}
+	\label{benchmark:cost}
+\end{figure}
+
+Benchmark \cite{benchmark:cost} seeks to answer an important question that is often overlooked, what is the configuration that outperforms a single thread(COST)? this can be convincingly answered in shapiro. As it can be seen, on the LUBM dataset, a synthetic infinitely-scalable ontology, in order to fully materialize all data at once, differential reasoner performs on par with the substitution-based reasoner, showcasing the very little overhead that differential dataflow has, given that it implements the same algorithm as the substitution-based reasoner.
+
+\subsection{Scalability.}
+
+\begin{figure}[ht]
+	\centering
+	\subfloat[]{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{addition}\label{benchmark:scalability_addition}}%
+	\subfloat[]{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{deletion}\label{benchmark:scalability_deletion}}\\
+	\caption{Scalability with respect to update size}
+	\label{benchmark:scalability}
+\end{figure}
+
+Scalability is measured over the LUBM dataset over increasingly larger relative updates. There are two kinds of updates: additions and deletions, both as a percentage of the total data. It is evident from benchmark \cite{benchmark:scalability} that all reasoners scale linearly with respect to the increasing amount of data, however, there is a significant difference with respect to updates. Both non-differential reasoners seem to get polynomially slower with bigger deletion update sizes than differential dataflow.
+
+\subsection{Multiple Datasets.}
+
+\begin{figure}[ht]
+	\centering
+	\subfloat[]{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{CSDA}\label{benchmark:CSDA}}%
+	\subfloat[]{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{CSPA}\label{benchmark:CSPA}}\\
+	\caption{Multiple programs with different datasets}
+	\label{benchmark:scalability}
+\end{figure}
+
+The last benchmark, pertaining to program analysis, is used to explore the possibly performance differences for completely different datasets, with the same programs. Benchmark \cite{benchmark:csda} is the most surprising, since differential dataflow significantly outperforms the other implementations, while this isn't the case in any other benchmark. The rationale behind that, is that in both non-differential reasoners, iteration implies cloning a non-trivial amount of data, therefore generating a large amount of allocations, while the differential version also makes a large number of allocations, it parallelizes iterations, due to its partially-ordered timestamp, being able to concurrently progress multiple independent transitive chains at once.
+
+\section{Conclusion}
+
+In this paper we introduced Shapiro, a reasoning framework whose core value proposition is in providing modular components to build datalog reasoners. We utilized it to build a reasoner with a promising differential computation framework, differential dataflow, and evaluated it against two other reference implementations. The differential implementation bested its non-differential counterpart, showing very little overhead, however, it did not get close to a relational implementation, the current state-of-the-art approach, nor could it scale as well as the others, nonetheless, it did manage to handle updates in a much more efficient manner, performing exactly as well in additions as in deletions, therefore being much more efficient in practical situations, where no assumption about the kind of update can be made, than both implementations. This yields promising evidence as to the suitability of differential dataflow's computational model to datalog evaluation.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{software}
