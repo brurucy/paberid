@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{35}
+\begin{thebibliography}{36}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -356,6 +356,15 @@
 \urldef\tempurl%
 \url{https://doi.org/10.1515/itit-2016-0005}
 \showDOI{\tempurl}
+
+
+\bibitem[Ryzhyk and Budiu(2019)]%
+        {ddlog}
+\bibfield{author}{\bibinfo{person}{Leonid Ryzhyk} {and} \bibinfo{person}{Mihai
+  Budiu}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Differential Datalog}. In
+  \bibinfo{booktitle}{\emph{Datalog}}.
+\newblock
 
 
 \bibitem[Scholz et~al\mbox{.}(2016)]%
