@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{1}
+\begin{thebibliography}{35}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -37,13 +37,435 @@
 \providecommand\natexlab[1]{#1}
 \providecommand\showeprint[2][]{arXiv:#2}
 
-\bibitem[Doe and Doe(2015)]%
-        {key}
-\bibfield{author}{\bibinfo{person}{John Doe} {and} \bibinfo{person}{Jane Doe}.}
+\bibitem[log([n.\,d.])]%
+        {logica}
+ \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{howpublished}{\url{https://github.com/google/logica}}.
+\newblock
+\newblock
+\shownote{Accessed: 2022-11-04}.
+
+
+\bibitem[blo([n.\,d.]a)]%
+        {blogdynamicdatalog}
+ \bibinfo{year}{[n.\,d.]}\natexlab{a}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/frankmcsherry/dynamic-datalog}}.
+\newblock
+\newblock
+\shownote{Accessed: 2022-11-04}.
+
+
+\bibitem[blo([n.\,d.]b)]%
+        {blogvldbsigmod}
+ \bibinfo{year}{[n.\,d.]}\natexlab{b}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/frankmcsherry/blog/blob/master/posts/2019-09-06.md}}.
+\newblock
+\newblock
+\shownote{Accessed: 2022-11-04}.
+
+
+\bibitem[dat([n.\,d.])]%
+        {datascript}
+ \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{howpublished}{\url{https://github.com/tonsky/datascript}}.
+\newblock
+\newblock
+\shownote{Accessed: 2022-11-04}.
+
+
+\bibitem[Abadi et~al\mbox{.}(2015)]%
+        {differential_dataflow}
+\bibfield{author}{\bibinfo{person}{Martín Abadi}, \bibinfo{person}{Frank
+  McSherry}, {and} \bibinfo{person}{Gordon Plotkin}.}
   \bibinfo{year}{2015}\natexlab{}.
-\newblock \showarticletitle{A super interesting Article}.
-\newblock \bibinfo{journal}{\emph{Journal of unreproducible Results}}
-  (\bibinfo{year}{2015}).
+\newblock \showarticletitle{Foundations of Differential Dataflow}.
+  \bibinfo{pages}{71--83}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1007/978-3-662-46678-0_5}
+\showDOI{\tempurl}
+
+
+\bibitem[Allemang and Hendler(2011)]%
+        {rdfs}
+\bibfield{author}{\bibinfo{person}{Dean~T. Allemang} {and}
+  \bibinfo{person}{James~A. Hendler}.} \bibinfo{year}{2011}\natexlab{}.
+\newblock \showarticletitle{Semantic Web for the Working Ontologist - Effective
+  Modeling in RDFS and OWL, Second Edition}.
+\newblock
+
+
+\bibitem[Armbrust et~al\mbox{.}(2015)]%
+        {spark}
+\bibfield{author}{\bibinfo{person}{Michael Armbrust}, \bibinfo{person}{Ali
+  Ghodsi}, \bibinfo{person}{Matei Zaharia}, \bibinfo{person}{Reynold Xin},
+  \bibinfo{person}{Cheng Lian}, \bibinfo{person}{Yin Huai},
+  \bibinfo{person}{Davies Liu}, \bibinfo{person}{Joseph Bradley},
+  \bibinfo{person}{Xiangrui Meng}, \bibinfo{person}{Tomer Kaftan}, {and}
+  \bibinfo{person}{Michael Franklin}.} \bibinfo{year}{2015}\natexlab{}.
+\newblock \showarticletitle{Spark SQL}. \bibinfo{pages}{1383--1394}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1145/2723372.2742797}
+\showDOI{\tempurl}
+
+
+\bibitem[Baldazzi et~al\mbox{.}(2021)]%
+        {warded}
+\bibfield{author}{\bibinfo{person}{Teodoro Baldazzi}, \bibinfo{person}{Luigi
+  Bellomarini}, \bibinfo{person}{Emanuel Sallinger}, {and}
+  \bibinfo{person}{Paolo Atzeni}.} \bibinfo{year}{2021}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Eliminating Harmful Joins in Warded
+  Datalog+/}}.
+\newblock \bibinfo{pages}{267--275}.
+\newblock
+\showISBNx{978-3-030-91166-9}
+\urldef\tempurl%
+\url{https://doi.org/10.1007/978-3-030-91167-6_18}
+\showDOI{\tempurl}
+
+
+\bibitem[Bellomarini et~al\mbox{.}(2020)]%
+        {vadalog}
+\bibfield{author}{\bibinfo{person}{Luigi Bellomarini}, \bibinfo{person}{Davide
+  Benedetto}, \bibinfo{person}{Georg Gottlob}, {and} \bibinfo{person}{Emanuel
+  Sallinger}.} \bibinfo{year}{2020}\natexlab{}.
+\newblock \showarticletitle{Vadalog: A modern architecture for automated
+  reasoning with large knowledge graphs}.
+\newblock \bibinfo{journal}{\emph{Information Systems}}  \bibinfo{volume}{105}
+  (\bibinfo{date}{05} \bibinfo{year}{2020}), \bibinfo{pages}{101528}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1016/j.is.2020.101528}
+\showDOI{\tempurl}
+
+
+\bibitem[Brickley(2004)]%
+        {rdf}
+\bibfield{author}{\bibinfo{person}{Dan Brickley}.}
+  \bibinfo{year}{2004}\natexlab{}.
+\newblock \showarticletitle{Rdf vocabulary description language 1.0 : Rdf
+  schema}.
+\newblock
+
+
+\bibitem[Ceri et~al\mbox{.}(1989)]%
+        {datalog}
+\bibfield{author}{\bibinfo{person}{Stefano Ceri}, \bibinfo{person}{Georg
+  Gottlob}, {and} \bibinfo{person}{Letizia Tanca}.}
+  \bibinfo{year}{1989}\natexlab{}.
+\newblock \showarticletitle{What you Always Wanted to Know About Datalog (And
+  Never Dared to Ask).}
+\newblock \bibinfo{journal}{\emph{Knowledge and Data Engineering, IEEE
+  Transactions on}}  \bibinfo{volume}{1} (\bibinfo{date}{04}
+  \bibinfo{year}{1989}), \bibinfo{pages}{146 -- 166}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1109/69.43410}
+\showDOI{\tempurl}
+
+
+\bibitem[Christudas(2019)]%
+        {mysql}
+\bibfield{author}{\bibinfo{person}{Binildas~A. Christudas}.}
+  \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{MySQL}.
+\newblock \bibinfo{journal}{\emph{Practical Microservices Architectural
+  Patterns}} (\bibinfo{year}{2019}).
+\newblock
+
+
+\bibitem[Codd(1970)]%
+        {codd_1970}
+\bibfield{author}{\bibinfo{person}{E.~F. Codd}.}
+  \bibinfo{year}{1970}\natexlab{}.
+\newblock \showarticletitle{A Relational Model for Large Shared Data Banks}.
+\newblock \bibinfo{journal}{\emph{Communications of The ACM}}
+  (\bibinfo{year}{1970}).
+\newblock
+
+
+\bibitem[Fr{\"o}hlich(2022)]%
+        {pg}
+\bibfield{author}{\bibinfo{person}{Lutz Fr{\"o}hlich}.}
+  \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{PostgreSQL}.
+\newblock
+
+
+\bibitem[Gottlob and Koch(2003)]%
+        {monadic}
+\bibfield{author}{\bibinfo{person}{Georg Gottlob} {and}
+  \bibinfo{person}{Christoph Koch}.} \bibinfo{year}{2003}\natexlab{}.
+\newblock \showarticletitle{Monadic Datalog and the Expressive Power of}.
+\newblock  (\bibinfo{date}{11} \bibinfo{year}{2003}).
+\newblock
+
+
+\bibitem[Gottlob et~al\mbox{.}(2014)]%
+        {datalog_plus_minus}
+\bibfield{author}{\bibinfo{person}{Georg Gottlob}, \bibinfo{person}{Thomas
+  Lukasiewicz}, {and} \bibinfo{person}{Andreas Pieris}.}
+  \bibinfo{year}{2014}\natexlab{}.
+\newblock \showarticletitle{Datalog+/-: Questions and Answers}. In
+  \bibinfo{booktitle}{\emph{KR}}.
+\newblock
+
+
+\bibitem[Gottlob and Pieris(2012)]%
+        {sticky}
+\bibfield{author}{\bibinfo{person}{Georg Gottlob} {and}
+  \bibinfo{person}{Andreas Pieris}.} \bibinfo{year}{2012}\natexlab{}.
+\newblock \showarticletitle{Towards more expressive ontology languages: The
+  query answering problem}.
+\newblock \bibinfo{journal}{\emph{Artificial Intelligence}}
+  \bibinfo{volume}{193} (\bibinfo{date}{12} \bibinfo{year}{2012}),
+  \bibinfo{pages}{87–128}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1016/j.artint.2012.08.002}
+\showDOI{\tempurl}
+
+
+\bibitem[Gupta and Mumick(1999)]%
+        {dred}
+\bibfield{author}{\bibinfo{person}{Ashish~Kumar Gupta} {and}
+  \bibinfo{person}{Inderpal~Singh Mumick}.} \bibinfo{year}{1999}\natexlab{}.
+\newblock \showarticletitle{Incremental Maintenance of Recursive Views: A
+  Survey}.
+\newblock
+
+
+\bibitem[Hewage et~al\mbox{.}(2018)]%
+        {yedalog}
+\bibfield{author}{\bibinfo{person}{Thulara Hewage}, \bibinfo{person}{Malka
+  Halgamuge}, \bibinfo{person}{Ali Syed}, {and} \bibinfo{person}{Gullu Ekici}.}
+  \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Review: Big Data Techniques of Google, Amazon,
+  Facebook and Twitter}.
+\newblock \bibinfo{journal}{\emph{Journal of Communications}}
+  \bibinfo{volume}{13} (\bibinfo{date}{02} \bibinfo{year}{2018}),
+  \bibinfo{pages}{94--100}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.12720/jcm.13.2.94-100}
+\showDOI{\tempurl}
+
+
+\bibitem[Imran et~al\mbox{.}(2020)]%
+        {cog}
+\bibfield{author}{\bibinfo{person}{Muhammad Imran}, \bibinfo{person}{Gábor
+  Gévay}, {and} \bibinfo{person}{Volker Markl}.}
+  \bibinfo{year}{2020}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Distributed Graph Analytics with Datalog
+  Queries in Flink}}.
+\newblock \bibinfo{pages}{70--83}.
+\newblock
+\showISBNx{978-3-030-61132-3}
+\urldef\tempurl%
+\url{https://doi.org/10.1007/978-3-030-61133-0_6}
+\showDOI{\tempurl}
+
+
+\bibitem[Imran et~al\mbox{.}(2022)]%
+        {cog2}
+\bibfield{author}{\bibinfo{person}{Muhammad Imran}, \bibinfo{person}{Gábor
+  Gévay}, \bibinfo{person}{Jorge-Arnulfo Quiané-Ruiz}, {and}
+  \bibinfo{person}{Volker Markl}.} \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{Fast datalog evaluation for batch and stream graph
+  processing}.
+\newblock \bibinfo{journal}{\emph{World Wide Web}}  \bibinfo{volume}{25}
+  (\bibinfo{date}{03} \bibinfo{year}{2022}).
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1007/s11280-021-00960-w}
+\showDOI{\tempurl}
+
+
+\bibitem[Jordan et~al\mbox{.}(2019)]%
+        {souffle_btree}
+\bibfield{author}{\bibinfo{person}{Herbert Jordan}, \bibinfo{person}{Pavle
+  Subotic}, \bibinfo{person}{David Zhao}, {and} \bibinfo{person}{Bernhard
+  Scholz}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{A specialized B-tree for concurrent datalog
+  evaluation}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the 24th Symposium on
+  Principles and Practice of Parallel Programming}} (\bibinfo{year}{2019}).
+\newblock
+
+
+\bibitem[McSherry et~al\mbox{.}(2015)]%
+        {COST}
+\bibfield{author}{\bibinfo{person}{Frank McSherry}, \bibinfo{person}{Michael
+  Isard}, {and} \bibinfo{person}{Derek~Gordon Murray}.}
+  \bibinfo{year}{2015}\natexlab{}.
+\newblock \showarticletitle{Scalability! But at what COST?}. In
+  \bibinfo{booktitle}{\emph{HotOS}}.
+\newblock
+
+
+\bibitem[Murray et~al\mbox{.}(2013)]%
+        {timely}
+\bibfield{author}{\bibinfo{person}{Derek~Gordon Murray}, \bibinfo{person}{Frank
+  McSherry}, \bibinfo{person}{Rebecca Isaacs}, \bibinfo{person}{Michael Isard},
+  \bibinfo{person}{Paul Barham}, {and} \bibinfo{person}{Mart{\'i}n Abadi}.}
+  \bibinfo{year}{2013}\natexlab{}.
+\newblock \showarticletitle{Naiad: a timely dataflow system}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the Twenty-Fourth ACM
+  Symposium on Operating Systems Principles}} (\bibinfo{year}{2013}).
+\newblock
+
+
+\bibitem[Nenov et~al\mbox{.}(2015)]%
+        {rdfox}
+\bibfield{author}{\bibinfo{person}{Yavor Nenov}, \bibinfo{person}{Robert Piro},
+  \bibinfo{person}{Boris Motik}, \bibinfo{person}{Ian Horrocks},
+  \bibinfo{person}{Zhe Wu}, {and} \bibinfo{person}{Jay Banerjee}.}
+  \bibinfo{year}{2015}\natexlab{}.
+\newblock \showarticletitle{RDFox: A Highly-Scalable RDF Store}.
+  \bibinfo{pages}{3--20}.
+\newblock
+\showISBNx{978-3-319-25009-0}
+\urldef\tempurl%
+\url{https://doi.org/10.1007/978-3-319-25010-6_1}
+\showDOI{\tempurl}
+
+
+\bibitem[O'Neil et~al\mbox{.}(1996)]%
+        {lsm}
+\bibfield{author}{\bibinfo{person}{Patrick~E. O'Neil}, \bibinfo{person}{Edward
+  Y.~C. Cheng}, \bibinfo{person}{Dieter Gawlick}, {and}
+  \bibinfo{person}{Elizabeth~J. O'Neil}.} \bibinfo{year}{1996}\natexlab{}.
+\newblock \showarticletitle{The log-structured merge-tree (LSM-tree)}.
+\newblock \bibinfo{journal}{\emph{Acta Informatica}}  \bibinfo{volume}{33}
+  (\bibinfo{year}{1996}), \bibinfo{pages}{351--385}.
+\newblock
+
+
+\bibitem[Rabl et~al\mbox{.}(2016)]%
+        {flink}
+\bibfield{author}{\bibinfo{person}{Tilmann Rabl}, \bibinfo{person}{Jonas
+  Traub}, \bibinfo{person}{Asterios Katsifodimos}, {and}
+  \bibinfo{person}{Volker Markl}.} \bibinfo{year}{2016}\natexlab{}.
+\newblock \showarticletitle{Apache Flink in current research}.
+\newblock \bibinfo{journal}{\emph{it - Information Technology}}
+  \bibinfo{volume}{58} (\bibinfo{date}{01} \bibinfo{year}{2016}).
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1515/itit-2016-0005}
+\showDOI{\tempurl}
+
+
+\bibitem[Scholz et~al\mbox{.}(2016)]%
+        {souffle}
+\bibfield{author}{\bibinfo{person}{Bernhard Scholz}, \bibinfo{person}{Herbert
+  Jordan}, \bibinfo{person}{Pavle Subotic}, {and} \bibinfo{person}{Till
+  Westmann}.} \bibinfo{year}{2016}\natexlab{}.
+\newblock \showarticletitle{On fast large-scale program analysis in Datalog}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the 25th International
+  Conference on Compiler Construction}} (\bibinfo{year}{2016}).
+\newblock
+
+
+\bibitem[Shkapsky et~al\mbox{.}(2016)]%
+        {bigdatalog}
+\bibfield{author}{\bibinfo{person}{Alexander Shkapsky}, \bibinfo{person}{Mohan
+  Yang}, \bibinfo{person}{Matteo Interlandi}, \bibinfo{person}{Hsuan Chiu},
+  \bibinfo{person}{Tyson Condie}, {and} \bibinfo{person}{Carlo Zaniolo}.}
+  \bibinfo{year}{2016}\natexlab{}.
+\newblock \showarticletitle{Big Data Analytics with Datalog Queries on Spark}.
+\newblock \bibinfo{journal}{\emph{Proceedings. ACM-Sigmod International
+  Conference on Management of Data}}  \bibinfo{volume}{2016},
+  \bibinfo{pages}{1135--1149}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1145/2882903.2915229}
+\showDOI{\tempurl}
+
+
+\bibitem[Shkapsky et~al\mbox{.}(2015)]%
+        {deals}
+\bibfield{author}{\bibinfo{person}{Alexander Shkapsky}, \bibinfo{person}{Mohan
+  Yang}, {and} \bibinfo{person}{Carlo Zaniolo}.}
+  \bibinfo{year}{2015}\natexlab{}.
+\newblock \showarticletitle{Optimizing recursive queries with monotonic
+  aggregates in DeALS}.
+\newblock \bibinfo{journal}{\emph{Proceedings - International Conference on
+  Data Engineering}}  \bibinfo{volume}{2015} (\bibinfo{date}{05}
+  \bibinfo{year}{2015}), \bibinfo{pages}{867--878}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1109/ICDE.2015.7113340}
+\showDOI{\tempurl}
+
+
+\bibitem[Szab{\'o} et~al\mbox{.}(2018)]%
+        {incA}
+\bibfield{author}{\bibinfo{person}{Tam{\'a}s Szab{\'o}},
+  \bibinfo{person}{G{\'a}bor Bergmann}, \bibinfo{person}{Sebastian Erdweg},
+  {and} \bibinfo{person}{Markus V{\"o}lter}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Incrementalizing lattice-based program analyses in
+  Datalog}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the ACM on Programming
+  Languages}}  \bibinfo{volume}{2} (\bibinfo{year}{2018}), \bibinfo{pages}{1 --
+  29}.
+\newblock
+
+
+\bibitem[Wang et~al\mbox{.}(2017)]%
+        {graspan}
+\bibfield{author}{\bibinfo{person}{Kai Wang}, \bibinfo{person}{Aftab Hussain},
+  \bibinfo{person}{Zhiqiang Zuo}, \bibinfo{person}{Guoqing~Harry Xu}, {and}
+  \bibinfo{person}{Ardalan~Amiri Sani}.} \bibinfo{year}{2017}\natexlab{}.
+\newblock \showarticletitle{Graspan: A Single-machine Disk-based Graph System
+  for Interprocedural Static Analyses of Large-scale Systems Code}.
+\newblock \bibinfo{journal}{\emph{Proceedings of the Twenty-Second
+  International Conference on Architectural Support for Programming Languages
+  and Operating Systems}} (\bibinfo{year}{2017}).
+\newblock
+
+
+\bibitem[Whaley et~al\mbox{.}(2005)]%
+        {bddbddb}
+\bibfield{author}{\bibinfo{person}{John Whaley}, \bibinfo{person}{Dzintars
+  Avots}, \bibinfo{person}{Michael Carbin}, {and} \bibinfo{person}{Monica
+  Lam}.} \bibinfo{year}{2005}\natexlab{}.
+\newblock \showarticletitle{Using Datalog with Binary Decision Diagrams for
+  Program Analysis}. \bibinfo{pages}{97--118}.
+\newblock
+\showISBNx{978-3-540-29735-2}
+\urldef\tempurl%
+\url{https://doi.org/10.1007/11575467_8}
+\showDOI{\tempurl}
+
+
+\bibitem[Wu et~al\mbox{.}(2022)]%
+        {dcdatalog}
+\bibfield{author}{\bibinfo{person}{Jiacheng Wu}, \bibinfo{person}{Jin Wang},
+  {and} \bibinfo{person}{Carlo Zaniolo}.} \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{Optimizing Parallel Recursive Datalog Evaluation on
+  Multicore Machines}. In \bibinfo{booktitle}{\emph{Proceedings of the 2022
+  International Conference on Management of Data}} (Philadelphia, PA, USA)
+  \emph{(\bibinfo{series}{SIGMOD '22})}. \bibinfo{publisher}{Association for
+  Computing Machinery}, \bibinfo{address}{New York, NY, USA},
+  \bibinfo{pages}{1433–1446}.
+\newblock
+\showISBNx{9781450392495}
+\urldef\tempurl%
+\url{https://doi.org/10.1145/3514221.3517853}
+\showDOI{\tempurl}
+
+
+\bibitem[Zhu et~al\mbox{.}(2018)]%
+        {recstep}
+\bibfield{author}{\bibinfo{person}{Jianqiao Zhu}, \bibinfo{person}{Zuyu Zhang},
+  \bibinfo{person}{Aws Albarghouthi}, \bibinfo{person}{Paraschos Koutris},
+  {and} \bibinfo{person}{Jignesh Patel}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Scaling-Up In-Memory Datalog Processing:
+  Observations and Techniques}.
+\newblock  (\bibinfo{date}{12} \bibinfo{year}{2018}).
 \newblock
 
 

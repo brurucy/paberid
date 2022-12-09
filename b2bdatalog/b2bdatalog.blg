@@ -6,43 +6,16 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Database file #1: software.bib
-Warning--I didn't find a database entry for "datalog"
-Warning--I didn't find a database entry for "rdfox"
-Warning--I didn't find a database entry for "others?"
-Warning--I didn't find a database entry for "bigdatalog"
-Warning--I didn't find a database entry for "cog"
-Warning--I didn't find a database entry for "cog2"
-Warning--I didn't find a database entry for "logica"
-Warning--I didn't find a database entry for "yedalog"
-Warning--I didn't find a database entry for "vadalog"
-Warning--I didn't find a database entry for "datalog_plus_minus"
-Warning--I didn't find a database entry for "sticky"
-Warning--I didn't find a database entry for "warded"
-Warning--I didn't find a database entry for "monadic"
-Warning--I didn't find a database entry for "datascript"
-Warning--I didn't find a database entry for "opa"
-Warning--I didn't find a database entry for "datomic"
-Warning--I didn't find a database entry for "COST"
-Warning--I didn't find a database entry for "blogdynamicdatalog"
-Warning--I didn't find a database entry for "blogvldbsigmod"
-Warning--I didn't find a database entry for "differential_dataflow"
-Warning--I didn't find a database entry for "recstep"
-Warning--I didn't find a database entry for "dcdatalog"
-Warning--I didn't find a database entry for "deals"
-Warning--I didn't find a database entry for "spark"
-Warning--I didn't find a database entry for "flink"
+Warning--I didn't find a database entry for "key"
+Warning--I didn't find a database entry for "sne"
+Warning--I didn't find a database entry for "ddlog"
 Warning--I didn't find a database entry for "nexus"
-Warning--I didn't find a database entry for "bddbddb"
 Warning--I didn't find a database entry for "microzee"
-Warning--I didn't find a database entry for "souffle_btree"
 Warning--I didn't find a database entry for "all_you_ever_wanted_to_ask"
-Warning--I didn't find a database entry for "codd_1970"
-Warning--I didn't find a database entry for "pg"
-Warning--I didn't find a database entry for "mysql"
 Warning--I didn't find a database entry for "sqlserver"
-Warning--I didn't find a database entry for "souffle"
 Warning--I didn't find a database entry for "opt_sys_alg_ev_dat"
 Warning--I didn't find a database entry for "log_dab"
+Warning--I didn't find a database entry for "complexity_of_dred"
 Warning--I didn't find a database entry for "rust_lang"
 Warning--I didn't find a database entry for "rust2014"
 Warning--I didn't find a database entry for "rustbelt"
@@ -50,57 +23,140 @@ Warning--I didn't find a database entry for "rustsafety"
 Warning--I didn't find a database entry for "rayon"
 Warning--I didn't find a database entry for "primitive_search"
 Warning--I didn't find a database entry for "rust_btree"
-Warning--I didn't find a database entry for "fenwick_tree"
 Warning--I didn't find a database entry for "dd"
-Warning--I didn't find a database entry for "dred"
-Warning--I didn't find a database entry for "timely"
-Warning--I didn't find a database entry for "lsm"
+Warning--I didn't find a database entry for "benchmark:cost"
+Warning--I didn't find a database entry for "benchmark:scalability"
+Warning--I didn't find a database entry for "benchmark:csda"
 Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--no key, author in logica
+Warning--no author, editor, organization, or key in logica
+Warning--to sort, need author or key in logica
+Warning--no key, author in blogdynamicdatalog
+Warning--no author, editor, organization, or key in blogdynamicdatalog
+Warning--to sort, need author or key in blogdynamicdatalog
+Warning--no key, author in blogvldbsigmod
+Warning--no author, editor, organization, or key in blogvldbsigmod
+Warning--to sort, need author or key in blogvldbsigmod
+Warning--no key, author in datascript
+Warning--no author, editor, organization, or key in datascript
+Warning--to sort, need author or key in datascript
 Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
 Reallocated global_strs (elt_size=200001) to 20 items from 10.
 Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Warning--no key, author in blogdynamicdatalog
+Warning--no key, author in blogdynamicdatalog
+Warning--no key, author in blogvldbsigmod
+Warning--no key, author in datascript
+Warning--no key, author in datascript
+Warning--no key, author in logica
+Warning--no key, author in logica
 Reallocated singl_function (elt_size=4) to 100 items from 50.
-Warning--no number and no volume in key
-Warning--page numbers missing in both pages and numpages fields in key
-You've used 1 entry,
+Warning--no key, author in logica
+Warning--empty author in logica
+Warning--empty year in logica
+Warning--no key, author in blogdynamicdatalog
+Warning--empty author in blogdynamicdatalog
+Warning--empty year in blogdynamicdatalog
+Warning--no key, author in blogvldbsigmod
+Warning--empty author in blogvldbsigmod
+Warning--empty year in blogvldbsigmod
+Warning--no key, author in datascript
+Warning--empty author in datascript
+Warning--empty year in datascript
+Warning--empty booktitle in differential_dataflow
+Warning--empty publisher in differential_dataflow
+Warning--empty address in differential_dataflow
+Warning--empty booktitle in rdfs
+Warning--empty publisher in rdfs
+Warning--empty address in rdfs
+Warning--page numbers missing in both pages and numpages fields in rdfs
+Warning--empty booktitle in spark
+Warning--empty publisher in spark
+Warning--empty address in spark
+Warning--empty publisher in warded
+Warning--empty address in warded
+Warning--empty booktitle in rdf
+Warning--empty publisher in rdf
+Warning--empty address in rdf
+Warning--page numbers missing in both pages and numpages fields in rdf
+Warning--no number and no volume in mysql
+Warning--page numbers missing in both pages and numpages fields in mysql
+Warning--no number and no volume in codd_1970
+Warning--page numbers missing in both pages and numpages fields in codd_1970
+Warning--empty booktitle in pg
+Warning--empty publisher in pg
+Warning--empty address in pg
+Warning--page numbers missing in both pages and numpages fields in pg
+Warning--no journal in monadic
+Warning--no number and no volume in monadic
+Warning--empty publisher in datalog_plus_minus
+Warning--empty address in datalog_plus_minus
+Warning--page numbers missing in both pages and numpages fields in datalog_plus_minus
+Warning--empty booktitle in dred
+Warning--empty publisher in dred
+Warning--empty address in dred
+Warning--page numbers missing in both pages and numpages fields in dred
+Warning--empty publisher in cog
+Warning--empty address in cog
+Warning--no number and no volume in souffle_btree
+Warning--page numbers missing in both pages and numpages fields in souffle_btree
+Warning--empty publisher in COST
+Warning--empty address in COST
+Warning--page numbers missing in both pages and numpages fields in COST
+Warning--no number and no volume in timely
+Warning--page numbers missing in both pages and numpages fields in timely
+Warning--empty booktitle in rdfox
+Warning--empty publisher in rdfox
+Warning--empty address in rdfox
+Warning--no number and no volume in souffle
+Warning--page numbers missing in both pages and numpages fields in souffle
+Warning--empty booktitle in bigdatalog
+Warning--no number and no volume in graspan
+Warning--page numbers missing in both pages and numpages fields in graspan
+Warning--empty booktitle in bddbddb
+Warning--empty publisher in bddbddb
+Warning--empty address in bddbddb
+Warning--no journal in recstep
+Warning--no number and no volume in recstep
+You've used 35 entries,
             5981 wiz_defined-function locations,
-            1524 strings with 18355 characters,
-and the built_in function-call counts, 1138 in all, are:
-= -- 167
-> -- 31
+            1687 strings with 23805 characters,
+and the built_in function-call counts, 36953 in all, are:
+= -- 4711
+> -- 1153
 < -- 0
-+ -- 13
-- -- 14
-* -- 66
-:= -- 110
-add.period$ -- 5
-call.type$ -- 1
-change.case$ -- 6
-chr.to.int$ -- 1
-cite$ -- 3
-duplicate$ -- 83
-empty$ -- 61
-format.name$ -- 18
-if$ -- 276
-int.to.chr$ -- 2
++ -- 394
+- -- 384
+* -- 2603
+:= -- 3411
+add.period$ -- 165
+call.type$ -- 35
+change.case$ -- 252
+chr.to.int$ -- 34
+cite$ -- 136
+duplicate$ -- 3315
+empty$ -- 2339
+format.name$ -- 492
+if$ -- 9252
+int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 4
-newline$ -- 48
-num.names$ -- 7
-pop$ -- 38
+missing$ -- 132
+newline$ -- 363
+num.names$ -- 217
+pop$ -- 1569
 preamble$ -- 1
-purify$ -- 14
+purify$ -- 511
 quote$ -- 0
-skip$ -- 26
+skip$ -- 1125
 stack$ -- 0
-substring$ -- 56
-swap$ -- 4
+substring$ -- 2349
+swap$ -- 275
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 16
-warning$ -- 2
-while$ -- 7
+type$ -- 777
+warning$ -- 86
+while$ -- 152
 width$ -- 0
-write$ -- 57
-(There were 51 warnings)
+write$ -- 716
+(There were 107 warnings)

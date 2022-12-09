@@ -129,7 +129,7 @@
 \maketitle
 
 \section{Introduction}
-\textbf{Motivation.} SQL\cite{key} has been the \textit{de facto} universal relational
+\textbf{Motivation.} SQL has been the \textit{de facto} universal relational
 database interface for querying and management since its inception,
 with all other alternatives having had experienced disproportionately
 little interest. The reasons for this are many, out of which only one
@@ -166,7 +166,7 @@ straightforward goal being to ensure queries do not need any reasoning.
 that plagues the real-world usage of datalog, and has been a source of much research interest,
 most commonly under the guise of incremental view maintenance.
 
-The handling of additions is efficiently done with the semi-naive evaluation method\cite{sne},
+The handling of additions is efficiently done with the semi-naive evaluation method\cite{datalog},
 that can be notoriously efficient for a special class of programs that are popular in practice.
 Deletions on the other hand, are possibly much less efficient, since the retraction of a \textit{ground truth}
 naively implies the deletion of all data derived from it.
@@ -286,7 +286,7 @@ In this section we review the basics of all concepts related to datalog evaluati
 
 \subsection{Datalog}
 
-\textit{Datalog}\cite{all_you_ever_wanted_to_ask} is a declarative programming language. A program $P$ is a set of
+\textit{Datalog}\cite{datalog} is a declarative programming language. A program $P$ is a set of
 rules $r$, with each $r$ being a restriction of tuple-generating dependencies: \[\bigwedge_{i=1}^kB_i(x_1, ..., x_j) \rightarrow \exists (y_1, ..., y_j)H(x_1, ..., x_j, y_1, ..., y_j)\]
 with $k$, $j$ as finite integers, $x$ and $y$ as terms, and each $B_i$ and $H$ as predicates. A term can belong
 either to the set of variables, or constants, however, it is to be noted that all $y$ are existentially quantified.
