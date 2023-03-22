@@ -1,59 +1,19 @@
-\documentclass[manuscript,screen,review]{acmart}
+\documentclass[sigconf,screen,review,natbib]{acmart}
 \AtBeginDocument{%
 \providecommand\BibTeX{{%
 \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
 
 \setcopyright{acmcopyright}
-\copyrightyear{2018}
-\acmYear{2018}
+\copyrightyear{2023}
+\acmYear{2023}
 \acmDOI{XXXXXXX.XXXXXXX}
 
-%% These commands are for a PROCEEDINGS abstract or paper.
-\acmConference[Conference acronym 'XX]{Make sure to enter the correct
-	conference title from your rights confirmation emai}{June 03--05,
-	2018}{Woodstock, NY}
-%
-%  Uncomment \acmBooktitle if th title of the proceedings is different
-%  from ``Proceedings of ...''!
-%
-\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
-	June 03--05, 2018, Woodstock, NY}
-\acmPrice{15.00}
-\acmISBN{978-1-4503-XXXX-X/18/06}
-%%
-%% Submission ID.
-%% Use this when submitting an article to a sponsored event. You'll
-%% receive a unique submission ID from the organizers
-%% of the event, and this ID should be used as the parameter to this command.
-%%\acmSubmissionID{123-A56-BU3}
+\acmConference[PPDP '23]{25th International Symposium on
+Principles and Practice of Declarative Programming}{October 22--23,
+	2023}{Cascais, Lisbon, Portugal}
 
-%%
-%% For managing citations, it is recommended to use bibliography
-%% files in BibTeX format.
-%%
-%% You can then either use BibTeX with the ACM-Reference-Format style,
-%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
-%% support for advanced citation of software artefact from the
-%% biblatex-software package, also separately available on CTAN.
-%%
-%% Look at the sample-*-biblatex.tex files for templates showcasing
-%% the biblatex styles.
-%%
-
-%%
-%% The majority of ACM publications use numbered citations and
-%% references.  The command \citestyle{authoryear} switches to the
-%% "author year" style.
-%%
-%% If you are preparing content for an event
-%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
-%% citations and references.
-%% Uncommenting
-%% the next command will enable that style.
-%% \citestyle{acmauthoryear}
 \usepackage{microtype}  %towards typographic perfection...
-\usepackage{tikz}
-\usepackage{tikz-qtree}
+\usepackage{tikz,tikz-qtree}
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows.meta, shapes.misc, positioning}
 \usepackage{subfig}
@@ -66,40 +26,30 @@
 \SetKwData{typeRat}{Rat}
 \SetKwData{Defined}{Defined}
 \SetKwFunction{parseStatement}{parseStatement}
+\usepackage{libertine}  
 
-%%
-%% end of the preamble, start of the body of the document source.
-\begin{document}
-
-%%
-%% The "title" command has an optional parameter,
-%% allowing the author to define a "short title" to be used in page headers.
 \title{A Back-to-basics Empirical Study of Datalog Materialization}
 
-%% The "author" command and its associated commands are used to define
-%% the authors and their affiliations.
-%% Of note is the shared affiliation of the first two authors, and the
-%% "authornote" and "authornotemark" commands
-%% used to denote shared contribution to the research.
 \author{Bruno Rucy Carneiro Alves de Lima}
-\email{bruno.rucy.carneiro.alves.de.lima@ut.ee}
 \orcid{1234-5678-9012}
-
-\author{Kalmer Apinis}
-\email{kalmer.apinis@ut.ee}
 \affiliation{%
 	\institution{University of Tartu}
+  \department{Institute of Computer Science}
 	\city{Tartu}
 	\country{Estonia}
 }
+\email{bruno98@ut.ee}
 
-%%
-%% By default, the full list of authors will be used in the page
-%% headers. Often, this list is too long, and will overlap
-%% other information printed in the page headers. This command allows
-%% the author to define a more concise list
-%% of authors' names for this purpose.
-\renewcommand{\shortauthors}{Trovato and Tobin, et al.}
+\author{Kalmer Apinis}
+\affiliation{%
+	\institution{University of Tartu}
+  \department{Institute of Computer Science}
+	\city{Tartu}
+	\country{Estonia}
+}
+\email{kalmera@ut.ee}
+
+% \renewcommand{\shortauthors}{Trovato and Tobin, et al.}
 
 % Kalmer: The abstract is too long and too complicated.
 % But lets not worry about it too much for now.
@@ -124,6 +74,8 @@
 
 
 \keywords{datalog, incremental view maintenance, differential dataflow}
+
+\begin{document}
 
 \maketitle
 
@@ -425,24 +377,24 @@ Shapiro, the developed system, is fully modular and offers a heap of independent
 
 \begin{figure} [htb!]
 	\centering
-	\begin{tikzpicture}
+	\begin{tikzpicture}[node distance=6mm]
 		\begin{scope}
-			\node (traits) at (0, 0) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm] {};
+			\node (traits) at (0, 0) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm] {};
 			\node (traits_title) at (traits.north east) [draw, anchor = north east] {Traits};
 
-			\node (ev_mec) at (traits.east) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=west] {};
+			\node (ev_mec) at (traits.east) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=west] {};
 			\node (ev_mec_title) at (ev_mec.north east) [draw, anchor=north east] {Evaluation Mechanisms};
 
-			\node (ds) at (traits.south) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=north] {};
+			\node (ds) at (traits.south) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=north] {};
 			\node (ds_title) at (ds.north east) [draw, anchor=north east] {Data Structures};
 
-			\node (engines) at (ds.east) [draw, dotted, rectangle, minimum width=5cm, minimum height=5cm, anchor=west] {};
+			\node (engines) at (ds.east) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=west] {};
 			\node (engines_title) at (engines.north east) [draw, anchor=north east] {Engines};
 		\end{scope}
 
 		% Traits
 		\begin{scope}
-			\node (insta) [draw, below = 3mm of traits.north] {RuleEvaluator};
+			\node (insta) [draw, below = 6mm of traits.north] {RuleEvaluator};
 			\node (bupe) [draw, below of = insta] {BottomUpEvaluator};
 			\node (tode) at (traits) [draw, below of = bupe] {TopDownEvaluator};
 			\node (idx) at (traits) [draw, below of = tode] {IndexBacking};
@@ -724,6 +676,7 @@ The most used method for handling deletions is a bottom-up algorithm\cite{dred} 
 Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the overdeletion program will generate one new $-$rule for each $b_j$ in each rule body $b(r_i)$, in order to represent that if such fact were to be deleted, then $h(r_i)$ would not hold true.
 
 \begin{exmp}{DRED Overdeletion program}
+  \tiny
 	\begin{align}
 		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                \\
 		-r_0 = -TC(?x, ?y) \leftarrow -Edge(?x, ?y)                                                                                                           \\
@@ -738,6 +691,7 @@ On example \ref{ex6} negative predicates represent overdeletion targets. For ins
 The next step is to compute the alternative derivations of the deleted facts, since some overdeleted facts might still hold true. The alternative derivation program will generate one new $+$rule for each $r_i$ in $P$, with one extra $-$ head predicate per body, representing an overdeleted fact. The $+$ program requires the overdeleted facts to not be present.
 
 \begin{exmp}{DRED Overdeletion program}
+  \tiny
 	\begin{align}
 		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                           \\
 		r_0 = +TC(?x, ?y) \leftarrow -TC(?x, ?y), Edge(?x, ?y)                                                                                                           \\
@@ -881,6 +835,7 @@ These advancements have been somewhat tested in practice, albeit with no full re
 The leading datalog engine in general, is also closed-source\cite{rdfox}, and is tailored specifically to the semantic web.
 
 \begin{exmp}{Context-sensitive Points-to Analysis Program}
+  \tiny
 	\begin{align}
 		valueFlow(?x, ?y) \leftarrow assign(?x, ?y)                                                 \\
 		valueFlow(?x, ?z) \leftarrow assign(?x, ?y), memoryAlias(?y, ?z)                            \\
@@ -897,6 +852,7 @@ The leading datalog engine in general, is also closed-source\cite{rdfox}, and is
 \end{exmp}
 
 \begin{exmp}{Context-sensitive Dataflow Analysis}
+  \tiny
 	\begin{align}
 		null(?x, ?y) \leftarrow nullEdge(?x, ?y) \\
 		null(?x, ?y) \leftarrow null(?x, ?y), arc(?y, ?z)
@@ -905,6 +861,7 @@ The leading datalog engine in general, is also closed-source\cite{rdfox}, and is
 \end{exmp}
 
 \begin{exmp}{RhoDFS inference rules}
+  \tiny
 	\begin{align}
 		A(?y, rdf:type, ?x) \leftarrow T(?a, rdfs:domain, ?x), A(?y, ?a, ?z)                                  \\
 		A(?z, rdf:type, ?x) \leftarrow T(?a, rdfs:range, ?x), A(?y, ?a, ?z)                                   \\
@@ -922,7 +879,7 @@ The first program, \ref{program:cspa}\cite{graspan}, expresses pointer analysis,
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=.75\textwidth,height=\textheight,keepaspectratio]{COST}
+	\includegraphics[width=.45\textwidth,height=\textheight,keepaspectratio]{COST}
 	\caption{The COST of differential reasoner}
 	\label{benchmark:cost}
 \end{figure}

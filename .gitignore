@@ -4,4 +4,10 @@
 *.gz
 *.out
 *.aux
+*.fls
+*.bbl
+*.cbx
+*.fdb_latexmk
+*.pdf
+*.watcher_pid
 .DS_Store
