@@ -64,17 +64,18 @@
 % Kalmer: The abstract is too long and too complicated.
 % But lets not worry about it too much for now.
 \begin{abstract}
-	The core reasoning task for datalog engines is materialization, the evaluation of a datalog program over a database alongside its physical incorporation into the database itself. The de-facto method of computing it, is through a recursive computation, namely semi-naive evaluation. Due to it being a costly operation, it is a must for datalog
-	engines to provide incremental materialization, that is, to adjust the
-	computation to new data, instead of restarting from scratch. One of the major caveats, is that deleting data
-	is notoriously more involved than adding, since one has to take into account
-	all possible data that has been entailed from what is being deleted. Differential Dataflow is a computational model that provides efficient incremental maintenance, notoriously with equal performance between additions and deletions, and work distribution, of iterative dataflows.
-	In this paper we investigate the performance of materialization with three reference datalog implementations, out of which one is built on top of a lightweight relational engine, and the two others are differential-dataflow and non-differential versions of the same rewrite algorithm, with the same optimizations.
-	The output of the paper is coalesced as a reasoning framework, that shares
-	as much code as it is sensible between the implementations, therefore providing strong
-	evidence to the accuracy of each measure.
+	The core reasoning task for datalog engines is materialization, the evaluation of a datalog program over
+	a database alongside its physical incorporation into the database itself. The de-facto method of computing
+	it, is through the recursive application of inference rules. Due to it being a costly operation, it is a must
+	for datalog engines to provide incremental materialization, that is, to adjust the computation to new
+	data, instead of restarting from scratch. One of the major caveats, is that deleting data is notoriously more
+	involved than adding, since one has to take into account all possible data that has been entailed from what
+	is being deleted. Differential Dataflow is a computational model that provides efficient incremental
+	maintenance, notoriously with equal performance between additions and deletions, and work distribution, of
+	iterative dataflows. In this paper we investigate the performance of materialization with three reference
+	datalog implementations, out of which one is built on top of a lightweight relational engine, and the two others
+	are differential-dataflow and non-differential versions of the same rewrite algorithm, with the same optimizations.
 \end{abstract}
-
 
 \keywords{datalog, incremental view maintenance, differential dataflow}
 
@@ -84,66 +85,31 @@
 
 \section{Introduction}
 % \textbf{Motivation.}
-SQL has been the \textit{de facto} universal relational
-database interface for querying and management since its inception,
-with all other alternatives having had experienced disproportionately
-little interest. %The reasons for this are many, out of which only one
-% is relevant to this narrative; performance.
+The canonical language for reasoning over relational databases, oft named as ground fact stores, is the declarative
+language datalog\cite{datalog}, whose semantics give meaning to the evaluation of a set of possibly-recursive
+restricted horn clauses, namely a program, while remaining not turing complete. To evaluate a program is to
+compute implicit consequences of itself over a fact store, providing new facts.
 
-The runner-ups of popularity were languages used for machine reasoning,
-a subset of the Artificial Intelligence field that attempts to attain
-intelligence through the usage of rules over knowledge. The canonical
-language for reasoning over relational databases is datalog\cite{datalog}.
-Similarly to SQL, it also is declarative, however, its main semantics' difference
-is in the support for recursion while still ensuring termination irrespective
-of the program being run.
-%
-A notable issue with respect to real-world adoption of datalog is in
-performance. The combined complexity of evaluating a program is
-$\text{EXPTIME}$\cite{datalog}, while SQL queries are $\text{AC}^0$. It was
-not until recently\cite{rdfox} that scalable implementations were
-developed.
+Physically storing all of a program's consequences is called materialization, with the most immediate benefit
+being that no reasoning is required during query answering. Maintaining that computation is a indispensable
+requirement of modern datalog use-cases, and relates to the more general problem of incremental view maintenance.
 
-Digital analytics has been one of the main drivers of the recent datalog renaissance,
-with virtually all big-data oriented datalog implementations having had either been built
-on top of the most mainstream industry oriented frameworks\cite{bigdatalog,cog,cog2} or with the
-aid of the most high-profile technology companies\cite{logica,yedalog,vadalog}.
+Additions are efficiently handled with the semi-naive evaluation method\cite{datalog}, that can be notoriously
+efficient for certain classes of programs that are popular in practice. Deletions on the other hand, are possibly
+much less efficient, since the retraction of a fact naively implies the deletion of all data derived from it.
 
-% Kalmer: no tangents! lets get to the point!
-% Another strong source of research interest has been from the knowledge graph community. A
-% knowledge graph \textit{KG} is a regular relational database \textit{I} that contains
-% \textit{ground truths}, and rules.
+The quintessential method for computing the materialization adjustment is delete-rederive\cite{dred}, that generates
+new datalog programs to compute the consequences of the deleted ground facts, doing so by first computing all
+possible deletions, and then whether there are alternative derivations, with the difference between these sets
+being the actual facts that have to be deleted.
 
-% Kalmer: most important? Do not add unimportant claims! 
-% The most
-\textit{Materialization} is the derivation of all
-truths that follow from the application of rules over the relational database, with the goal to ensure queries do not need any reasoning.
-%
-This, however, is a problem, if the underlying data changes.
-%
-%
-% \textbf{Problem.} 
-% The maintenance of materialization is possibly the most important issue
-% that plagues the real-world usage of datalog, and has been a source of much research interest,
-% most commonly under the guise of incremental view maintenance.
-%
-The handling of additions is efficiently done with the semi-naive evaluation method\cite{datalog},
-that can be notoriously efficient for a special class of programs that are popular in practice.
-Deletions on the other hand, are possibly much less efficient, since the retraction of a \textit{ground truth}
-naively implies the deletion of all data derived from it.
+The fact that two different algorithms are used implies that there are two different performance characteristics
+for additions and deletions, therefore there being possibly-severe biases in performance, such as in the scenario
+when either all, or a large portion, of ground facts are deleted, where delete-rederive could be much more expensive
+than re-materializing.
 
-The quintessential algorithm for computing the materialization adjustment with respect to a
-deletion is the delete-rederive\cite{dred} method, that generates new datalog programs to
-compute the deletions necessary to ensure correctness, doing so by first computing all possible
-deletions, and then all possible alternative derivations, with the adjusment being the difference
-between both of these sets.
 
-The fact that two different algorithms are used implies that there are two different performance
-characteristics for additions and deletions, in spite of dred utilizing semi-naive evaluation as well,
-therefore there being possibly-severe biases in performance.
-% To this date, there hasn't been
-% a study that evaluated a datalog engine performance in properly dynamic scenarios.
-%
+
 A promising computation framework that could be well-suited for incremental materializatin is differential
 dataflow\cite{differential_dataflow}.
 
@@ -166,7 +132,16 @@ analysis, heavy users of not-distributed datalog, or from the semantic web
 community, which has multiple popular infinitely-scalable benchmarks.
 
 
-\paragraph{Structure of the paper.} ...
+\paragraph{Structure of the paper.}
+
+\begin{itemize}
+	\item{\textbf{Introduction.}} Differential Dataflow being suitable, and what has been done
+	\item{\textbf{Background.}}  Datalog, Infer, DRED
+	\item{\textbf{Novelty.}} Differential Dataflow, INFER as a dataflow
+	\item{\textbf{System.}} The implementations, the possibly novel? indexing scheme
+	\item{\textbf{Benchmarks.}} Differential Dataflow better than everything
+	\item{\textbf{Conclusion.}}
+\end{itemize}
 
 
 \section{Related Work}
@@ -187,19 +162,10 @@ successful attempt at creating a distributed implemention has been Nexus\cite{ne
 and makes use of its most advanced feature, incremental stream processing. To date, it is the fastest distributed
 implementation.
 
-\textbf{Data structures used in datalog engines.} The core of each datalog engine is consisted of possibly
-two main data structures: one to hold the data itself, and another for indexes. Surprisingly little regard is given to
-this, compared to algorithms themselves, despite potentially being one of the most detrimental factors for performance
-. Binary-decision diagrams\cite{bddbddb}, hash sets\cite{microzee} and B-Trees\cite{souffle_btree} are often used as
-either one or both main structures. An important highlight of the importance of data structure implementation is how
-in \cite{souffle_btree} Subotic et al, managed to attain an almost 50 times higher performance in certain benchmarks
-than other implementations of the same data structure.
-
-
 % \textbf{Methodology.}
 
 
-\section{Datalog Background}
+\section{Background}
 
 In this section we review the basics of all concepts related to datalog evaluation, as it is done in the current time.
 
@@ -306,6 +272,10 @@ is called \textit{naive} evaluation. Every number indicates one rendering of the
 
 The ubiquitous evaluation mechanism, as of the date of writing this paper, is the \textit{semi-naive} one. The difference is that \textit{semi-naive} does not repeatedly union the $EDB$ with the entire $IDB$, but does so only with the difference of the previous immediate consequence with the $IDB$. This can be hinted from the example, where each next application of $I_c$ only renders new facts from the previous newly derived ones.
 
+\subsection{Semi-naive Evaluation}
+
+\subsection{Delete-Rederive}
+
 \subsection{Infer}
 The most relevant performance-oriented aspect of both of the introduced evaluation mechanisms is the implementation of $I_c$ itself. The two
 most high-profile methods to do so are either purely evaluating the rules, or rewriting them in some other imperative formalism, and executing it.
@@ -317,8 +287,6 @@ such as $TC(?x, 4)$, \textit{applying} the substitution $[?x \rightarrow 1]$ to 
 Infer relies on attempting to build and extend substitutions for each fact in each rule body over every single $DB$ fact. Once
 all substitutions are made, they are applied to the heads of each rule. Every result of this application that is ground belongs
 to the immediate consequence.
-
-\subsection{Infer Improvements}
 
 \subsection{Relational Algebra}
 Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed arity, relations. It is
