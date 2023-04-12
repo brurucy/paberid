@@ -12,7 +12,7 @@
 	Principles and Practice of Declarative Programming}{October 22--23,
 	2023}{Cascais, Lisbon, Portugal}
 
-\usepackage{microtype}  %towards typographic perfection...
+\usepackage{microtype}
 \usepackage{tikz,tikz-qtree}
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows.meta, shapes.misc, positioning}
@@ -41,12 +41,10 @@
 \email{bruno98@ut.ee}
 
 \author{Merlin Kramer}
-\orcid{1234-5678-9012}
 \affiliation{%
-	\institution{University of Tartu}
-	\department{Institute of Computer Science}
-	\city{Tartu}
-	\country{Estonia}
+	\institution{unaffiliated}
+	\city{Wuppertal}
+	\country{Germany}
 }
 \email{merlin.kramer@gmail.com}
 
@@ -59,7 +57,6 @@
 }
 \email{kalmera@ut.ee}
 
-% \renewcommand{\shortauthors}{Trovato and Tobin, et al.}
 
 % Kalmer: The abstract is too long and too complicated.
 % But lets not worry about it too much for now.
@@ -84,56 +81,70 @@
 \maketitle
 
 \section{Introduction}
-% \textbf{Motivation.}
-The canonical language for reasoning over relational databases, oft named as ground fact stores, is the declarative
-language datalog\cite{datalog}, whose semantics give meaning to the evaluation of a set of possibly-recursive
-restricted horn clauses, namely a program, while remaining not turing complete. To evaluate a program is to
-compute implicit consequences of itself over a fact store, providing new facts.
+Datalog\cite{datalog}, the canonical language for reasoning over relational databases, ground fact stores, is a
+declarative language used to evaluate sets of possibly-recursive restricted horn clauses, programs, while
+remaining not Turing complete. Evaluating a program entails computing implicit consequences over a fact
+store, yielding new facts.
 
-Physically storing all of a program's consequences is called materialization, with the most immediate benefit
-being that no reasoning is required during query answering. Maintaining that computation is a indispensable
-requirement of modern datalog use-cases, and relates to the more general problem of incremental view maintenance.
+Materialization, or the physical storage of a program's consequences, eliminates the need for reasoning
+during query answering. Maintaining this computation is essential for modern Datalog use-cases, as it
+relates to the broader problem of incremental view maintenance.
 
-Additions are efficiently handled with the semi-naive evaluation method\cite{datalog}, that can be notoriously
-efficient for certain classes of programs that are popular in practice. Deletions on the other hand, are possibly
-much less efficient, since the retraction of a fact naively implies the deletion of all data derived from it.
+While the semi-naive evaluation method\cite{datalog} efficiently handles additions, deletions are often less efficient, as
+retracting a fact may naively imply deleting all data derived from it. The delete-rederive\cite{dred} method addresses
+this issue by computing the materialization adjustment through the generation of new Datalog programs, first
+calculating all possible deletions, and then determining alternative derivations. The difference between these
+sets represents the actual facts to be deleted.
 
-The quintessential method for computing the materialization adjustment is delete-rederive\cite{dred}, that generates
-new datalog programs to compute the consequences of the deleted ground facts, doing so by first computing all
-possible deletions, and then whether there are alternative derivations, with the difference between these sets
-being the actual facts that have to be deleted.
+However, using two distinct algorithms for additions and deletions results in different performance characteristics,
+potentially causing severe biases. For example, when a large portion of ground facts are deleted, delete-rederive
+could be significantly more expensive than re-materializing.
 
-The fact that two different algorithms are used implies that there are two different performance characteristics
-for additions and deletions, therefore there being possibly-severe biases in performance, such as in the scenario
-when either all, or a large portion, of ground facts are deleted, where delete-rederive could be much more expensive
-than re-materializing.
+A promising way to tackle incremental maintenance in a more uniform manner is to use differential dataflow, a
+programming model that efficiently processes and maintains large-scale possibly recursive dataflow computations. Central
+to it is the notion of fine-grained tracking, with partially-ordered timestamps, and processing differences between
+collections of data, rather than entire collections themselves. This approach facilitates efficient updates in response
+to changes in the underlying data\cite{differential_dataflow}.
 
+In the context of datalog, differential dataflow presents an opportunity to address the performance challenges
+arising from handling additions and deletions. Contrary to traditional methods, such as semi-naive evaluation for
+additions and delete-rederive for deletions, differential dataflow provides a unified and efficient approach to
+incremental view maintenance.
 
+The utilization of partially ordered timestamps and arrangements allows differential dataflow to precisely
+identify affected parts of the computation and to recompute only the necessary components. This leads to
+a more efficient handling of incremental updates in Datalog evaluation, as the system can focus on affected
+sub-computations rather than re-evaluating the entire program. Furthermore, there also is first-class support
+for both automatic parallelism and distributed computing, contributing to enhanced performance and scalability.
 
-A promising computation framework that could be well-suited for incremental materializatin is differential
-dataflow\cite{differential_dataflow}.
+DDLog\cite{ddlog} has been the only attempt at building a datalog engine that utilized differential dataflow.
+Similarly to the high-profile reasoner Souffle\cite{souffle}, it is a compiler, in which a datalog program
+becomes an executable low-level language program, C++ in Souffle's case, and Rust for DDLog. The rationale for
+the language choice, is that differential dataflow's canonical implementation lives as a heavily optimized
+map-reduce-like framework written in Rust.
 
-\paragraph{Contributions.}
-To address the aforementioned problem, we conduct a back-to-basics empirical
-study of datalog program materialization, revisiting and measuring the core
-assumptions that go into the implementation of a reasoner. We coalesce this
-knowledge into a rust framework \textbf{Shapiro} that provides multiple shared
-components for reasoning research. Straightforward single-threaded, parallel
-and distributed implementations, with the last being done with differential
-dataflow, of both substitution-based and relational-algebra interpretations are
-realized alongside common well-known optimizations.
+Notably, DDLog does not support distribution, and given that it is a compiler, it is not suited for situations
+where either the program is dynamic, with rules being added or removed, or where new programs ought to be
+evaluated during run time, therefore restricting its use case to the specific scenarios where such drawbacks
+are acceptable.
 
-We perform two thorough benchmark suites. One evaluates the performance of the
-developed relational reasoner with multiple different index data structures and
-common optimizations, such as string interning and simple parallelism, and
-another that attempts to attain the COST\cite{COST} of the reasoner built on
-top of differential dataflow. The selected datasets are either from the program
-analysis, heavy users of not-distributed datalog, or from the semantic web
-community, which has multiple popular infinitely-scalable benchmarks.
+There has been no study evaluating the isolated benefit of differential dataflow to datalog evaluation. Therefore
+the suitability of differential dataflow in this context remains unclear, emphasizing the importance of further
+research on its potential benefits and limitations in incremental view maintenance.
 
+\paragraph{Contributions.} In this work, we directly address the posited research question by developing a datalog
+interpreter utilizing differential dataflow. We then compare our implementation with other prototypical datalog
+interpreters, created from scratch, that share as many components as it is reasonable. This allows us to more
+accurately empirically assess how does differential dataflow in itself fare against more traditional approaches.
+
+Unlike DDLog, which compiles a datalog program into its evaluation as a fixed differential dataflow program, our
+approach involves writing a single differential dataflow program capable of evaluating any datalog program. This
+eliminates the need for compilation and provides incremental maintenance for both rule removals and additions.
+
+We perform a benchmark suite that The selected datasets are either from the program analysis, heavy users of
+not-distributed datalog, or from the semantic web community, which has multiple popular infinitely-scalable benchmarks.
 
 \paragraph{Structure of the paper.}
-
 \begin{itemize}
 	\item{\textbf{Introduction.}} Differential Dataflow being suitable, and what has been done
 	\item{\textbf{Background.}}  Datalog, Infer, DRED
@@ -161,9 +172,6 @@ iteration, so implementing reasoning did not need to extend the core of the unde
 successful attempt at creating a distributed implemention has been Nexus\cite{nexus}, that is also built on Flink,
 and makes use of its most advanced feature, incremental stream processing. To date, it is the fastest distributed
 implementation.
-
-% \textbf{Methodology.}
-
 
 \section{Background}
 
@@ -394,7 +402,6 @@ Later on, the author made multiple pieces of informal writing in which the most 
 engines were investigated for COST\cite{blogdynamicdatalog, blogvldbsigmod}, with results that
 showed a very different picture than the ones depicted by the original articles.
 
-
 The \verb|Differential| engine is an attempt at implementing a substitution-based engine on top of the distribution framework that addresses datalog's
 evaluation inefficiencies in a manner that no other currently available framework does, differential dataflow\cite{dd}. Most of the distributed datalog engines are
 built on top of either graph-processing or map-reduce frameworks, both kinds of projects that were not specifically made with expressive query answering in mind, but
@@ -593,3 +600,7 @@ In this paper we introduced Shapiro, a reasoning framework whose core value prop
 
 \end{document}
 \endinput
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
