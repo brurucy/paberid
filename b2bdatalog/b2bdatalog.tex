@@ -123,41 +123,46 @@ becomes an executable low-level language program, C++ in Souffle's case, and Rus
 the language choice, is that differential dataflow's canonical implementation lives as a heavily optimized
 map-reduce-like framework written in Rust.
 
-Notably, DDLog does not support distribution, and given that it is a compiler, it is not suited for situations
-where either the program is dynamic, with rules being added or removed, or where new programs ought to be
-evaluated during run time, therefore restricting its use case to the specific scenarios where such drawbacks
-are acceptable.
+Notably, given that DDLog is a compiler, it is not suited for situations where either the program is expected
+to be dynamic, with rules being added or removed, or where new programs ought to be evaluated during run
+time, therefore restricting its use case to the specific scenarios where such drawbacks are acceptable.
 
 There has been no study evaluating the isolated benefit of differential dataflow to datalog evaluation. Therefore
 the suitability of differential dataflow in this context remains unclear, emphasizing the importance of further
 research on its potential benefits and limitations in incremental view maintenance.
-
 \paragraph{Contributions.} In this work, we directly address the posited research question by developing a datalog
 interpreter utilizing differential dataflow. We then compare our implementation with other prototypical datalog
-interpreters, created from scratch, that share as many components as it is reasonable. This allows us to more
+interpreters, created from scratch, that share as many components as it is reasonable, in order to isolate
+the effect of differential dataflow in both runtime performance and memory efficiency. This allows us to more
 accurately empirically assess how does differential dataflow in itself fare against more traditional approaches.
 
 Unlike DDLog, which compiles a datalog program into its evaluation as a fixed differential dataflow program, our
 approach involves writing a single differential dataflow program capable of evaluating any datalog program. This
-eliminates the need for compilation and provides incremental maintenance for both rule removals and additions.
-
-We perform a benchmark suite that The selected datasets are either from the program analysis, heavy users of
-not-distributed datalog, or from the semantic web community, which has multiple popular infinitely-scalable benchmarks.
-
+eliminates the need for compilation and provides the additional benefit of incremental maintenance for both rule
+removals and additions.
 \paragraph{Structure of the paper.}
 \begin{itemize}
-	\item{\textbf{Introduction.}} Differential Dataflow being suitable, and what has been done
-	\item{\textbf{Background.}}  Datalog, Infer, DRED
-	\item{\textbf{Novelty.}} Differential Dataflow, INFER as a dataflow
-	\item{\textbf{System.}} The implementations, the possibly novel? indexing scheme
-	\item{\textbf{Benchmarks.}} Differential Dataflow better than everything
-	\item{\textbf{Conclusion.}}
+	\item{\textbf{Background.}} A brief recapitulation of the general background, with datalog, its evaluation,
+	and the delete-rederive method being formally introduced.
+	\item{\textbf{Differential Dataflow.}} Differential Dataflow, and the translation of datalog evaluation to
+	a dataflow is showcased and explained.
+	\item{\textbf{System.}} The developed interpreters are described, alongside with all optimizations and
+	benchmark-relevant information.
+	\item{\textbf{Benchmarks.}} An empirical evaluation of all reasoners, over multiple different programs and
+	datasets is undertaken.
 \end{itemize}
-
 
 \section{Related Work}
 
-\textbf{Datalog engines.} There are two kinds of recent relevant datalog engines. The first encompasses
+\textbf{Relevant Projects that use Differential Dataflow.}
+
+\textbf{Datalog engines.} There are two kinds of datalog engines. The first encompasses those that compile
+a datalog program to usually a systems-level programming language, and the second are interpreters, able to
+evaluate any datalog program.
+
+Soufflé\cite{souffle} is a prominent example of a datalog compiler that translates datalog programs into high-performance C++ code. It incorporates several optimization techniques, such as parallel execution with highly specialized data structures\cite{souffle_btree}, and nearly optimal join ordering\cite{souffle_join}. Notably, its development has been an unparalleled source of articles on the engineering of reasoners.
+
+There are two kinds of recent and relevant datalog engines. The first encompasses
 those that push the performance boundary, with the biggest proponents being RDFox\cite{rdfox}, that
 proposes the to-date, according to their benchmarks, most scalable parallelisation routine, RecStep\cite{recstep},
 that builds on top of a highly efficient relational engine, and DCDatalog\cite{dcdatalog}, that builds upon
@@ -280,9 +285,36 @@ is called \textit{naive} evaluation. Every number indicates one rendering of the
 
 The ubiquitous evaluation mechanism, as of the date of writing this paper, is the \textit{semi-naive} one. The difference is that \textit{semi-naive} does not repeatedly union the $EDB$ with the entire $IDB$, but does so only with the difference of the previous immediate consequence with the $IDB$. This can be hinted from the example, where each next application of $I_c$ only renders new facts from the previous newly derived ones.
 
-\subsection{Semi-naive Evaluation}
+\subsection{Semi-Naive Evaluation}
+
+The semi-naive evaluation algorithm \cite{datalog} is a widely-used technique for efficiently handling additions in Datalog evaluation. Given a Datalog program $P$ and an initial fact set $F$, the algorithm iteratively computes the derived facts $D$ by maintaining a set of new facts $D^+$ that are generated in each iteration. The algorithm can be summarized as follows:
+
+\begin{enumerate}
+	\item Initialize the derived facts set $D \leftarrow F$ and the new facts set $D^+ \leftarrow F$.
+
+	\item While $D^+ \neq \emptyset$, perform the following steps:
+	      \begin{enumerate}
+		      \item For each rule $r \in P$, generate the set of new facts $D^+_r$ that can be derived using $r$ and the facts in $D^+$, without considering the facts in $D$ that were derived in previous iterations.
+
+		      \item Update the new facts set: $D^+ \leftarrow \bigcup_{r \in P} D^+_r$.
+
+		      \item Update the derived facts set: $D \leftarrow D \cup D^+$.
+	      \end{enumerate}
+\end{enumerate}
+
+The semi-naive evaluation algorithm improves the efficiency of Datalog evaluation by avoiding the recomputation of facts that have already been derived in previous iterations. This method is particularly efficient for certain classes of Datalog programs that are common in practice.
 
 \subsection{Delete-Rederive}
+
+The delete-rederive algorithm \cite{dred} addresses the challenge of handling retractions efficiently in Datalog evaluation. Given a Datalog program $P$ and a set of retracted facts $R$, the algorithm operates in two main steps:
+
+\begin{enumerate}
+	\item \textbf{Over-Deletion}: Construct an over-deletion program $P_{\text{OD}}$ by replacing each rule $r \in P$ with a rule $r'$ such that $r'$ contains only facts from the set $R$ in the rule body. The over-deletion program computes the set of possible deletions $D_{\text{OD}}$ caused by the retraction of facts in $R$.
+
+	\item \textbf{Alternate Derivation}: Create an alternate derivation program $P_{\text{AD}}$ by retaining only the rules in $P$ that could potentially generate an alternative derivation for a fact in $D_{\text{OD}}$. Compute the set of facts $D_{\text{AD}}$ that can be derived by the alternate derivation program. The actual facts to be deleted are given by the set difference: $D = D_{\text{OD}} \setminus D_{\text{AD}}$.
+\end{enumerate}
+
+The delete-rederive algorithm enables the maintenance of Datalog materialization by focusing on the consequences of the retracted facts, rather than re-evaluating the entire program from scratch. However, this approach introduces different performance characteristics for handling additions and deletions in Datalog evaluation, which could lead to performance biases in certain scenarios.
 
 \subsection{Infer}
 The most relevant performance-oriented aspect of both of the introduced evaluation mechanisms is the implementation of $I_c$ itself. The two
