@@ -411,36 +411,49 @@ Later on, the author made multiple pieces of informal writing in which the most 
 engines were investigated for COST\cite{blogdynamicdatalog, blogvldbsigmod}, with results that
 showed a very different picture than the ones depicted by the original articles.
 
-The \verb|Differential| engine is an attempt at implementing a substitution-based engine on top of the distribution framework that addresses datalog's
-evaluation inefficiencies in a manner that no other currently available framework does, differential dataflow\cite{dd}. Most of the distributed datalog engines are
-built on top of either graph-processing or map-reduce frameworks, both kinds of projects that were not specifically made with expressive query answering in mind, but
+The \verb|Differential| engine is an attempt at implementing a substitution-based engine on top
+of the distribution framework that addresses datalog's evaluation inefficiencies in a manner that
+no other currently available framework does, differential dataflow\cite{dd}. Most of the
+distributed datalog engines are built on top of either graph-processing or map-reduce frameworks
+both kinds of projects that were not specifically made with expressive query answering in mind, but
 more with efficiently handling complex non-recursive queries over large amounts of data.
 
-One of the biggest challenges in efficiently evaluating datalog is in the deletion of data. Incremental bottom-up processing of additions is already the
-manner in which semi-naive evaluation works, and is relatively efficient. The other direction is significantly more complex. In order to delete a fact,
-one has to take into account that it might have influenced the inferrence of other facts, which imply having to look over the whole data, while the opposite
-direction does not require that, therefore incurring possibly very large performance differences between both directions.
+One of the biggest challenges in efficiently evaluating datalog is in the deletion of data.
+Incremental bottom-up processing of additions is already the manner in which semi-naive evaluation
+works, and is relatively efficient. The other direction is significantly more complex. In order
+to delete a fact, one has to take into account that it might have influenced the inferrence of other
+facts, which imply having to look over the whole data, while the opposite direction does not
+require that, therefore incurring possibly very large performance differences between both directions.
 
-Similarly to how semi-naive evaluation is the \textit{de facto} method for incremental bottom-up evaluation, the Delete-Rederive\cite{dred} algorithm holds
-the same regard with respect to the incremental maintenance of bottom-up evaluation with respect to deletions. There are two stages to it, the first, Deletion,
-naively overdeletes all facts that could have been derived from it, but at the same time, keeps track of possible facts that could have had alternative
-derivations. The second stage, rederive, restarts the evaluation process.
+Similarly to how semi-naive evaluation is the \textit{de facto} method for incremental bottom-up
+evaluation, the Delete-Rederive\cite{dred} algorithm holds the same regard with respect to
+the incremental maintenance of bottom-up evaluation with respect to deletions. There are two stages
+to it, the first, Deletion, naively overdeletes all facts that could have been derived from it, but
+at the same time, keeps track of possible facts that could have had alternative derivations. The second
+stage, rederive, restarts the evaluation process.
 
-Differential dataflow directly addresses this issue by evaluating both additions and deletions in the same manner, while at the same time efficiently parallelizing
-semi-naive evaluation, however, it is first necessary to digress over Timely Dataflow~\cite{timely}, the underlying networked computation system in which differential
-is built upon.
+Differential dataflow directly addresses this issue by evaluating both additions and deletions in the
+same manner, while at the same time efficiently parallelizing semi-naive evaluation, however, it is first
+necessary to digress over Timely Dataflow~\cite{timely}, the underlying networked computation system
+in which differential is built upon.
 
-Timely is a high-throughput, low-latency streaming-and-distributed model that extends dataflow. The timely in its name refers to it thoroughly establishing
-the semantics of each aspect of communication notification, taking the parallelization blueprint and making its execution transparent to the user. A notification
-sent between operators is assigned a timestamp, that needs only to be partially ordered, with no assumptions being made with respect to insertion. The goal is to use
-them to correctly reason about the data with respect to the local operator states' of computation completion, in order to cleverly know with certainty when not only
-whether should work be done asynchronously or with sharding, but whether there is data yet to be processed or not.
+Timely is a high-throughput, low-latency streaming-and-distributed model that extends dataflow. The
+timely in its name refers to it thoroughly establishing the semantics of each aspect of communication
+notification, taking the parallelization blueprint and making its execution transparent to the
+user. A notification sent between operators is assigned a timestamp, that needs only to be partially
+ordered, with no assumptions being made with respect to insertion. The goal is to use them to correctly
+reason about the data with respect to the local operator states' of computation completion, in order to
+cleverly know with certainty when not only whether should work be done asynchronously or with sharding, but
+whether there is data yet to be processed or not.
 
-Differential Dataflow, a generalization of incremental processing, is an extension to the Timely Dataflow model. While the shape of the data that flows in the latter is
-in the form of \verb|(data, timestamp)|, the former's is \verb|(data, timestamp, multiplicity)|, therefore restricting its bag-of-data semantics to multisets, with
-the multiplicity element representing a difference, for instance, $+1$ representing the addition of $1$ datapoint arriving at a specific timestamp, or $-1$, a deletion. The
-key difference between both models is that similarly to how timely makes distribution transparent, differential does the same with incremental computation, by providing to the
-user the possibility of not only adding to a stream, the only possible action in timely dataflow, but allow it to respond to arbitrary additions and retractions at any timestamp.
+Differential Dataflow, a generalization of incremental processing, is an extension to the Timely
+Dataflow model. While the shape of the data that flows in the latter is in the form of \verb|(data, timestamp)|, the
+former's is \verb|(data, timestamp, multiplicity)|, therefore restricting its bag-of-data semantics to multisets, with
+the multiplicity element representing a difference, for instance, $+1$ representing the addition of $1$ datapoint
+arriving at a specific timestamp, or $-1$, a deletion. The key difference between both models is that similarly to how
+timely makes distribution transparent, differential does the same with incremental computation, by providing to the
+user the possibility of not only adding to a stream, the only possible action in timely dataflow, but allow it to
+respond to arbitrary additions and retractions at any timestamp.
 
 Similarly to how timestamps in timely are the key element to the efficient parallelization of iterative dataflows, they can also be used in incremental scenarios in order to
 overcome their inherently sequential nature. This is of paramount importance to the performance of datalog evaluation.
