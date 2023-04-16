@@ -144,7 +144,7 @@ removals and additions.
 \begin{itemize}
 	\item{\textbf{Background.}} A brief recapitulation of the general background, with datalog, its evaluation
 	methods, and the delete-rederive method being formally introduced.
-	\item{\textbf{Differential Dataflow.}} Differential Dataflow, and the translation of datalog evaluation to
+	\item{\textbf{Differential Datalog Evaluation.}} Differential Dataflow, and the translation of datalog evaluation to
 	a dataflow is showcased and explained.
 	\item{\textbf{System.}} The developed interpreters are described, alongside with all optimizations and
 	benchmark-relevant information.
@@ -314,28 +314,55 @@ complexity remains the same\cite{complexity_of_dred}. Nonetheless, in practice, 
 addition, as it can be trivially seen by the worst-possible scenario, in which all facts are deleted, where while
 materialization would be free, DRED would inquire an expensive overdeletion computation.
 
-\subsection{Infer}
-The most relevant performance-oriented aspect of both of the introduced evaluation mechanisms is the implementation
-of $I_c$ itself. The two most high-profile methods to do so are either purely evaluating the rules, or rewriting
-them in some other imperative formalism, and executing it.
+\subsection{Substitution-based evaluation}
+The most impactful aspect of both of the introduced evaluation mechanisms is the implementation
+of $I_c$ itself. The two most high-profile methods to do so are either purely evaluating the rules, or
+rewriting them in some other imperative formalism, and executing it.
 
-The Infer\cite{datalog} method is the simplest example of the former, and relies on substitutions. A substitution $S$ is a homomorphism
-$[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is a constant. Given a not-ground fact,
-such as $TC(?x, 4)$, \textit{applying} the substitution $[?x \rightarrow 1]$ to it will yield the ground fact $TC(1, 4)$.
+The substitution-based\cite{datalog} method is the simplest example of the former. A substitution $\sigma$ is
+a homomorphism $[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is
+a constant. Given a not-ground fact, such as $TC(?x, 4)$, \textit{applying} the substitution $[?x \rightarrow 1]$ to
+it will yield the ground fact $TC(1, 4)$.
 
-Infer relies on attempting to build and extend substitutions for each fact in each rule body over every single $DB$ fact. Once
-all substitutions are made, they are applied to the heads of each rule. Every result of this application that is ground belongs
-to the immediate consequence.
+Let $r$ be a Datalog rule of the form $h \leftarrow b_1, b_2, \ldots, b_m$, where $h$ is the head atom and $b_i$ are
+the body atoms. We denote the set of all variables in $r$ as $V(r)$. Let $EDB$ be the set of ground facts for the input
+relations.
 
-\subsection{Relational Algebra}
-Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed arity, relations. It is
-the most popular database formalism that there is, with virtually every single major database system adhering to the
-relational model\cite{pg,mysql,sqlserver} and using SQL as a declarative syntax for relational algebra.
+The substitution-based method computes the immediate consequence of the rule $r$ as follows:
+
+Define the initial set of substitutions as $\Sigma_0 = {\sigma_0 | \sigma_0: V(r) \rightarrow \emptyset}$, where $\sigma_0$
+is an empty substitution for each variable in $r$. For each body atom $b_i$, find the set of ground facts $F_i \subseteq F$
+that match $b_i$.
+
+For each $i = 1, 2, \ldots, m$:
+a. Initialize an empty set of substitutions $\Sigma_{i}$.
+b. For each fact $f \in F_i$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$:
+i. Generate an extension $\sigma'{i-1}$ of $\sigma{i-1}$ with the constant-to-variable homomorphisms from $f$ that are
+consistent with the current partial substitution $\sigma_{i-1}$.
+ii. If the extension is successful (i.e., $\sigma'{i-1}$ is a valid substitution), add $\sigma'{i-1}$ to the set of
+substitutions $\Sigma_i$.
+For each final substitution $\sigma_m \in \Sigma_m$, apply it to the head atom $H$ to generate the derived facts.
+
+There is a noteworthy performance issue that arises due to the interaction between the substitution-based method
+and DRED. During the alternate derivation phase, the new program has one more body atom. This can be prohibitively
+more expensive to evaluate than the original program, since one extra body atom implies one extra iteration, which
+could generate a polynomial number of substitutions, due to cartesian product nature of each step.
+
+\subsection{Relational algebra rewriting method}
+Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed
+arity, relations. It is the most popular database formalism that there is, with virtually every single
+major database system adhering to the relational model\cite{pg,mysql,sqlserver} and using SQL as a
+declarative syntax for relational algebra.
+
+The translation of datalog rules to relational algebra equations is a well-known technique, and has been
+the most successful strategy employed by the vast majority of all current state-of-the-art reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle}
+mostly due to the extensive industrial and academic research into developing data processing frameworks
+that process very large amounts of data, and the techniques that have arisen from those.
 
 Let $R$ and $T$ be relations with arity $r$ and $t$, $\theta$ be a binary operation with a boolean output, $R(i)$ be
 the i-th column, all terms in the i-th position of every tuple in $R$, and $R[h, ..., k]$ be the subset of $R$ such
-that only the columns $h, ..., k$ remain, and Const the set of all constant terms. The following are the most relevant
-relational algebra operators and their semantics:
+that only the columns $h, ..., k$ remain, and Const the set of all constant terms. The following are the most
+relevant relational algebra operators and their semantics:
 \begin{itemize}
 	\item Selection by column $\sigma_{i=j)}(R) = \{ a \in R | a(i) == a(j) \}$
 	\item Selection by value $\sigma_{i=k}(R) = \{a \in R | a(i) == k \}$
@@ -344,20 +371,12 @@ relational algebra operators and their semantics:
 	\item Join $\Join_{i=j} = \{(a, b) | a \in R \wedge b \in T \wedge a(i) == b(j)\}$
 \end{itemize}
 
-Rewriting datalog into some form of relational algebra has been the most successful strategy employed by the vast majority of all
-current state-of-the-art reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle} mostly due to the extensive industrial
-and academic research into developing data processing frameworks that process very large amounts of data, and the techniques that
-have arisen from these.
+A relational algebra expression is in the $\mathcal{SPJ}$ form if it consists solely of select, project and join
+operators. This form is very often seen in practice, being equivalent to \verb|SELECT ... FROM ... WHERE ...| SQL
+queries, and highly benefits from being equivalent to conjunctive queries, that are equivalent to single-rule and
+non-recursive datalog programs.
 
-In spite of this, there is no open-source library that provides a stand-alone datalog to relational algebra translator, therefore every single
-datalog evaluator has to repeat this effort. Moreover, datalog rules translate to a specific form of relational algebra expressions, the
-select-project-join $\mathcal{SPJ}$ form.
-
-A relational algebra expression is in the $\mathcal{SPJ}$ form if it consists solely of select, project and join operators. This form
-is very often seen in practice, being equivalent to \verb|SELECT ... FROM ... WHERE ...| SQL queries, and highly benefits from being
-equivalent to conjunctive queries, that are equivalent to single-rule and non-recursive datalog programs.
-
-\section{Differential Datalog}
+\section{Differential Datalog Evaluation}
 
 \emph{Timely dataflow} is a high-throughput, low-latency
 streaming-and-distributed computational model that extends the dataflow paradigm. The timely
