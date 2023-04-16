@@ -9,10 +9,10 @@
 \acmDOI{XXXXXXX.XXXXXXX}
 
 \acmConference[PPDP '23]{25th International Symposium on
-Principles and Practice of Declarative Programming}{October 22--23,
+	Principles and Practice of Declarative Programming}{October 22--23,
 	2023}{Cascais, Lisbon, Portugal}
 
-\usepackage{microtype}  %towards typographic perfection...
+\usepackage{microtype}
 \usepackage{tikz,tikz-qtree}
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows.meta, shapes.misc, positioning}
@@ -26,52 +26,53 @@ Principles and Practice of Declarative Programming}{October 22--23,
 \SetKwData{typeRat}{Rat}
 \SetKwData{Defined}{Defined}
 \SetKwFunction{parseStatement}{parseStatement}
-\usepackage{libertine}  
+\usepackage{libertine}
 
-\title{A Back-to-basics Empirical Study of Datalog Materialization}
+\title{A Differential Datalog Interpreter}
 
 \author{Bruno Rucy Carneiro Alves de Lima}
 \orcid{1234-5678-9012}
 \affiliation{%
 	\institution{University of Tartu}
-  \department{Institute of Computer Science}
+	\department{Institute of Computer Science}
 	\city{Tartu}
 	\country{Estonia}
 }
 \email{bruno98@ut.ee}
 
+\author{Merlin Kramer}
+\affiliation{%
+	\institution{unaffiliated}
+	\city{Wuppertal}
+	\country{Germany}
+}
+\email{merlin.kramer@gmail.com}
+
 \author{Kalmer Apinis}
 \affiliation{%
 	\institution{University of Tartu}
-  \department{Institute of Computer Science}
+	\department{Institute of Computer Science}
 	\city{Tartu}
 	\country{Estonia}
 }
 \email{kalmera@ut.ee}
 
-% \renewcommand{\shortauthors}{Trovato and Tobin, et al.}
 
 % Kalmer: The abstract is too long and too complicated.
 % But lets not worry about it too much for now.
 \begin{abstract}
-	The core reasoning task for datalog engines is materialization, the
-	act of evaluating a program until no more data can be inferred from
-	a database. Due to it being a costly operation, it is a must for datalog
-	engines to provide incremental materialization, that is, to adjust the
-	computation to new data, instead of restarting from scratch. Deleting data
-	is notoriously more involved than adding, since one has to take into account
-	all possible data that has been inferred from what is being deleted.
-  %   , hence, it is
-  % likely that performance is not even across the direction of the update.
-  In this	paper we investigate the performance of materialization with
-	three reference datalog implementations including a
-	lightweight relational engine, and an engine using differential dataflow.
-  %
-	The output of the paper is coalesced as an extensible reasoning framework, that shares
-	as much code as it is sensible between the implementations, therefore providing strong
-	evidence to the efficiency of each measure.
+	The core reasoning task for datalog engines is materialization, the evaluation of a datalog program over
+	a database alongside its physical incorporation into the database itself. The de-facto method of computing
+	it, is through the recursive application of inference rules. Due to it being a costly operation, it is a must
+	for datalog engines to provide incremental materialization, that is, to adjust the computation to new
+	data, instead of restarting from scratch. One of the major caveats, is that deleting data is notoriously more
+	involved than adding, since one has to take into account all possible data that has been entailed from what
+	is being deleted. Differential Dataflow is a computational model that provides efficient incremental
+	maintenance, notoriously with equal performance between additions and deletions, and work distribution, of
+	iterative dataflows. In this paper we investigate the performance of materialization with three reference
+	datalog implementations, out of which one is built on top of a lightweight relational engine, and the two others
+	are differential-dataflow and non-differential versions of the same rewrite algorithm, with the same optimizations.
 \end{abstract}
-
 
 \keywords{datalog, incremental view maintenance, differential dataflow}
 
@@ -80,100 +81,113 @@ Principles and Practice of Declarative Programming}{October 22--23,
 \maketitle
 
 \section{Introduction}
-% \textbf{Motivation.}
-SQL has been the \textit{de facto} universal relational
-database interface for querying and management since its inception,
-with all other alternatives having had experienced disproportionately
-little interest. %The reasons for this are many, out of which only one
-% is relevant to this narrative; performance.
+Datalog\cite{datalog}, the canonical language for reasoning over relational databases, ground fact stores, is a
+declarative language used to evaluate sets of possibly-recursive restricted horn clauses, programs, while
+remaining not Turing complete. Evaluating a program entails computing implicit consequences over a fact
+store, yielding new facts.
 
-The runner-ups of popularity were languages used for machine reasoning,
-a subset of the Artificial Intelligence field that attempts to attain
-intelligence through the usage of rules over knowledge. The canonical
-language for reasoning over relational databases is datalog\cite{datalog}.
-Similarly to SQL, it also is declarative, however, its main semantics' difference
-is in the support for recursion while still ensuring termination irrespective
-of the program being run.
-%
-A notable issue with respect to real-world adoption of datalog is in
-performance. The combined complexity of evaluating a program is
-$\text{EXPTIME}$\cite{datalog}, while SQL queries are $\text{AC}^0$. It was
-not until recently\cite{rdfox} that scalable implementations were
-developed.
+Materialization, or the physical storage of a program's consequences, eliminates the need for reasoning
+during query answering. Maintaining this computation is essential for modern Datalog use-cases, as it
+relates to the broader problem of incremental view maintenance.
 
-Digital analytics has been one of the main drivers of the recent datalog renaissance,
-with virtually all big-data oriented datalog implementations having had either been built
-on top of the most mainstream industry oriented frameworks\cite{bigdatalog,cog,cog2} or with the
-aid of the most high-profile technology companies\cite{logica,yedalog,vadalog}.
+While the semi-naive evaluation method\cite{datalog} efficiently handles additions, deletions are often less efficient, as
+retracting a fact may naively imply deleting all data derived from it. The delete-rederive\cite{dred} method addresses
+this issue by computing the materialization adjustment through the generation of new Datalog programs, first
+calculating all possible deletions, and then determining alternative derivations. The difference between these
+sets represents the actual facts to be deleted.
 
-% Kalmer: no tangents! lets get to the point!
-% Another strong source of research interest has been from the knowledge graph community. A
-% knowledge graph \textit{KG} is a regular relational database \textit{I} that contains
-% \textit{ground truths}, and rules.
+However, using two distinct algorithms for additions and deletions results in different performance characteristics,
+potentially causing severe biases. For example, when a large portion of ground facts are deleted, delete-rederive
+could be significantly more expensive than re-materializing.
 
-% Kalmer: most important? Do not add unimportant claims! 
-% The most
-\textit{Materialization} is the derivation of all
-truths that follow from the application of rules over the relational database, with the goal to ensure queries do not need any reasoning.
-%
-This, however, is a problem, if the underlying data changes.
-%
-%
-% \textbf{Problem.} 
-% The maintenance of materialization is possibly the most important issue
-% that plagues the real-world usage of datalog, and has been a source of much research interest,
-% most commonly under the guise of incremental view maintenance.
-%
-The handling of additions is efficiently done with the semi-naive evaluation method\cite{datalog},
-that can be notoriously efficient for a special class of programs that are popular in practice.
-Deletions on the other hand, are possibly much less efficient, since the retraction of a \textit{ground truth}
-naively implies the deletion of all data derived from it.
+A promising way to tackle incremental maintenance in a more uniform manner is to use differential dataflow, a
+programming model that efficiently processes and maintains large-scale possibly recursive dataflow computations. Central
+to it is the notion of fine-grained tracking, with partially-ordered timestamps, and processing differences between
+collections of data, rather than entire collections themselves. This approach facilitates efficient updates in response
+to changes in the underlying data\cite{differential_dataflow}.
 
-The quintessential algorithm for computing the materialization adjustment with respect to a
-deletion is the delete-rederive\cite{dred} method, that generates new datalog programs to
-compute the deletions necessary to ensure correctness, doing so by first computing all possible
-deletions, and then all possible alternative derivations, with the adjusment being the difference
-between both of these sets.
+In the context of datalog, differential dataflow presents an opportunity to address the performance challenges
+arising from handling additions and deletions. Contrary to traditional methods, such as semi-naive evaluation for
+additions and delete-rederive for deletions, differential dataflow provides a unified and efficient approach to
+incremental view maintenance.
 
-The fact that two different algorithms are used implies that there are two different performance
-characteristics for additions and deletions, in spite of dred utilizing semi-naive evaluation as well,
-therefore there being possibly-severe biases in performance. 
-% To this date, there hasn't been
-% a study that evaluated a datalog engine performance in properly dynamic scenarios.
-%
-A promising computation framework that could be well-suited for incremental materializatin is differential
-dataflow\cite{differential_dataflow}.
+The utilization of partially ordered timestamps and arrangements allows differential dataflow to precisely
+identify affected parts of the computation and to recompute only the necessary components. This leads to
+a more efficient handling of incremental updates in Datalog evaluation, as the system can focus on affected
+sub-computations rather than re-evaluating the entire program. Furthermore, there also is first-class support
+for both automatic parallelism and distributed computing, contributing to enhanced performance and scalability.
 
-\paragraph{Contributions.} 
-To address the aforementioned problem, we conduct a back-to-basics empirical
-study of datalog program materialization, revisiting and measuring the core
-assumptions that go into the implementation of a reasoner. We coalesce this
-knowledge into a rust framework \textbf{Shapiro} that provides multiple shared
-components for reasoning research. Straightforward single-threaded, parallel
-and distributed implementations, with the last being done with differential
-dataflow, of both substitution-based and relational-algebra interpretations are
-realized alongside common well-known optimizations.
+DDLog\cite{ddlog} has been the only attempt at building a datalog engine that utilized differential dataflow.
+Similarly to the high-profile reasoner Souffle\cite{souffle}, it is a compiler, in which a datalog program
+becomes an executable low-level language program, C++ in Souffle's case, and Rust for DDLog. The rationale for
+the language choice, is that differential dataflow's canonical implementation lives as a heavily optimized
+map-reduce-like framework written in Rust.
 
-We perform two thorough benchmark suites. One evaluates the performance of the
-developed relational reasoner with multiple different index data structures and
-common optimizations, such as string interning and simple parallelism, and
-another that attempts to attain the COST\cite{COST} of the reasoner built on
-top of differential dataflow. The selected datasets are either from the program
-analysis, heavy users of not-distributed datalog, or from the semantic web
-community, which has multiple popular infinitely-scalable benchmarks.
+Notably, given that DDLog is a compiler, it is not suited for situations where either the program is expected
+to be dynamic, with rules being added or removed, or where new programs ought to be evaluated during run
+time, therefore restricting its use case to the specific scenarios where such drawbacks are acceptable.
 
+There has been no study evaluating the isolated benefit of differential dataflow to datalog evaluation. Therefore
+the suitability of differential dataflow in this context remains unclear, emphasizing the importance of further
+research on its potential benefits and limitations in incremental view maintenance.
+\paragraph{Contributions.} In this work, we directly address the posited research question by developing a datalog
+interpreter utilizing differential dataflow. We then compare our implementation with other prototypical datalog
+interpreters, created from scratch, that share as many components as it is reasonable, in order to isolate
+the effect of differential dataflow in both runtime performance and memory efficiency. This allows us to more
+accurately empirically assess how does differential dataflow in itself fare against more traditional approaches.
 
-\paragraph{Structure of the paper.} ...
-
-
+Unlike DDLog, which compiles a datalog program into its evaluation as a fixed differential dataflow program, our
+approach involves writing a single differential dataflow program capable of evaluating any datalog program. This
+eliminates the need for compilation and provides the additional benefit of incremental maintenance for both rule
+removals and additions.
+\paragraph{Structure of the paper.}
+\begin{itemize}
+	\item{\textbf{Background.}} A brief recapitulation of the general background, with datalog, its evaluation
+	methods, and the delete-rederive method being formally introduced.
+	\item{\textbf{Differential Datalog Evaluation.}} Differential Dataflow, and the translation of datalog evaluation to
+	a dataflow is showcased and explained.
+	\item{\textbf{System.}} The developed interpreters are described, alongside with all optimizations and
+	benchmark-relevant information.
+	\item{\textbf{Benchmarks.}} An empirical evaluation of all reasoners, over multiple different programs and
+	datasets is undertaken.
+\end{itemize}
 \section{Related Work}
 
-\textbf{Datalog engines.} There are two kinds of recent relevant datalog engines. The first encompasses
-those that push the performance boundary, with the biggest proponents being RDFox\cite{rdfox}, that
-proposes the to-date, according to their benchmarks, most scalable parallelisation routine, RecStep\cite{recstep},
-that builds on top of a highly efficient relational engine, and DCDatalog\cite{dcdatalog}, that builds upon
-an influential query optimizer, DeALS\cite{deals} and extends a work that establishes how some linear
-datalog programs could be evaluated in a lock-free manner, to general positive programs.
+\textbf{Differential Dataflow Applications.} There are two relevant differential dataflow projects that are worth
+mentioning. One of them is Graspan, a parallel graph processing system that uses differential dataflow for efficient
+incremental computation of static program analyses over large codebases.
+
+Graspan models the program analysis problem as a reachability problem on a graph, where nodes represent program elements
+and edges represent the relationships between these elements. It leverages differential dataflow to incrementally update
+the analysis results in response to changes in the input graph, which can be due to code modifications or updates to
+the analysis rules. Graspan has demonstrated its ability to scale to large codebases and provide low-latency updates
+for various static analyses, including points-to analysis, control-flow analysis, and data-flow analysis.
+
+Another project of interest is DBSP\cite{dbsp}, a recent development, that started from the need for a more concise
+theoretical definition of differential dataflow. All of DBSP operators are based on differential dataflow's, however, its
+computational model is less powerful as it does not allow updates to past values in a stream, and it is also assumed that
+inputs arrive in time order. DBSP can express both incremental and non-incremental computations, with the former not being
+possible in differential dataflow.
+
+\textbf{Datalog engines.} There are two kinds of datalog engines. The first encompasses those that compile
+a datalog program to usually a systems-level programming language, and the second are interpreters, able to
+evaluate any datalog program.
+
+Soufflé is a prominent example of a datalog compiler that translates datalog programs into high-performance
+C++ code. It incorporates several optimization techniques, such as parallel execution with highly specialized data
+structures\cite{souffle_btree}, and nearly optimal join ordering\cite{souffle_join}. Notably, its development has
+been an unparalleled source of articles on the engineering of reasoners.
+
+DDLog As previously mentioned, compiles datalog to differential dataflow, achieving efficient differential data updates
+for datalog programs. It demonstrates the applicability of differential dataflow in the context of declarative logic
+programming and incremental view maintenance.
+
+The majority of reasoners recently developed have been mostly interpreters, further split into distributed or
+shared memory systems. Out of the shared memory ones, the most notable are RDFox\cite{rdfox}, a highly specialized
+and performant reasoner that is tailored to the semantic web needs, RecStep\cite{recstep}, that builds on top of a
+highly efficient relational engine, and DCDatalog\cite{dcdatalog}, that builds upon the query optimizer DeALS\cite{deals}
+and extends a work that establishes how some linear datalog programs could be evaluated in a lock-free manner, to
+general positive programs.
 
 One of the most high-profile datalog papers of interest has been BigDatalog\cite{bigdatalog}, that
 originally used the query optimizer DeALs, and was built on top of the very popular Spark\cite{spark}
@@ -181,36 +195,18 @@ distribution framework. Soon after, a prototypical implementation\cite{cog} over
 a distribution framework that supports streaming, Cog, followed. Flink, unlike Spark, supports
 iteration, so implementing reasoning did not need to extend the core of the underlying framework. The most
 successful attempt at creating a distributed implemention has been Nexus\cite{nexus}, that is also built on Flink,
-and makes use of its most advanced feature, incremental stream processing. To date, it is the fastest distributed
-implementation.
-
-\textbf{Data structures used in datalog engines.} The core of each datalog engine is consisted of possibly
-two main data structures: one to hold the data itself, and another for indexes. Surprisingly little regard is given to
-this, compared to algorithms themselves, despite potentially being one of the most detrimental factors for performance
-. Binary-decision diagrams\cite{bddbddb}, hash sets\cite{microzee} and B-Trees\cite{souffle_btree} are often used as
-either one or both main structures. An important highlight of the importance of data structure implementation is how
-in \cite{souffle_btree} Subotic et al, managed to attain an almost 50 times higher performance in certain benchmarks
-than other implementations of the same data structure.
-
-
-% \textbf{Methodology.}
-
-
-\section{Datalog Background}
-
-In this section we review the basics of all concepts related to datalog evaluation, as it is done in the current time.
-
-\subsection{Datalog}
-% Kalmer: This subsections should be really short as everybody who reads this paper already knows about datalog. But we cannot delete it completely as then we wont have definitions.
+and makes use of its most advanced feature, incremental stream processing.
+\section{Background}
 
 \textit{Datalog}\cite{datalog} is a declarative programming language. A program $P$ is a set of
-rules $r$, with each $r$ being a restriction of tuple-generating dependencies: \[\bigwedge_{i=1}^kB_i(x_1, ..., x_j) \rightarrow \exists (y_1, ..., y_j)H(x_1, ..., x_j, y_1, ..., y_j)\]
-with $k$, $j$ as finite integers, $x$ and $y$ as terms, and each $B_i$ and $H$ as predicates. A term can belong
-either to the set of variables, or constants, however, it is to be noted that all $y$ are existentially quantified.
-The set of all $B_i$ is called the \textit{body}, and $H$ the \textit{head}.
+rules $r$, with each $r$ being a restriction of tuple-generating dependencies: \[\bigwedge_{i=1}^kB_i(x_1, ..., x_j) \rightarrow H(x_1, ..., x_j)\]
+with $k$, $j$ as finite integers, $x$ as terms, and each $B_i$ and $H$ as predicates. A term can belong
+either to the set of variables, or constants. The set of all $B_i$ is called the \textit{body}, and $H$ the \textit{head}.
 
-A rule $r$ is said to be datalog, if the set of all $y$ is empty, and no predicate is negated, conversely, a
-datalog program is one in which all rules are datalog.
+A rule $r$ is said to be datalog, if no predicate is negated, and all variables in the head appear somewhere in the body,
+thereby not there being the possibility for existential variables to exist, conversely, a datalog program is one in which
+all rules are datalog.
+
 \begin{exmp}{Datalog Program}\label{ex1}
 	\[
 		P = \left\{  \begin{array}{l}
@@ -222,461 +218,63 @@ Example \ref{ex1} shows a simple valid recursive program. The only rule denotes 
 	in a SubClassOf relation with y, and y is in a SubClassOf relation with z, then it follows that x is in a subClassOf
 	relation with z}.
 
-The meaning of a datalog program is often\cite{datalog} defined through a \textit{Herbrand Interpretation}. The first step
-to attain it is the \textit{Herbrand Universe} $\mathfrak{U}$, the set of all constant, commonly referred to as \textit{ground}, terms.
-\begin{exmp}{Herbrand Universe}\label{ex2}
-  % \[
-  %   S = \left\{ \begin{array}{l}
-  %     \text{SubClassOf}(\text{professor}, \text{employee}) \\
-  %     \text{SubClassOf}(\text{employee}, \text{taxPayer})  \\
-  %     \text{SubClassOf}(\text{employee}, \text{employed})  \\
-  %     \text{SubClassOf}(\text{employed}, \text{employee})
-  %   \end{array}\right\}
-  % \]
-  % \[
-  %   \mathfrak{U} = \left\{  \begin{array}{l}
-  %     \text{professor}, \text{employee}, \text{employed}, \text{taxPayer}
-  %   \end{array}\right\}
-  % \]
-  ...
+Programs denote implications over a store of ground facts. This store is called the extensional database, $EDB$, and the result
+of evaluating a program over some $EDB$ is the $IDB$, the intensional database.
+
+Let $DB = EDB \cup IDB$, and for there to be a program $P$. We define the \textit{immediate consequence} of $P$ over $DB$ as
+all facts that are either in $DB$, or stem from the result of applying the rules in $P$ to $DB$. The \textit{immediate consequence operator}
+$\textbf{I}_C(DB)$ is the union of $DB$ and its immediate consequence, and the $IDB$, at the moment of the
+application of $\textbf{I}_C(DB)$ is the difference of the union of all previous $DB$ with the $EDB$.
+
+It is trivial to see that $I_C(DB)$ is monotone, and given that both the $EDB$ and $P$ are finite sets, and
+that $IDB = \emptyset$ at the start, at some point $I_C(DB) = DB$, since there won't be new facts to be inferred. This
+point is the \textit{least fixed point} of $I_c(DB)$\cite{datalog}. Computing the \textit{least fixed point} as
+described, recursively applying the immediate consequence, is called Naive evaluation.
+
+\subsection{Semi-Naive Evaluation}
+
+The semi-naive evaluation algorithm \cite{datalog} is a widely-used technique for improving naive evaluation.
+Given a Datalog program $P$ and an $EDB$, the algorithm iteratively computes the $IDB$ in the same manner as
+naive evaluation, with the addition of maintaining a set of new delta facts $\Delta^+$ that are generated in
+each iteration, that are utilized in a new delta program $\Delta^+P$.
+
+Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the
+delta program will generate one new $\Delta$rule for each $b_j$ in each rule body $b(r_i)$, in order to
+represent that only facts that have been recently inferred are being taken into account.
+
+\begin{exmp}{Semi-naive Evaluation Delta Program}
+	\tiny
+	\begin{align}
+		P = \{ TC(?x, ?z) \leftarrow TC(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                           \\
+		r_0 = TC(?x, ?y) \leftarrow Edge(?x, ?y)                                                                                                                       \\
+		\Delta r_1 = TC(?x, ?z) \leftarrow \Delta TC(?x, ?y), TC(?y, ?z)                                                                                     \nonumber \\
+		\Delta r_2 = TC(?x, ?z) \leftarrow TC(?x, ?y), \Delta TC(?y, ?z)
+	\end{align}
+	\label{exsne}
 \end{exmp}
-From the shown universe on example \ref{ex2}, it is possible to build The \textit{Herbrand Base}, the set of all possible truths,
-from \textit{facts}, assertions that are true, as represented by the actual constituents of the SubClassOf set.
-\begin{exmp}{Herbrand Base}\label{ex3}
-  ...
-  % \[
-  %   \mathfrak{B} = S \cup \left\{  \begin{array}{l}
-  %     \text{SubClassOf}(\text{professor}, {professor}) \\
-  %     \text{SubClassOf}(\text{employee}, {employee})   \\
-  %     \text{SubClassOf}(\text{employed}, {employed})   \\
-  %     \text{SubClassOf}(\text{taxPayer}, {taxPayer})   \\
-  %     \text{SubClassOf}(\text{professor}, {taxPayer})  \\
-  %     \text{SubClassOf}(\text{taxPayer}, {professor})  \\
-  %     \text{SubClassOf}(\text{employee}, {professor})  \\
-  %     \text{SubClassOf}(\text{taxPayer}, {employee})
-  %   \end{array}\right\}
-  % \]
-\end{exmp}
-On example \ref{ex3}, all facts are indeed \textit{possible}, but not necessarily \textit{derivable} from the actual data and
-program. An interpretation $I$ is a subset of $\mathfrak{B}$, and a \textit{model} is an interpretation such that all rules
-are satisfied. A rule is satisfied if either the head is true, or if the body is not true.
-\begin{exmp}{Models}\label{ex4}
-  ...
-  % \[
-  %   I_1 = S \cup \left\{  \begin{array}{l}
-  %     \text{SubClassOf}(\text{professor}, {taxPayer}) \\
-  %     \text{SubClassOf}(\text{employee}, {employee})
-  %   \end{array}\right\}
-  % \]
-  % \[
-  %   I_2 = S \cup \left\{  \begin{array}{l}
-  %     \text{SubClassOf}(\text{professor}, {taxPayer}) \\
-  %     \text{SubClassOf}(\text{employee}, {employee})  \\
-  %     \text{SubClassOf}(\text{employed}, {employed})
-  %   \end{array}\right\}
-  % \]
-  % \[
-  %   I_3 = S \cup \left\{  \begin{array}{l}
-  %     \text{SubClassOf}(\text{professor}, {taxPayer}) \\
-  %     \text{SubClassOf}(\text{employee}, {employee} ) \\
-  %     \text{SubClassOf}(\text{employed}, {employed})  \\
-  %     \text{SubClassOf}(\text{professor, professor})
-  %   \end{array}\right\}
-  % \]
-\end{exmp}
-The first interpretation, $I_1$, from example \ref{ex4}, is not a model, since $\text{SubClassOf}(\text{employed}, \text{employed})$ is satisfied
-and present. Despite both $I_2$ and $I_3$ being models, $I_2$ is the \textit{minimal} model, which is the definition of the meaning of the program
-over the data. The input data, the database, is named as the \textit{Extensional Database} $EDB$, and the output of the program is the \textit{Intensional Database}
-$IDB$.
 
-Let an $DB = EDB \cup IDB$, and for there to be a program $P$. We define the \textit{immediate consequence} of $P$ over $DB$ as all facts
-that are either in $DB$, or stem from the result of applying the rules in $P$ to $DB$. The \textit{immediate consequence operator}
-$\textbf{I}_C(DB)$ is the union of $DB$ and its immediate consequence, and the $IDB$, at the moment of the application of $\textbf{I}_C(DB)$
-is the difference of the union of all previous $DB$ with the $EDB$.
+In theory, the semi-naive evaluation algorithm improves the efficiency of Datalog evaluation by avoiding
+the recomputation of facts that have already been derived in previous iterations. This method is particularly
+efficient for certain classes of Datalog programs that are common in practice. Example \ref{exsne} shows
+the generated $\Delta$ program. It is worth noting, that there are substantial implementation challenges in order
+to ensure that its overhead is not larger than the performance gains, since it possibly requires multiple
+indexes and set operations to keep track of the most recently inferred facts.
 
+\subsection{Delete-Rederive}
 
-It is trivial to see that $I_C(DB)$ is monotone, and given that both the $EDB$ and $P$ are finite sets, and that $IDB = \emptyset$ at the start,
-at some point $I_C(DB) = DB$, since there won't be new facts to be inferred. This point is the \textit{least fixed point} of $I_c(DB)$\cite{datalog},
-and happens to be the \textit{minimal} model.
-% \begin{exmp}{Repeated application of $I_c$}
-%   \begin{align}
-%     P = \{ Edge(?x, ?y) \leftarrow TC(?x, ?y), TC(?x, ?y), TC(?y, ?z) \leftarrow TC(?x, ?z) \} \nonumber             \\
-%     EDB = \{ Edge(1, 2), Edge(2, 3), Edge(3, 4) \}                                               \nonumber           \\
-%     DB = EDB                                                                                     \nonumber           \\
-%     DB = I_C(DB)                                                                                                     \\
-%     DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4) \}                                                      \nonumber \\
-%     DB = I_C(DB)                                                                                           \nonumber \\
-%     DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4) \}                                  \nonumber \\
-%     DB = I_C(DB)                                                                                                     \\
-%     DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}                        \nonumber \\
-%     DB = I_C(DB)                                                                                                     \\
-%     DB == EDB \cup \{ TC(1, 2), TC(2, 3), TC(3, 4), TC(1, 3), TC(2, 4), TC(1, 4) \}                        \nonumber \\
-%     IDB = DB \setminus EDB
-%   \end{align}
-%   \label{ex5}
-% \end{exmp}
+Both the regular semi-naive and naive evaluation methods are already incremental, and easily handles the
+addition of data. One merely has to continue the evaluation with all previous data as the most recent delta.
 
-The walkthrough 
-% given on example \ref{ex5}
-is called \textit{naive} evaluation. Every number indicates one rendering of the immediate consequence. As it can be seen by 3 and 4, at some point $DB$ equals $I_C(DB)$, from which onwards no more new tuples will be inferred, therefore halting.
+The most used method for handling deletions is a bottom-up algorithm\cite{dred} that uses semi-naive evaluation
+to evaluate two new programs, one that computes all possible deletions that could stem from the deletion of the
+facts being retracted, and then another that attempts to find alternative derivations to the overdeleted ones.
 
-The ubiquitous evaluation mechanism, as of the date of writing this paper, is the \textit{semi-naive} one. The difference is that \textit{semi-naive} does not repeatedly union the $EDB$ with the entire $IDB$, but does so only with the difference of the previous immediate consequence with the $IDB$. This can be hinted from the example, where each next application of $I_c$ only renders new facts from the previous newly derived ones.
+Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the
+overdeletion program will generate one new $-$rule for each $b_j$ in each rule body $b(r_i)$, in order to represent
+that if such fact were to be deleted, then $h(r_i)$ would not hold true.
 
-\subsection{Infer}
-The most relevant performance-oriented aspect of both of the introduced evaluation mechanisms is the implementation of $I_c$ itself. The two
-most high-profile methods to do so are either purely evaluating the rules, or rewriting them in some other imperative formalism, and executing it.
-
-The Infer\cite{datalog} method is the simplest example of the former, and relies on substitutions. A substitution $S$ is a homomorphism
-$[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is a constant. Given a not-ground fact,
-such as $TC(?x, 4)$, \textit{applying} the substitution $[?x \rightarrow 1]$ to it will yield the ground fact $TC(1, 4)$.
-
-Infer relies on attempting to build and extend substitutions for each fact in each rule body over every single $DB$ fact. Once
-all substitutions are made, they are applied to the heads of each rule. Every result of this application that is ground belongs
-to the immediate consequence.
-
-\subsection{Relational Algebra}
-Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed arity, relations. It is
-the most popular database formalism that there is, with virtually every single major database system adhering to the relational model\cite{pg,mysql,sqlserver}
-and using SQL as a declarative syntax for relational algebra.
-
-Let $R$ and $T$ be relations with arity $r$ and $t$, $\theta$ be a binary operation with a boolean output, $R(i)$ be the i-th column, all terms in the i-th position of every tuple in $R$, and
-$R[h, ..., k]$ be the subset of $R$ such that only the columns $h, ..., k$ remain, and Const the set of all constant terms. The following
-are the most relevant relational algebra operators and their semantics:
-\begin{itemize}
-	\item Selection by column $\sigma_{i=j)}(R) = \{ a \in R | a(i) == a(j) \}$
-	\item Selection by value $\sigma_{i=k}(R) = \{a \in R | a(i) == k \}$
-	\item Projection $\pi_{h, ..., k}(R) = \{(R(i), ..., R(j), \overrightarrow{C}) |  i, j >= 1 \wedge i, j <= r\ \wedge \forall c \in C. c \in \text{Const}$
-	\item Product $\times(R, T) = \{(a, b) | a \in R \wedge b \in T \}$
-	\item Join $\Join_{i=j} = \{(a, b) | a \in R \wedge b \in T \wedge a(i) == b(j)\}$
-\end{itemize}
-
-Rewriting datalog into some form of relational algebra has been the most successful strategy employed by the vast majority of all current state-of-the-art
-reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle} mostly due to the extensive industrial and academic research into developing data processing frameworks that
-process very large amounts of data, and the techniques that have arisen from these.
-
-In spite of this, there is no open-source library that provides a stand-alone datalog to relational algebra translator, therefore every single
-datalog evaluator has to repeat this effort. Moreover, datalog rules translate to a specific form of relational algebra expressions, the
-select-project-join $\mathcal{SPJ}$ form.
-
-A relational algebra expression is in the $\mathcal{SPJ}$ form if it consists solely of select, project and join operators. This form
-is very often seen in practice, being equivalent to \verb|SELECT ... FROM ... WHERE ...| SQL queries, and highly benefits from being
-equivalent to conjunctive queries, that are equivalent to single-rule and non-recursive datalog programs.
-
-\section{Shapiro}
-The central contribution of this article is Shapiro, an extensible reasoning system designedfrom scratch. No frameworks
-were used, nor any code related to any other reasoner has been reutilized, furthermore, a modern, performant and safe programming
-language was used, Rust\cite{rust_lang}.
-
-All most performant shared-memory reasoners are unsurpisingly all implemented in C++\cite{rdfox, vadalog, souffle}, since
-it provides manual memory management and is the \textit{de facto} language for high-performance computing. Rust is a
-recent language, approximately 10 years old, that exhibits similar or faster performance than C++, with its \textit{raison d'etre}
-being that, unlike C++, it is memory-safe and thread-safe\cite{rust2014,rustbelt,rustsafety}; both of these guarantees are
-of incredible immediate benefit to writing a reasoner.
-
-Shapiro, the developed system, is fully modular and offers a heap of independent components and interfaces.
-
-\begin{figure} [htb!]
-	\centering
-	\begin{tikzpicture}[node distance=6mm]
-		\begin{scope}
-			\node (traits) at (0, 0) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm] {};
-			\node (traits_title) at (traits.north east) [draw, anchor = north east] {Traits};
-
-			\node (ev_mec) at (traits.east) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=west] {};
-			\node (ev_mec_title) at (ev_mec.north east) [draw, anchor=north east] {Evaluation Mechanisms};
-
-			\node (ds) at (traits.south) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=north] {};
-			\node (ds_title) at (ds.north east) [draw, anchor=north east] {Data Structures};
-
-			\node (engines) at (ds.east) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=west] {};
-			\node (engines_title) at (engines.north east) [draw, anchor=north east] {Engines};
-		\end{scope}
-
-		% Traits
-		\begin{scope}
-			\node (insta) [draw, below = 6mm of traits.north] {RuleEvaluator};
-			\node (bupe) [draw, below of = insta] {BottomUpEvaluator};
-			\node (tode) at (traits) [draw, below of = bupe] {TopDownEvaluator};
-			\node (idx) at (traits) [draw, below of = tode] {IndexBacking};
-			\node (ty) at (traits.south) [draw, below of = idx] {Ty};
-		\end{scope}
-
-		% Data Structures
-
-		\begin{scope}
-			\node (btset) [draw, below = 10mm of ds.north] {BTreeSet};
-			\node (hashm) at (ds) [draw, below of = btset] {HashMap};
-			\node (vecto) at (ds) [draw, below of = hashm] {Vec};
-			\node (spine) at (ds) [draw, below of = vecto] {Spine};
-		\end{scope}
-
-		% Evaluation Mechanisms
-
-		\begin{scope}
-			\node (relal) [draw, below = 10mm of ev_mec.north] {RelationalAlgebra};
-			\node (subst) at (ds) [draw, below of = relal] {Substitution};
-		\end{scope}
-
-		% Engines
-
-		\begin{scope}
-			\node (chibi) [draw, below = 10mm of engines.north] {Chibi};
-			\node (relational) at (engines) [draw, below of = chibi] {Relational};
-			\node (differential) at (engines) [draw, below of = relational] {Differential};
-		\end{scope}
-
-	\end{tikzpicture}
-	\caption{Shapiro Components}
-	\label{fig:shapiro_comp}
-\end{figure}
-On figure \ref{fig:shapiro_comp} we can see the most relevant modules. The northwestern quadrant, Traits, refers to Rust Traits, constructs that
-define \textit{behavior}, and that can be passed to functions. It is important to take note that Rust favors \textit{composition} over inheritance, unlike Java.
-Nevertheless, all other quadrants are built upon these traits, and are therefore generic over any type that implements them.
-
-A \verb|Rule Evaluator| represents $\textbf{T}_p$, requiring only that types implement a function \verb|evaluate|, that accepts an instance,
-and produces another instance. The evaluation mechanisms \verb|Relational Algebra| and \verb|Substitution| both implement this trait,
-evaluating datalog rules by either using the aforegiven translation algorithm, or using Infer. We also provide naive parallel evaluation of rules,
-in which each rule, in both mechanisms, are sent to be executed in a threadpool. We leverage the highly efficient, and easy to use, requiring
-only one additional line of code, rayon\cite{rayon} library. This should suffice as a transparent baseline from which other parallelization
-strategies could be compared to.
-
-The concept of fixpoint evaluation is a Struct, that consists of the ground fact database, $EDB$, a \verb|Rule Evaluator|, and an array of
-instances. It is assumed that the datalog program is in the instance itself. Semi-naive evaluation is a method of fixpoint evaluation that takes
-no arguments, and instead uses two additional instances, one to keep the current delta, and the previous one. This is succintly implemented in rust
-in the same manner as this description.
-
-\verb|BottomUpEvaluator| and \verb|TopDownEvaluator| both respectively denote the two kinds of evaluation, respectively, the explicit
-materialization of the program, and the answering to a query with respect to a program. The former requires the implementation of a function that takes
-in only a program as an argument, and the latter, a program and a goal.
-
-The three engines, \verb|Chibi|, \verb|Relational| and \verb|Differential| all implement only \verb|BottomUpEvaluator|. In order to be able to
-evaluate a program, it is required to have access to an instance. An instance is defined in code as it is in literature, a set of relations. Taking
-inspiration from the highly successful open-source project DataScript\cite{datascript}, we implement relations as hashmaps, with generic hashing
-functions. The point of using a hashmap is that it allows for one to easily disregard duplicates altogether, further simplifying the implementation.
-
-Indexes on the other hand, are a vital optimization aspect. A considerable amount of recent datalog research has dealt with speeding up relational joins
-with respect to datalog, such as in attempting to specialize data structures to it\cite{souffle_btree}, and rminimizing the number of necessary
-joins to evaluate a $SPJ$ expression\cite{primitive_search}. Thus, a trait \verb|IndexBacking| is defined, whose requirements are two methods, one
-that takes in a row for insertion, and another that requires a join implementation.
-
-We implement the \verb|IndexBacking| trait for implementations of all most used data structures for datalog indexes, such as the Rust standard
-library BTree\cite{rust_btree} and HashMap, persistent implementations of both them, a regular vector, that naively sorts itself before a
-join, and the Spine, an experimental data structure, that empirically shows good performance characteristics in datalog workflows.
-
-
-
-
-% Kalmer: this must be a separete section (it its new), otherwise cut it
-% It should be made clear that this is not re-telling of known concepts but the algorithms you propose in Shapiro
-\section{Translating Datalog into Relational Algebra}
-
-We propose a straightforward not-recursive pseudocode algorithm to translate a datalog rule into a $SPJ$ expression tree, in which
-relational operators are nodes and leaves are relations. The value proposition of the algorithm is for the resulting tree to be ready
-to be recursively executed, alongside having two essential relational optimizations, selection by value pushdown, and melding selection
-by column with products into joins, the most important relational operator. This is paramount to understanding the performance of the relational reasoner.
-
-The algorithm has two parts, generating a semantically equivalent relational expression to the input rule, and then optimising all products out for joins, therefore turning it into a $\mathcal{SPJ}$ expression.
-
-\begin{algorithm}
-	\scriptsize
-	\KwIn{A datalog rule $\mathcal{R}$}
-	\KwResult{A relational algebra expression $\mathcal{R}_a$}
-	\SetKwData{s}{s}
-	\BlankLine
-	\SetKwProg{Fn}{Function}{ is}{end}
-	\SetKwProg{For}{For}{:}{end}
-
-	\Fn{toIncompleteExpression($r$ : Datalog Rule)}{
-		let $t$ be a fresh tree
-
-		\For{every fact $a_i$ in the rule body $b$} {
-			create a relation node $r_i$ with the same arity as $a_i$, and its terms representing columns. variable terms
-			are column identifiers, and constant terms are temporary-lived proxies for selections.
-			\If {$i < len(b) - 1$ } {
-				add a product node $p_i$ to $t$.
-				set $r_i$ as the left child of $p_i$.
-			}\Else {
-				\If {$len(b) > 1$} {
-					set $r_i$ as the right child of $p_{i - 1}$
-				}
-			}
-			\If {$i > 0$} {
-				set $p_i$ as the right child of $p_{i - 1}$
-			}
-		}
-		\textbf{return} $t$
-	}
-	\caption{toIncompleteExpression procedure}
-	\label{alg:to_incomplete_expression}
-\end{algorithm}
-
-Procedure \ref{alg:to_incomplete_expression} receives as input a rule, such as $TC(?x, z) \leftarrow TC(?x, y), TC(y, ?z)$, and outputs an
-incomplete expression tree representing a relational inclusion comprised solely of products: $(TC(?x, y) \times TC(y, ?z)) \subseteq TC$.
-
-\begin{algorithm}
-	\scriptsize
-	\KwIn{A datalog rule $\mathcal{R}$}
-	\KwResult{A relational algebra expression $\mathcal{R}_a$}
-	\SetKwData{s}{s}
-	\BlankLine
-	\SetKwProg{Fn}{Function}{ is}{end}
-	\SetKwProg{For}{For}{:}{end}
-
-	\Fn{constantToSelection($e$ : Expression)}{
-		let $t$ be a copy of $e$
-
-		let $C$ be a map $C : \text{Const} \rightarrow \text{Var}$
-
-		\For {every relation $r_i$ in $t$} {
-			\For {every constant $c_j$ in $r_i$}{
-				add a selection by value node $s_j$ to $t$ with column index $j$ and value $c_j$
-
-				set $s_j$'s parent to $r_i$'s, and $r_i$ as its left child
-
-				\If {$\neg (c_j \in C)$}{
-					create a fresh variable term $v_j$ and store it in $C$ with $c_j$ as the key}
-				\Else{replace $c_j$ for the value in $C$ under $c_j$}
-			}
-		}
-		\textbf{return} $t$
-	}
-	\caption{constantToSelection procedure}
-	\label{alg:constant_to_selection}
-\end{algorithm}
-
-The next two steps handle the translation of datalog constant terms into selection operations. procedure \ref{alg:constant_to_selection} will swap out
-all constant terms in relations for selections by value, that will remain as close as possible to the relation node: $(\sigma_{1=y}TC(?x, ?y) \times \sigma_{0=y}TC(?y, ?z)) \subseteq TC$.
-
-\begin{algorithm}
-	\scriptsize
-	\KwIn{A datalog rule $\mathcal{R}$}
-	\KwResult{A relational algebra expression $\mathcal{R}_a$}
-	\SetKwData{s}{s}
-	\BlankLine
-	\SetKwProg{Fn}{Function}{ is}{end}
-	\SetKwProg{For}{For}{:}{end}
-
-	\Fn{equalityToSelection($e$ : Expression)}{
-		let $t$ be a copy of $e$
-
-		let $V$ be a map $V : \text{Var} \rightarrow \mathbb{Z}$
-
-		let $t_{p}$ be a pre-order traversal of $t$
-
-		\For {every relation $r_i$ in $t_{p}$} {
-			\For {every variable $v_j$ in $r_i$}{
-				\If{$\neg (v_j \in V)$}{
-					add $v_j$ to $V$ with $j$ as the value
-				}\Else{let $k$ be the value of $v_j$ in $V$
-					let $p_i$ be the first product to the left of $r_i$ in $t_{p}$
-
-					add a selection by column node $s_j$ to $t$ with left column index $k$ and right column index $j$
-
-					set $s_j$'s parent to $p_i$'s, and $p_i$ as its left child
-				}
-			}
-		}
-		\textbf{return} $t$
-	}
-	\caption{equalityToSelection procedure}
-	\label{alg:equality_to_selection}
-\end{algorithm}
-
-With constant terms being gone, it is necessary to remove variable terms altogether. This is done with procedure \ref{alg:equality_to_selection}, that
-whenever there are terms with the same symbol, a selection by column is added: $(\sigma_{1=2}(\sigma_{1=y}TC \times \sigma_{0=y}TC)) \subseteq TC$.
-
-\begin{algorithm}
-	\scriptsize
-	\KwIn{A datalog rule $\mathcal{R}$}
-	\KwResult{A relational algebra expression $\mathcal{R}_a$}
-	\SetKwData{s}{s}
-	\BlankLine
-	\SetKwProg{Fn}{Function}{ is}{end}
-	\SetKwProg{For}{For}{:}{end}
-
-	\Fn{projectHead($e$ : Expression, $r$ : Datalog Rule)}{
-		let $n$ be 0
-
-		let $t$ be a copy of $e$
-
-		let $h$ be the head of $r$
-
-		let $t_{p}$ be a pre-order traversal of $t$
-
-		let $V$ be a map $V : \text{Var} \rightarrow \mathbb{Z}$
-
-		\For {every relation $r_i$ in $t_{p}$}{
-			\For {every term $x$ in $r_i$}{
-				\If {$x$ is a variable} {
-					add $x$ to $V$ with $n$ as value
-				}\Else{
-					continue
-				}
-				$n$ += 1
-
-				add projection node $z$ to $t$ and set it as root with an empty list
-
-				\For {every term $x$ in $h$}{
-					\If {$x$ is a constant}{
-						push $x$ into $z$
-					}\Else {
-						let $k$ be the value of $x$ in $V$
-
-						push $k$ into $z$
-					}
-				}
-			}
-		}
-
-		\textbf{return} $t$
-	}
-	\caption{projectHead procedure}
-	\label{alg:project_head}
-\end{algorithm}
-
-The last step in translation is the most straightforward one, to convert the head of the rule. This is directly done with procedure \ref{alg:project_head} by converting the head $TC(?x, ?z)$ into a relational projection node: $\pi_{[0, 2]}(\sigma_{1=2}(\sigma_{1=y}TC \times \sigma_{0=y}TC)) \subseteq TC$. Now, the output expression is semantically equivalent to the input rule.
-
-\begin{algorithm}
-	\scriptsize
-	\KwIn{A datalog rule $\mathcal{R}$}
-	\KwResult{A relational algebra expression $\mathcal{R}_a$}
-	\SetKwData{s}{s}
-	\BlankLine
-	\SetKwProg{Fn}{Function}{ is}{end}
-	\SetKwProg{For}{For}{:}{end}
-	\Fn{productToJoin($e$ : Expression)}{
-		let $t$ be a copy of $e$
-
-		let $t_{p}$ be a pre-order traversal of $t$
-
-		\For {every selection by column $s_i$ in $t_{p}$}{
-			find the first product $p_j$ after $s_i$ in $t_{p}$
-
-			remove $s_i$ from $t$, swap $p_j$ for a join $g_j$ in $t$ with left and right column indexes by those of $s_i$
-		}
-		\textbf{return} t
-	}
-
-	\textbf{return} $\mathcal{R}_a$
-	\caption{productToJoin procedure}
-	\label{alg:product_to_join}
-\end{algorithm}
-
-The second part of the algorithm is brief, yet of paramount importance, as it optimises all products away into joins with procedure \ref{alg:product_to_join}: $\pi_{[0, 2]}(\sigma_{1=y}TC \Join_{1=2} \sigma_{0=y}TC) \subseteq TC$.
-
-The canonical algorithms for translating datalog to relational algebra\cite{opt_sys_alg_ev_dat, log_dab} are recursive, complex,
-and do not assume the output to be a tree, instead being mostly symbolic.
-
-\section{DRED algorithm in Shapiro}
-
-The regular semi-naive evaluation method is already incremental, and easily handles the addition of data. One merely has to continue the evaluation with all previous data as the most recent delta.
-
-The most used method for handling deletions is a bottom-up algorithm\cite{dred} that uses semi-naive evaluation to evaluate two new programs, one that computes all possible deletions that could stem from the deletion of the facts being retracted, and then another that attempts to find alternative derivations to the overdeleted ones.
-
-Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the overdeletion program will generate one new $-$rule for each $b_j$ in each rule body $b(r_i)$, in order to represent that if such fact were to be deleted, then $h(r_i)$ would not hold true.
-
-\begin{exmp}{DRED Overdeletion program}
-  \tiny
+\begin{exmp}{DRED Overdeletion Program}
+	\tiny
 	\begin{align}
 		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                \\
 		-r_0 = -TC(?x, ?y) \leftarrow -Edge(?x, ?y)                                                                                                           \\
@@ -686,12 +284,17 @@ Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., 
 	\label{ex6}
 \end{exmp}
 
-On example \ref{ex6} negative predicates represent overdeletion targets. For instance, if \verb|Edge(2, 3)| is being deleted, then \verb|TC(2, 3)| will be deleted, and any other inferred fact that depends on it. Given that it is a regular datalog program, it can be efficiently evaluated with semi-naive evaluation.
+On example \ref{ex6} negative predicates represent overdeletion targets. For instance, if \verb|Edge(2, 3)| is
+being deleted, then \verb|TC(2, 3)| will be deleted, and any other inferred fact that depends on it. Given that
+it is a regular datalog program, it can be efficiently evaluated with semi-naive evaluation.
 
-The next step is to compute the alternative derivations of the deleted facts, since some overdeleted facts might still hold true. The alternative derivation program will generate one new $+$rule for each $r_i$ in $P$, with one extra $-$ head predicate per body, representing an overdeleted fact. The $+$ program requires the overdeleted facts to not be present.
+The next step is to compute the alternative derivations of the deleted facts, since some overdeleted facts might
+still hold true. The alternative derivation program will generate one new $+$rule for each $r_i$ in $P$, with
+one extra $-$ head predicate per body, representing an overdeleted fact. The $+$ program requires the overdeleted
+facts to not be present.
 
-\begin{exmp}{DRED Overdeletion program}
-  \tiny
+\begin{exmp}{DRED Alternative Rederivation}
+	\tiny
 	\begin{align}
 		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                           \\
 		r_0 = +TC(?x, ?y) \leftarrow -TC(?x, ?y), Edge(?x, ?y)                                                                                                           \\
@@ -700,22 +303,85 @@ The next step is to compute the alternative derivations of the deleted facts, si
 	\label{ex7}
 \end{exmp}
 
-The output relations from example \ref{ex7} represent the data that has to be put back into the materialization. The rationale for alternative derivations is that, for $r_1$, for instance, if the edge \verb|TC(3, 4)| was overdeleted, because of there being \verb|Edge(1, 2)| and \verb|TC(2, 3)|, if \verb|Edge(3, 4)| was not deleted, by rule $r_0$, then there is an alternative derivation for \verb|TC(3, 4)|.
+The output relations from example \ref{ex7} represent the data that has to be put back into the materialization.
+The rationale for alternative derivations is that, for $r_1$, for instance, if the edge \verb|TC(3, 4)| was
+overdeleted, because of there being \verb|Edge(1, 2)| and \verb|TC(2, 3)|, if \verb|Edge(3, 4)| was not deleted, by
+rule $r_0$, then there is an alternative derivation for \verb|TC(3, 4)|.
 
-As it can be seen, computing the maintenance of the materialization implies evaluating a program bigger than the materialization itself, however, due to the fact that it is evaluated with semi-naive evaluation in itself, the asymptotic complexity remains the same\cite{complexity_of_dred}. Nonetheless, in practice, deletion is often much slower than addition.
+As it can be seen, computing the maintenance of the materialization implies evaluating a program bigger than the
+materialization itself, however, due to the fact that it is evaluated with semi-naive evaluation, the asymptotic
+complexity remains the same\cite{complexity_of_dred}. Nonetheless, in practice, deletion is often much slower than
+addition, as it can be trivially seen by the worst-possible scenario, in which all facts are deleted, where while
+materialization would be free, DRED would inquire an expensive overdeletion computation.
 
-\section{Differential Dataflow in Shapiro}
+\subsection{Substitution-based evaluation}
+The most impactful aspect of both of the introduced evaluation mechanisms is the implementation
+of $I_c$ itself. The two most high-profile methods to do so are either purely evaluating the rules, or
+rewriting them in some other imperative formalism, and executing it.
+
+The substitution-based\cite{datalog} method is the simplest example of the former. A substitution $\sigma$ is
+a homomorphism $[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is
+a constant. Given a not-ground fact, such as $TC(?x, 4)$, \textit{applying} the substitution $[?x \rightarrow 1]$ to
+it will yield the ground fact $TC(1, 4)$.
+
+Let $r$ be a Datalog rule of the form $h \leftarrow b_1, b_2, \ldots, b_m$, where $h$ is the head atom and $b_i$ are
+the body atoms. We denote the set of all variables in $r$ as $V(r)$. Let $EDB$ be the set of ground facts for the input
+relations.
+
+The substitution-based method computes the immediate consequence of the rule $r$ as follows:
+
+Define the initial set of substitutions as $\Sigma_0 = {\sigma_0 | \sigma_0: V(r) \rightarrow \emptyset}$, where $\sigma_0$
+is an empty substitution for each variable in $r$. For each body atom $b_i$, find the set of ground facts $F_i \subseteq F$
+that match $b_i$.
+
+For each $i = 1, 2, \ldots, m$:
+a. Initialize an empty set of substitutions $\Sigma_{i}$.
+b. For each fact $f \in F_i$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$:
+i. Generate an extension $\sigma'{i-1}$ of $\sigma{i-1}$ with the constant-to-variable homomorphisms from $f$ that are
+consistent with the current partial substitution $\sigma_{i-1}$.
+ii. If the extension is successful (i.e., $\sigma'{i-1}$ is a valid substitution), add $\sigma'{i-1}$ to the set of
+substitutions $\Sigma_i$.
+For each final substitution $\sigma_m \in \Sigma_m$, apply it to the head atom $H$ to generate the derived facts.
+
+There is a noteworthy performance issue that arises due to the interaction between the substitution-based method
+and DRED. During the alternate derivation phase, the new program has one more body atom. This can be prohibitively
+more expensive to evaluate than the original program, since one extra body atom implies one extra iteration, which
+could generate a polynomial number of substitutions, due to cartesian product nature of each step.
+
+\subsection{Relational algebra rewriting method}
+Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed
+arity, relations. It is the most popular database formalism that there is, with virtually every single
+major database system adhering to the relational model\cite{pg,mysql,sqlserver} and using SQL as a
+declarative syntax for relational algebra.
+
+The translation of datalog rules to relational algebra equations is a well-known technique, and has been
+the most successful strategy employed by the vast majority of all current state-of-the-art reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle}
+mostly due to the extensive industrial and academic research into developing data processing frameworks
+that process very large amounts of data, and the techniques that have arisen from those.
+
+Let $R$ and $T$ be relations with arity $r$ and $t$, $\theta$ be a binary operation with a boolean output, $R(i)$ be
+the i-th column, all terms in the i-th position of every tuple in $R$, and $R[h, ..., k]$ be the subset of $R$ such
+that only the columns $h, ..., k$ remain, and Const the set of all constant terms. The following are the most
+relevant relational algebra operators and their semantics:
+\begin{itemize}
+	\item Selection by column $\sigma_{i=j)}(R) = \{ a \in R | a(i) == a(j) \}$
+	\item Selection by value $\sigma_{i=k}(R) = \{a \in R | a(i) == k \}$
+	\item Projection $\pi_{h, ..., k}(R) = \{(R(i), ..., R(j), \overrightarrow{C}) |  i, j >= 1 \wedge i, j <= r\ \wedge \forall c \in C. c \in \text{Const}$
+	\item Product $\times(R, T) = \{(a, b) | a \in R \wedge b \in T \}$
+	\item Join $\Join_{i=j} = \{(a, b) | a \in R \wedge b \in T \wedge a(i) == b(j)\}$
+\end{itemize}
+
+A relational algebra expression is in the $\mathcal{SPJ}$ form if it consists solely of select, project and join
+operators. This form is very often seen in practice, being equivalent to \verb|SELECT ... FROM ... WHERE ...| SQL
+queries, and highly benefits from being equivalent to conjunctive queries, that are equivalent to single-rule and
+non-recursive datalog programs.
+
+\section{Differential Datalog Evaluation}
 
 \emph{Timely dataflow} is a high-throughput, low-latency
 streaming-and-distributed computational model that extends the dataflow paradigm. The timely
 in its name refers to it thoroughly establishing the semantics of each aspect of communication
 notification, taking the parallelization blueprint and making its execution transparent to the user.
-
-% A notification sent between operators is assigned a timestamp, that needs only to be partially
-% ordered, with no assumptions being made with respect to insertion. The goal is to use these to
-% correctly reason about the data with respect to the local operator states' of computation completion,
-% in order to cleverly know with certainty when not only whether should work be done asynchronously
-% or with sharding, but whether there is data yet to be processed or not.
 
 \emph{Differential dataflow}, a generalization of incremental processing, is an extension to the
 timely dataflow model. While the shape of the data that flows in the latter is in the form
@@ -745,37 +411,49 @@ Later on, the author made multiple pieces of informal writing in which the most 
 engines were investigated for COST\cite{blogdynamicdatalog, blogvldbsigmod}, with results that
 showed a very different picture than the ones depicted by the original articles.
 
-
-The \verb|Differential| engine is an attempt at implementing a substitution-based engine on top of the distribution framework that addresses datalog's
-evaluation inefficiencies in a manner that no other currently available framework does, differential dataflow\cite{dd}. Most of the distributed datalog engines are
-built on top of either graph-processing or map-reduce frameworks, both kinds of projects that were not specifically made with expressive query answering in mind, but
+The \verb|Differential| engine is an attempt at implementing a substitution-based engine on top
+of the distribution framework that addresses datalog's evaluation inefficiencies in a manner that
+no other currently available framework does, differential dataflow\cite{dd}. Most of the
+distributed datalog engines are built on top of either graph-processing or map-reduce frameworks
+both kinds of projects that were not specifically made with expressive query answering in mind, but
 more with efficiently handling complex non-recursive queries over large amounts of data.
 
-One of the biggest challenges in efficiently evaluating datalog is in the deletion of data. Incremental bottom-up processing of additions is already the
-manner in which semi-naive evaluation works, and is relatively efficient. The other direction is significantly more complex. In order to delete a fact,
-one has to take into account that it might have influenced the inferrence of other facts, which imply having to look over the whole data, while the opposite
-direction does not require that, therefore incurring possibly very large performance differences between both directions.
+One of the biggest challenges in efficiently evaluating datalog is in the deletion of data.
+Incremental bottom-up processing of additions is already the manner in which semi-naive evaluation
+works, and is relatively efficient. The other direction is significantly more complex. In order
+to delete a fact, one has to take into account that it might have influenced the inferrence of other
+facts, which imply having to look over the whole data, while the opposite direction does not
+require that, therefore incurring possibly very large performance differences between both directions.
 
-Similarly to how semi-naive evaluation is the \textit{de facto} method for incremental bottom-up evaluation, the Delete-Rederive\cite{dred} algorithm holds
-the same regard with respect to the incremental maintenance of bottom-up evaluation with respect to deletions. There are two stages to it, the first, Deletion,
-naively overdeletes all facts that could have been derived from it, but at the same time, keeps track of possible facts that could have had alternative
-derivations. The second stage, rederive, restarts the evaluation process.
+Similarly to how semi-naive evaluation is the \textit{de facto} method for incremental bottom-up
+evaluation, the Delete-Rederive\cite{dred} algorithm holds the same regard with respect to
+the incremental maintenance of bottom-up evaluation with respect to deletions. There are two stages
+to it, the first, Deletion, naively overdeletes all facts that could have been derived from it, but
+at the same time, keeps track of possible facts that could have had alternative derivations. The second
+stage, rederive, restarts the evaluation process.
 
-Differential dataflow directly addresses this issue by evaluating both additions and deletions in the same manner, while at the same time efficiently parallelizing
-semi-naive evaluation, however, it is first necessary to digress over Timely Dataflow~\cite{timely}, the underlying networked computation system in which differential
-is built upon.
+Differential dataflow directly addresses this issue by evaluating both additions and deletions in the
+same manner, while at the same time efficiently parallelizing semi-naive evaluation, however, it is first
+necessary to digress over Timely Dataflow~\cite{timely}, the underlying networked computation system
+in which differential is built upon.
 
-Timely is a high-throughput, low-latency streaming-and-distributed model that extends dataflow. The timely in its name refers to it thoroughly establishing
-the semantics of each aspect of communication notification, taking the parallelization blueprint and making its execution transparent to the user. A notification
-sent between operators is assigned a timestamp, that needs only to be partially ordered, with no assumptions being made with respect to insertion. The goal is to use
-them to correctly reason about the data with respect to the local operator states' of computation completion, in order to cleverly know with certainty when not only
-whether should work be done asynchronously or with sharding, but whether there is data yet to be processed or not.
+Timely is a high-throughput, low-latency streaming-and-distributed model that extends dataflow. The
+timely in its name refers to it thoroughly establishing the semantics of each aspect of communication
+notification, taking the parallelization blueprint and making its execution transparent to the
+user. A notification sent between operators is assigned a timestamp, that needs only to be partially
+ordered, with no assumptions being made with respect to insertion. The goal is to use them to correctly
+reason about the data with respect to the local operator states' of computation completion, in order to
+cleverly know with certainty when not only whether should work be done asynchronously or with sharding, but
+whether there is data yet to be processed or not.
 
-Differential Dataflow, a generalization of incremental processing, is an extension to the Timely Dataflow model. While the shape of the data that flows in the latter is
-in the form of \verb|(data, timestamp)|, the former's is \verb|(data, timestamp, multiplicity)|, therefore restricting its bag-of-data semantics to multisets, with
-the multiplicity element representing a difference, for instance, $+1$ representing the addition of $1$ datapoint arriving at a specific timestamp, or $-1$, a deletion. The
-key difference between both models is that similarly to how timely makes distribution transparent, differential does the same with incremental computation, by providing to the
-user the possibility of not only adding to a stream, the only possible action in timely dataflow, but allow it to respond to arbitrary additions and retractions at any timestamp.
+Differential Dataflow, a generalization of incremental processing, is an extension to the Timely
+Dataflow model. While the shape of the data that flows in the latter is in the form of \verb|(data, timestamp)|, the
+former's is \verb|(data, timestamp, multiplicity)|, therefore restricting its bag-of-data semantics to multisets, with
+the multiplicity element representing a difference, for instance, $+1$ representing the addition of $1$ datapoint
+arriving at a specific timestamp, or $-1$, a deletion. The key difference between both models is that similarly to how
+timely makes distribution transparent, differential does the same with incremental computation, by providing to the
+user the possibility of not only adding to a stream, the only possible action in timely dataflow, but allow it to
+respond to arbitrary additions and retractions at any timestamp.
 
 Similarly to how timestamps in timely are the key element to the efficient parallelization of iterative dataflows, they can also be used in incremental scenarios in order to
 overcome their inherently sequential nature. This is of paramount importance to the performance of datalog evaluation.
@@ -803,7 +481,7 @@ trace, is a structure that represents the state of a collection since the latest
 of batches of updates, with each batch possibly being merged with other batches, that make up an LSM-Tree~\cite{lsm}, therefore benefitting from its compaction mechanism
 to ensure that only a logarithmic number of batches exist.
 
-\section{Experiments}
+\section{Benchmarks}
 
 The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
 programming language, and use the same elementary memory model, possibly strong empirical statements can be made with respect to the specificities of their implementation.
@@ -835,7 +513,7 @@ These advancements have been somewhat tested in practice, albeit with no full re
 The leading datalog engine in general, is also closed-source\cite{rdfox}, and is tailored specifically to the semantic web.
 
 \begin{exmp}{Context-sensitive Points-to Analysis Program}
-  \tiny
+	\tiny
 	\begin{align}
 		valueFlow(?x, ?y) \leftarrow assign(?x, ?y)                                                 \\
 		valueFlow(?x, ?z) \leftarrow assign(?x, ?y), memoryAlias(?y, ?z)                            \\
@@ -852,7 +530,7 @@ The leading datalog engine in general, is also closed-source\cite{rdfox}, and is
 \end{exmp}
 
 \begin{exmp}{Context-sensitive Dataflow Analysis}
-  \tiny
+	\tiny
 	\begin{align}
 		null(?x, ?y) \leftarrow nullEdge(?x, ?y) \\
 		null(?x, ?y) \leftarrow null(?x, ?y), arc(?y, ?z)
@@ -861,7 +539,7 @@ The leading datalog engine in general, is also closed-source\cite{rdfox}, and is
 \end{exmp}
 
 \begin{exmp}{RhoDFS inference rules}
-  \tiny
+	\tiny
 	\begin{align}
 		A(?y, rdf:type, ?x) \leftarrow T(?a, rdfs:domain, ?x), A(?y, ?a, ?z)                                  \\
 		A(?z, rdf:type, ?x) \leftarrow T(?a, rdfs:range, ?x), A(?y, ?a, ?z)                                   \\
@@ -944,3 +622,7 @@ In this paper we introduced Shapiro, a reasoning framework whose core value prop
 
 \end{document}
 \endinput
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
