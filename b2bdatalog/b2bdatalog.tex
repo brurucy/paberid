@@ -142,8 +142,8 @@ eliminates the need for compilation and provides the additional benefit of incre
 removals and additions.
 \paragraph{Structure of the paper.}
 \begin{itemize}
-	\item{\textbf{Background.}} A brief recapitulation of the general background, with datalog, its evaluation,
-	and the delete-rederive method being formally introduced.
+	\item{\textbf{Background.}} A brief recapitulation of the general background, with datalog, its evaluation
+	methods, and the delete-rederive method being formally introduced.
 	\item{\textbf{Differential Dataflow.}} Differential Dataflow, and the translation of datalog evaluation to
 	a dataflow is showcased and explained.
 	\item{\textbf{System.}} The developed interpreters are described, alongside with all optimizations and
@@ -151,23 +151,43 @@ removals and additions.
 	\item{\textbf{Benchmarks.}} An empirical evaluation of all reasoners, over multiple different programs and
 	datasets is undertaken.
 \end{itemize}
-
 \section{Related Work}
 
-\textbf{Relevant Projects that use Differential Dataflow.}
+\textbf{Differential Dataflow Applications.} There are two relevant differential dataflow projects that are worth
+mentioning. One of them is Graspan, a parallel graph processing system that uses differential dataflow for efficient
+incremental computation of static program analyses over large codebases.
+
+Graspan models the program analysis problem as a reachability problem on a graph, where nodes represent program elements
+and edges represent the relationships between these elements. It leverages differential dataflow to incrementally update
+the analysis results in response to changes in the input graph, which can be due to code modifications or updates to
+the analysis rules. Graspan has demonstrated its ability to scale to large codebases and provide low-latency updates
+for various static analyses, including points-to analysis, control-flow analysis, and data-flow analysis.
+
+Another project of interest is DBSP\cite{dbsp}, a recent development, that started from the need for a more concise
+theoretical definition of differential dataflow. All of DBSP operators are based on differential dataflow's, however, its
+computational model is less powerful as it does not allow updates to past values in a stream, and it is also assumed that
+inputs arrive in time order. DBSP can express both incremental and non-incremental computations, with the former not being
+possible in differential dataflow.
 
 \textbf{Datalog engines.} There are two kinds of datalog engines. The first encompasses those that compile
 a datalog program to usually a systems-level programming language, and the second are interpreters, able to
 evaluate any datalog program.
 
-Soufflé\cite{souffle} is a prominent example of a datalog compiler that translates datalog programs into high-performance C++ code. It incorporates several optimization techniques, such as parallel execution with highly specialized data structures\cite{souffle_btree}, and nearly optimal join ordering\cite{souffle_join}. Notably, its development has been an unparalleled source of articles on the engineering of reasoners.
+Soufflé is a prominent example of a datalog compiler that translates datalog programs into high-performance
+C++ code. It incorporates several optimization techniques, such as parallel execution with highly specialized data
+structures\cite{souffle_btree}, and nearly optimal join ordering\cite{souffle_join}. Notably, its development has
+been an unparalleled source of articles on the engineering of reasoners.
 
-There are two kinds of recent and relevant datalog engines. The first encompasses
-those that push the performance boundary, with the biggest proponents being RDFox\cite{rdfox}, that
-proposes the to-date, according to their benchmarks, most scalable parallelisation routine, RecStep\cite{recstep},
-that builds on top of a highly efficient relational engine, and DCDatalog\cite{dcdatalog}, that builds upon
-an influential query optimizer, DeALS\cite{deals} and extends a work that establishes how some linear
-datalog programs could be evaluated in a lock-free manner, to general positive programs.
+DDLog As previously mentioned, compiles datalog to differential dataflow, achieving efficient differential data updates
+for datalog programs. It demonstrates the applicability of differential dataflow in the context of declarative logic
+programming and incremental view maintenance.
+
+The majority of reasoners recently developed have been mostly interpreters, further split into distributed or
+shared memory systems. Out of the shared memory ones, the most notable are RDFox\cite{rdfox}, a highly specialized
+and performant reasoner that is tailored to the semantic web needs, RecStep\cite{recstep}, that builds on top of a
+highly efficient relational engine, and DCDatalog\cite{dcdatalog}, that builds upon the query optimizer DeALS\cite{deals}
+and extends a work that establishes how some linear datalog programs could be evaluated in a lock-free manner, to
+general positive programs.
 
 One of the most high-profile datalog papers of interest has been BigDatalog\cite{bigdatalog}, that
 originally used the query optimizer DeALs, and was built on top of the very popular Spark\cite{spark}
@@ -175,9 +195,7 @@ distribution framework. Soon after, a prototypical implementation\cite{cog} over
 a distribution framework that supports streaming, Cog, followed. Flink, unlike Spark, supports
 iteration, so implementing reasoning did not need to extend the core of the underlying framework. The most
 successful attempt at creating a distributed implemention has been Nexus\cite{nexus}, that is also built on Flink,
-and makes use of its most advanced feature, incremental stream processing. To date, it is the fastest distributed
-implementation.
-
+and makes use of its most advanced feature, incremental stream processing.
 \section{Background}
 
 In this section we review the basics of all concepts related to datalog evaluation, as it is done in the current time.
@@ -379,7 +397,7 @@ On example \ref{ex6} negative predicates represent overdeletion targets. For ins
 
 The next step is to compute the alternative derivations of the deleted facts, since some overdeleted facts might still hold true. The alternative derivation program will generate one new $+$rule for each $r_i$ in $P$, with one extra $-$ head predicate per body, representing an overdeleted fact. The $+$ program requires the overdeleted facts to not be present.
 
-\begin{exmp}{DRED Overdeletion program}
+\begin{exmp}{DRED Alternative Rederivation}
 	\tiny
 	\begin{align}
 		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                           \\
