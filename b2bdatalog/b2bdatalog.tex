@@ -144,7 +144,7 @@ removals and additions.
 \begin{itemize}
 	\item{\textbf{Background.}} A brief recapitulation of the general background, with datalog, its evaluation
 	methods, and the delete-rederive method being formally introduced.
-	\item{\textbf{Differential Datalog Evaluation.}} Differential Dataflow, and the translation of datalog evaluation to
+	\item{\textbf{Differential Evaluation.}} Differential Dataflow, and the translation of datalog evaluation to
 	a dataflow is showcased and explained.
 	\item{\textbf{System.}} The developed interpreters are described, alongside with all optimizations and
 	benchmark-relevant information.
@@ -376,110 +376,45 @@ operators. This form is very often seen in practice, being equivalent to \verb|S
 queries, and highly benefits from being equivalent to conjunctive queries, that are equivalent to single-rule and
 non-recursive datalog programs.
 
-\section{Differential Datalog Evaluation}
+\section{Differential Evaluation}
 
-\emph{Timely dataflow} is a high-throughput, low-latency
-streaming-and-distributed computational model that extends the dataflow paradigm. The timely
-in its name refers to it thoroughly establishing the semantics of each aspect of communication
-notification, taking the parallelization blueprint and making its execution transparent to the user.
+\subsection{Differential dataflow} is a computational model that generalizes incremental processing to
+times that are possibly partially ordered, and specifically operates over multisets of differences, which
+can be either additions or retractions, instead of over a full dataset.
 
-\emph{Differential dataflow}, a generalization of incremental processing, is an extension to the
-timely dataflow model. While the shape of the data that flows in the latter is in the form
-of \verb|(data, timestamp)|, the former's is \verb|(data, timestamp, multiplicity)|, therefore
-restricting its bag-of-data semantics to multisets, with the multiplicity element representing a
-difference, for instance, $+1$ representing the addition of $1$ datapoint arriving at a
-specific timestamp, or $-1$, a deletion.
+Let $C$ be a multiset, referred to as a collection, with $C_t$ being its value at a not necessarily totally
+ordered time $t$, and $C_t(b)$ being the possibly negative weight of some record $b \in C_t$. We establish
+that the difference of some collection $C$ at time $t$, named $\delta C_t$, is defined as: \[\delta C_t = C_t - C_{t - 1}\],
+notably, differences can be both positive, representing additions, or negative, retractions. It therefore
+holds that the value of $C_t$ can be reconstructed by the following equivalence: \[C_t = \sum_{i \leq t}\delta C_{i}\]
 
-The key difference between both models is that similarly to how timely makes distribution
-transparent, differential does the same with incremental computation, by providing to the user the
-possibility of not only adding to a stream, the only possible action in timely dataflow, but
-allow it to respond to arbitrary additions and retractions at any timestamp.  There is one
-reasoner that uses differential dataflow\cite{ddlog}, however, it has no storage layer, instead
-it compiles fixed datalog programs into fixed differential dataflow programs, that can only run in one computer.
+Let $A$ and $B$ be collections, and $\mathcal{OP}$ be some operator that maps a collection to some other
+collection. Assuming $B$ to be the output of $\mathcal{OP}$ applied over $A$, computations in differential
+dataflow follow the following: \[A_t = \sum_{i \leq t} \delta B_i = \mathcal{OP}(\sum_{i \leq t} \delta A_i)\]
+with $\mathcal{OP}$ being proportional to $\delta A_t$, and not $A_t$.
 
-The lack of a canonical open-source implementation of datalog makes attempts at making
-empirical statements about performance-impacting theoretical developments, such as the usage of
-differential dataflow, brittle and difficult, since there is no point of reference to
-compare and validate, and comparisons against commercial implementations are not
-reliable, since optimizations might be trade secrets.
+Notably, a core premise of the canonical differential dataflow implementation, is in cleverly, and efficiently,
+maintaining $\delta B$ and $\delta $, specifically in the context of iterative dataflows, due to $t$ being
+partially ordered.
 
-A notorious exploration that highlights this issue is the COST, Configuration That Outperforms
-a Single Thread, article\cite{COST}, in which the author posits that multiple published
-graph-processing engines are likely never able to outperform simple single-threaded implementations.
-Some high-profile datalog implementations were built upon systems mentioned on that article.
-Later on, the author made multiple pieces of informal writing in which the most performant datalog
-engines were investigated for COST\cite{blogdynamicdatalog, blogvldbsigmod}, with results that
-showed a very different picture than the ones depicted by the original articles.
+Let's assume that a datalog program is being evaluated, and four fact updates, labeled as $\delta_0$, $\delta_1$,
+$\delta_2$, $\delta_3$, arrive. In regular semi-naive evaluation, even though rule application might happen in parallel,
+$\delta_{t + 1}$ will only be evaluated after $\delta_{t}$ is, and the data used to compute each will always consist
+of all extensional and intensional, previously inferred, facts.
 
-The \verb|Differential| engine is an attempt at implementing a substitution-based engine on top
-of the distribution framework that addresses datalog's evaluation inefficiencies in a manner that
-no other currently available framework does, differential dataflow\cite{dd}. Most of the
-distributed datalog engines are built on top of either graph-processing or map-reduce frameworks
-both kinds of projects that were not specifically made with expressive query answering in mind, but
-more with efficiently handling complex non-recursive queries over large amounts of data.
+If program evaluation could be written as a differential dataflow dataflow, there would be two timestamps, $t$
+representing the time of arrival of the update, and $\langle a, b \rangle$, with $a$ representing the time $t$ in
+which some initial fact was fed into the evaluation, and $b$ denoting the iteration count of the semi-naive
+evaluation fixpoint, respecting the following partial order: \[\langle a_i, b_j \rangle \leq \langle c_k, d_l \rangle \iff a_i \leq c_k \wedge b_j \leq d_l\]
 
-One of the biggest challenges in efficiently evaluating datalog is in the deletion of data.
-Incremental bottom-up processing of additions is already the manner in which semi-naive evaluation
-works, and is relatively efficient. The other direction is significantly more complex. In order
-to delete a fact, one has to take into account that it might have influenced the inferrence of other
-facts, which imply having to look over the whole data, while the opposite direction does not
-require that, therefore incurring possibly very large performance differences between both directions.
+If we treat $\alpha_0$, $\alpha_3$, $\alpha_1$ and $\alpha_2$ as differences with the following respective
+timestamps: $\langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 1, 2 \rangle$ it is
+noticeable that $\alpha_0$ and $\alpha_3$ are comparable, but both of them, and vice-versa, are incomparable
+with respect to $\alpha_1$ and $\alpha_2$. This, in turn, has twofold meaning in differential dataflow. First,
+that both $\alpha_3$ and $\alpha_2$ could have been inferred in parallel, and secondly, that only their strictly
+prior differences were used in their computation.
 
-Similarly to how semi-naive evaluation is the \textit{de facto} method for incremental bottom-up
-evaluation, the Delete-Rederive\cite{dred} algorithm holds the same regard with respect to
-the incremental maintenance of bottom-up evaluation with respect to deletions. There are two stages
-to it, the first, Deletion, naively overdeletes all facts that could have been derived from it, but
-at the same time, keeps track of possible facts that could have had alternative derivations. The second
-stage, rederive, restarts the evaluation process.
-
-Differential dataflow directly addresses this issue by evaluating both additions and deletions in the
-same manner, while at the same time efficiently parallelizing semi-naive evaluation, however, it is first
-necessary to digress over Timely Dataflow~\cite{timely}, the underlying networked computation system
-in which differential is built upon.
-
-Timely is a high-throughput, low-latency streaming-and-distributed model that extends dataflow. The
-timely in its name refers to it thoroughly establishing the semantics of each aspect of communication
-notification, taking the parallelization blueprint and making its execution transparent to the
-user. A notification sent between operators is assigned a timestamp, that needs only to be partially
-ordered, with no assumptions being made with respect to insertion. The goal is to use them to correctly
-reason about the data with respect to the local operator states' of computation completion, in order to
-cleverly know with certainty when not only whether should work be done asynchronously or with sharding, but
-whether there is data yet to be processed or not.
-
-Differential Dataflow, a generalization of incremental processing, is an extension to the Timely
-Dataflow model. While the shape of the data that flows in the latter is in the form of \verb|(data, timestamp)|, the
-former's is \verb|(data, timestamp, multiplicity)|, therefore restricting its bag-of-data semantics to multisets, with
-the multiplicity element representing a difference, for instance, $+1$ representing the addition of $1$ datapoint
-arriving at a specific timestamp, or $-1$, a deletion. The key difference between both models is that similarly to how
-timely makes distribution transparent, differential does the same with incremental computation, by providing to the
-user the possibility of not only adding to a stream, the only possible action in timely dataflow, but allow it to
-respond to arbitrary additions and retractions at any timestamp.
-
-Similarly to how timestamps in timely are the key element to the efficient parallelization of iterative dataflows, they can also be used in incremental scenarios in order to
-overcome their inherently sequential nature. This is of paramount importance to the performance of datalog evaluation.
-
-Let's assume that there is some dataflow that computes the transitive closure of some graph $d_0$, and one update consisted of four edge differences, labeled as $\delta$, arrives, with
-the resulting updated graph being $d_1$. In a regular incremental system, each triple would increment the iteration counter by $1$, and even though the relational operations inside
-the dataflow might happen in parallel, $\delta_1$, $\delta_2$, $\delta_3$ and $\delta_4$ will only be evaluated after $\delta_0$ and each of its sequent difference's iteration finishes.
-
-If that dataflow were to be executed with differential dataflow, inside the iteration scope there would be a product timestamp $\langle a, b \rangle$, with $a$ representing the time
-in which some initial triple was fed into the computation, and $b$ denoting the iteration count, therefore tracking the transitive chain length, respecting the
-following partial order: \[\langle a_i, b_1 \rangle \leq \langle a_j, b_j \rangle \iff a_i \leq a_j \wedge b_i \leq b_j\]
-
-If we take that $\delta_0$, $\delta_3$, $\delta_1$ and $\delta_2$ are differences with the following respective timestamps: $\langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 1, 2 \rangle$ it
-is noticiable that $\delta_0$ and $\delta_3$ are comparable, but both of them, and vice-versa, are incomparable with respect to $\delta_1$ and $\delta_2$. This, in turn, means that, as it can
-these pairs of differences, despite notifying change on the same iteration operator, could safely be executed in parallel in differential dataflow, but not in a regular
-incremental system that uses totally-ordered timestamps.
-
-The most notable difference between iterative and incremental processing is that in the latter computation advances by, ideally, making adjustments proportional to the newly
-received data, referred to as difference. Naturally, this could result in massively reduced latency, however, in order to support this in the first place, incremental
-systems have to maintain indexes of all updates, be it an addition or a retraction, that could impact the calculation.
-
-The differential dataflow implementation, built on top of timely dataflow's rust one, utilizes a novel method to maintain indexes such that they are not restricted
-to each individual operator, and could also be shared between multiple readers. This method utilizes shared arrangements, out of which its core concept, collection
-trace, is a structure that represents the state of a collection since the latest frontier, as explained in the timely dataflow section, as an append-only ordered sequence
-of batches of updates, with each batch possibly being merged with other batches, that make up an LSM-Tree~\cite{lsm}, therefore benefitting from its compaction mechanism
-to ensure that only a logarithmic number of batches exist.
+\subsection{Differential Substitution-based Method}
 
 \section{Benchmarks}
 
