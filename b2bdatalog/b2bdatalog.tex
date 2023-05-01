@@ -57,9 +57,6 @@
 }
 \email{kalmera@ut.ee}
 
-
-% Kalmer: The abstract is too long and too complicated.
-% But lets not worry about it too much for now.
 \begin{abstract}
 	The core reasoning task for datalog engines is materialization, the evaluation of a datalog program over
 	a database alongside its physical incorporation into the database itself. The de-facto method of computing
@@ -258,7 +255,8 @@ the recomputation of facts that have already been derived in previous iterations
 efficient for certain classes of Datalog programs that are common in practice. Example \ref{exsne} shows
 the generated $\Delta$ program. It is worth noting, that there are substantial implementation challenges in order
 to ensure that its overhead is not larger than the performance gains, since it possibly requires multiple
-indexes and set operations to keep track of the most recently inferred facts.
+indexes and set operations to keep track of the most recently inferred facts, hence, it could be that in practice
+naive evaluation might outperform it.
 
 \subsection{Delete-Rederive}
 
@@ -317,7 +315,7 @@ materialization would be free, DRED would inquire an expensive overdeletion comp
 \subsection{Substitution-based evaluation}
 The most impactful aspect of both of the introduced evaluation mechanisms is the implementation
 of $I_c$ itself. The two most high-profile methods to do so are either purely evaluating the rules, or
-rewriting them in some other imperative formalism, and executing it.
+rewriting them in some other imperative formalism, such as relational algebra, and executing it.
 
 The substitution-based\cite{datalog} method is the simplest example of the former. A substitution $\sigma$ is
 a homomorphism $[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is
@@ -325,28 +323,31 @@ a constant. Given a not-ground fact, such as $TC(?x, 4)$, \textit{applying} the 
 it will yield the ground fact $TC(1, 4)$.
 
 Let $r$ be a Datalog rule of the form $h \leftarrow b_1, b_2, \ldots, b_m$, where $h$ is the head atom and $b_i$ are
-the body atoms. We denote the set of all variables in $r$ as $V(r)$. Let $EDB$ be the set of ground facts for the input
-relations.
+the body atoms. Let $EDB$ be the set of ground facts for the input relations.
 
 The substitution-based method computes the immediate consequence of the rule $r$ as follows:
 
-Define the initial set of substitutions as $\Sigma_0 = {\sigma_0 | \sigma_0: V(r) \rightarrow \emptyset}$, where $\sigma_0$
-is an empty substitution for each variable in $r$. For each body atom $b_i$, find the set of ground facts $F_i \subseteq F$
-that match $b_i$.
+Define the initial set of substitutions as $\Sigma_0 = { \sigma_0 }$, where $\sigma_0$ is an empty substitution. For
+each body atom $b_i$, find the set of ground facts $F_i \subseteq F$ that match $b_i$.
 
-For each $i = 1, 2, \ldots, m$:
-a. Initialize an empty set of substitutions $\Sigma_{i}$.
-b. For each fact $f \in F_i$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$:
-i. Generate an extension $\sigma'{i-1}$ of $\sigma{i-1}$ with the constant-to-variable homomorphisms from $f$ that are
-consistent with the current partial substitution $\sigma_{i-1}$.
-ii. If the extension is successful (i.e., $\sigma'{i-1}$ is a valid substitution), add $\sigma'{i-1}$ to the set of
-substitutions $\Sigma_i$.
-For each final substitution $\sigma_m \in \Sigma_m$, apply it to the head atom $H$ to generate the derived facts.
+\paragraph{Algorithm I.} Substitution-based Immediate Consequence Computation
+\begin{enumerate}
+\item Initialize the initial set of substitutions $\Sigma_{0}$.
+\textbf{For} each $i = 1, 2, \ldots, m$:
+\item \textbf{For} each fact $f \in F_i$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$:
+\begin{enumerate}
+	\item Generate an extension $\sigma'{i-1}$ of $\sigma{i-1}$ with the constant-to-variable homomorphisms from $f$ that are
+	      consistent with the current partial substitution $\sigma_{i-1}$.
+	\item If the extension is successful (i.e., $\sigma'{i-1}$ is a valid substitution), add $\sigma'{i-1}$ to the set of
+	      substitutions $\Sigma_i$.
+	      \end {enumerate}
+	\item For each final substitution $\sigma_m \in \Sigma_m$, apply it to the head atom $H$ to generate the derived facts.
+\end{enumerate}
 
 There is a noteworthy performance issue that arises due to the interaction between the substitution-based method
 and DRED. During the alternate derivation phase, the new program has one more body atom. This can be prohibitively
 more expensive to evaluate than the original program, since one extra body atom implies one extra iteration, which
-could generate a polynomial number of substitutions, due to cartesian product nature of each step.
+could generate a polynomial number of substitutions, due to the cartesian product nature of each step.
 
 \subsection{Relational algebra rewriting method}
 Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed
@@ -376,45 +377,133 @@ operators. This form is very often seen in practice, being equivalent to \verb|S
 queries, and highly benefits from being equivalent to conjunctive queries, that are equivalent to single-rule and
 non-recursive datalog programs.
 
+Differential dataflow either implements, or makes it trivial to do so, all of the aforementioned relational algebra
+operations, but lifted to the multiset domain, which implies that there must be some additional step to fit them
+into datalog's set semantics.
+
 \section{Differential Evaluation}
 
 \subsection{Differential dataflow} is a computational model that generalizes incremental processing to
 times that are possibly partially ordered, and specifically operates over multisets of differences, which
-can be either additions or retractions, instead of over a full dataset.
+can be either additions or retractions, instead of over the full data.
 
-Let $C$ be a multiset, referred to as a collection, with $C_t$ being its value at a not necessarily totally
-ordered time $t$, and $C_t(b)$ being the possibly negative weight of some record $b \in C_t$. We establish
-that the difference of some collection $C$ at time $t$, named $\delta C_t$, is defined as: \[\delta C_t = C_t - C_{t - 1}\],
-notably, differences can be both positive, representing additions, or negative, retractions. It therefore
-holds that the value of $C_t$ can be reconstructed by the following equivalence: \[C_t = \sum_{i \leq t}\delta C_{i}\]
+Let $C$ be a multiset, referred to as a collection, with $C_t$ being its value at a partially ordered
+time $t$, and $C_t(b)$ being the unsigned integer representing weight of some record $b \in C_t$. We
+establish that the difference of some collection $C$ at time $t$, named $\delta C_t$, is defined as: \[\delta C_t = C_t - C_{t - 1}\],
+notably, differences can be both positive, representing additions, or negative, retractions, and it
+also therefore holds that the value of $C_t$ can be reconstructed by the following equivalence: \[C_t = \sum_{i \leq t}\delta C_{i}\]
 
 Let $A$ and $B$ be collections, and $\mathcal{OP}$ be some operator that maps a collection to some other
-collection. Assuming $B$ to be the output of $\mathcal{OP}$ applied over $A$, computations in differential
-dataflow follow the following: \[A_t = \sum_{i \leq t} \delta B_i = \mathcal{OP}(\sum_{i \leq t} \delta A_i)\]
+collection, or itself. Assuming $B$ to be the output of $\mathcal{OP}$ applied over $A$, computations in
+differential dataflow follow the following: \[A_t = \sum_{i \leq t} \delta B_i = \mathcal{OP}(\sum_{i \leq t} \delta A_i)\]
 with $\mathcal{OP}$ being proportional to $\delta A_t$, and not $A_t$.
 
 Notably, a core premise of the canonical differential dataflow implementation, is in cleverly, and efficiently,
-maintaining $\delta B$ and $\delta $, specifically in the context of iterative dataflows, due to $t$ being
+maintaining $\delta B$ and $\delta A$, specifically in the context of iterative dataflows, due to $t$ being
 partially ordered.
 
-Let's assume that a datalog program is being evaluated, and four fact updates, labeled as $\delta_0$, $\delta_1$,
-$\delta_2$, $\delta_3$, arrive. In regular semi-naive evaluation, even though rule application might happen in parallel,
-$\delta_{t + 1}$ will only be evaluated after $\delta_{t}$ is, and the data used to compute each will always consist
-of all extensional and intensional, previously inferred, facts.
+Let's assume that a datalog program is being evaluated, and five fact updates, labeled as $\alpha_t$ arrive. In
+regular semi-naive evaluation, even though rule application might happen in parallel, $\alpha_{t + 1}$ will only be
+evaluated after $\alpha_{t}$ is, and the data used to compute each will always consist of all extensional and
+intensional, previously inferred, facts.
 
-If program evaluation could be written as a differential dataflow dataflow, there would be two timestamps, $t$
-representing the time of arrival of the update, and $\langle a, b \rangle$, with $a$ representing the time $t$ in
-which some initial fact was fed into the evaluation, and $b$ denoting the iteration count of the semi-naive
-evaluation fixpoint, respecting the following partial order: \[\langle a_i, b_j \rangle \leq \langle c_k, d_l \rangle \iff a_i \leq c_k \wedge b_j \leq d_l\]
+In contrast, program evaluation could be written as a differential dataflow dataflow with two timestamps, $t$,
+representing the time of arrival of the update, and $\langle a, b \rangle$, the product that keeps track of the
+fixpoint evaluation, with $a$ being equal to $t$, and $b$ representing the current iteration count, respecting
+the following partial order: \[\langle a_i, b_j \rangle \leq \langle c_k, d_l \rangle \iff a_i \leq c_k \wedge b_j \leq d_l\]
 
-If we treat $\alpha_0$, $\alpha_3$, $\alpha_1$ and $\alpha_2$ as differences with the following respective
-timestamps: $\langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 1, 2 \rangle$ it is
-noticeable that $\alpha_0$ and $\alpha_3$ are comparable, but both of them, and vice-versa, are incomparable
-with respect to $\alpha_1$ and $\alpha_2$. This, in turn, has twofold meaning in differential dataflow. First,
-that both $\alpha_3$ and $\alpha_2$ could have been inferred in parallel, and secondly, that only their strictly
-prior differences were used in their computation.
+If we treat $\alpha_0$, $\alpha_1$, $\alpha_2$, $\alpha_3$ and $\alpha_4$ as differences with the following
+respective timestamps: \[\langle 0, 0 \rangle, \langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 1, 2 \rangle\]
+it is noticeable that $\alpha_1$ and $\alpha_4$ are comparable, but both of them, and vice-versa, are
+incomparable with respect to $\alpha_2$ and $\alpha_3$. This, in turn, has two consequences in differential
+dataflow. First, that the computation of both $\alpha_3$ and $\alpha_2$ happened independent of each other,
+meaning both could have been computed in parallel, and, most importantly, that neither appeared in each other's
+computation:
+\begin{align*}
+	\alpha_2 & = \delta A_{0, 2} = A_{0, 2} - (\delta A_{0, 0} + \delta A_{0, 1} )                  \\
+	\alpha_3 & = \delta A_{1, 1} = A_{1, 1} - (\delta A_{0, 0} + \delta A_{0, 1} + \delta A_{1, 0})
+\end{align*}
+
+Within the context of datalog, the aforementioned evaluation semantics provide a full alternative to the way
+incremental datalog evaluation is currently done, most specifically, the practical advantage of differential
+dataflow, is that instead of using semi-naive evaluation and DRED, one can just describe the evaluation process
+as a dataflow, and have both additions and deletions handled in the same way, with automatic parallelism and
+distribution.
 
 \subsection{Differential Substitution-based Method}
+
+We now present a translation of algorithm I ported over to differential dataflow. All relational algebra
+operators are available in differential dataflow, however, given that they operate over multisets, in order
+for semantics to remain in line with datalog, it is necessary to use the possibly costly distinct operator,
+that ensures that every record has only at most one weight.
+
+\begin{figure} [htb!]
+	\centering
+	\begin{tikzpicture}[node distance=6mm]
+		\begin{scope}
+			\node (traits) at (0, 0) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm] {};
+			\node (traits_title) at (traits.north east) [draw, anchor = north east] {Traits};
+
+			\node (ev_mec) at (traits.east) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=west] {};
+			\node (ev_mec_title) at (ev_mec.north east) [draw, anchor=north east] {Evaluation Mechanisms};
+
+			\node (ds) at (traits.south) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=north] {};
+			\node (ds_title) at (ds.north east) [draw, anchor=north east] {Data Structures};
+
+			\node (engines) at (ds.east) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=west] {};
+			\node (engines_title) at (engines.north east) [draw, anchor=north east] {Engines};
+		\end{scope}
+
+		% Traits
+		\begin{scope}
+			\node (insta) [draw, below = 6mm of traits.north] {RuleEvaluator};
+			\node (bupe) [draw, below of = insta] {BottomUpEvaluator};
+			\node (tode) at (traits) [draw, below of = bupe] {TopDownEvaluator};
+			\node (idx) at (traits) [draw, below of = tode] {IndexBacking};
+			\node (ty) at (traits.south) [draw, below of = idx] {Ty};
+		\end{scope}
+
+		% Data Structures
+
+		\begin{scope}
+			\node (btset) [draw, below = 10mm of ds.north] {BTreeSet};
+			\node (hashm) at (ds) [draw, below of = btset] {HashMap};
+			\node (vecto) at (ds) [draw, below of = hashm] {Vec};
+			\node (spine) at (ds) [draw, below of = vecto] {Spine};
+		\end{scope}
+
+		% Evaluation Mechanisms
+
+		\begin{scope}
+			\node (relal) [draw, below = 10mm of ev_mec.north] {RelationalAlgebra};
+			\node (subst) at (ds) [draw, below of = relal] {Substitution};
+		\end{scope}
+
+		% Engines
+
+		\begin{scope}
+			\node (chibi) [draw, below = 10mm of engines.north] {Chibi};
+			\node (relational) at (engines) [draw, below of = chibi] {Relational};
+			\node (differential) at (engines) [draw, below of = relational] {Differential};
+		\end{scope}
+
+	\end{tikzpicture}
+	\caption{Shapiro Components}
+	\label{fig:shapiro_comp}
+\end{figure}
+
+\section{System}
+
+In this section we provide a technical overview of the implemented reasoners, alongside a novel optimization
+technique for the substitution-based method, that at the cost of slightly increased memory usage, avoids the
+potential polynomial blowup, making the method suitable to be used with DRED, furthermore, we then port it to
+differential dataflow
+
+\subsection{Chibi}
+
+\subsection{Relational}
+
+\subsection{Differential}
 
 \section{Benchmarks}
 
@@ -490,7 +579,7 @@ The first program, \ref{program:cspa}\cite{graspan}, expresses pointer analysis,
 
 \subsection{COST}
 
-\begin{figure}[ht]
+\begin{figure}[htb!]
 	\centering
 	\includegraphics[width=.45\textwidth,height=\textheight,keepaspectratio]{COST}
 	\caption{The COST of differential reasoner}
@@ -501,7 +590,7 @@ Benchmark \cite{benchmark:cost} seeks to answer an important question that is of
 
 \subsection{Scalability.}
 
-\begin{figure}[ht]
+\begin{figure}[htb!]
 	\centering
 	\subfloat[]{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{addition}\label{benchmark:scalability_addition}}%
 	\subfloat[]{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{deletion}\label{benchmark:scalability_deletion}}\\
