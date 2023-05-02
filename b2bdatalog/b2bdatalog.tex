@@ -433,64 +433,98 @@ distribution.
 \subsection{Differential Substitution-based Method}
 
 We now present a translation of algorithm I ported over to differential dataflow. All relational algebra
-operators are available in differential dataflow, however, given that they operate over multisets, in order
-for semantics to remain in line with datalog, it is necessary to use the possibly costly distinct operator,
-that ensures that every record has only at most one weight.
+operators are available in differential dataflow.
 
 \begin{figure} [htb!]
 	\centering
-	\begin{tikzpicture}[node distance=6mm]
+	\begin{tikzpicture}[->Stealth,>=stealth',auto,node distance=6cm,
+			thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
+
+		%% Nodes
 		\begin{scope}
-			\node (traits) at (0, 0) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm] {};
-			\node (traits_title) at (traits.north east) [draw, anchor = north east] {Traits};
+			\node (inputs) at (0, 0) [draw, dotted, rectangle, minimum width=8cm, minimum height=1cm] {};
+			\node (inputs_title) at (inputs.south east) [draw, anchor=south east] {\scriptsize Input};
 
-			\node (ev_mec) at (traits.east) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=west] {};
-			\node (ev_mec_title) at (ev_mec.north east) [draw, anchor=north east] {Evaluation Mechanisms};
+			\node (blank) at (inputs.south) [minimum width=8cm, minimum height=1.5cm] {};
 
-			\node (ds) at (traits.south) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=north] {};
-			\node (ds_title) at (ds.north east) [draw, anchor=north east] {Data Structures};
+			\node (fixpoint) at (blank.south) [draw, dotted, rectangle, minimum width=8cm, minimum height=4cm, anchor=north] {};
+			\node (fixpoint_title) at (fixpoint.south east) [draw, anchor=south east] {\scriptsize Iteration};
 
-			\node (engines) at (ds.east) [draw, dotted, rectangle, minimum width=4cm, minimum height=4cm, anchor=west] {};
-			\node (engines_title) at (engines.north east) [draw, anchor=north east] {Engines};
+			\node (outputs) at (fixpoint.south) [draw, dotted, rectangle, minimum width=8cm, minimum height=1cm, anchor=north] {};
+			\node (outputs_title) at (outputs.south east) [draw, anchor=south east] {\scriptsize Output};
 		\end{scope}
 
-		% Traits
+		% Inputs
 		\begin{scope}
-			\node (insta) [draw, below = 6mm of traits.north] {RuleEvaluator};
-			\node (bupe) [draw, below of = insta] {BottomUpEvaluator};
-			\node (tode) at (traits) [draw, below of = bupe] {TopDownEvaluator};
-			\node (idx) at (traits) [draw, below of = tode] {IndexBacking};
-			\node (ty) at (traits.south) [draw, below of = idx] {Ty};
+			\node (empty_sub) [draw, right = 1.25cm of inputs.west] {\small $\Sigma_0$};
+			\node (facts) [draw, right = 1.25cm of empty_sub.east] {\small Facts};
+			\node (rules) [draw, right = 1.25cm of facts.east] {\small Rules};
 		\end{scope}
 
-		% Data Structures
-
+		% No Iteration
 		\begin{scope}
-			\node (btset) [draw, below = 10mm of ds.north] {BTreeSet};
-			\node (hashm) at (ds) [draw, below of = btset] {HashMap};
-			\node (vecto) at (ds) [draw, below of = hashm] {Vec};
-			\node (spine) at (ds) [draw, below of = vecto] {Spine};
+			\node (flat_map) at (blank) [draw, below = 4mm of rules] {$\text{\small flat\_map}^1$};
+			\node (map) at (blank) [draw, right = 4mm of flat_map] {$\text{\small map}^2$};
 		\end{scope}
 
-		% Evaluation Mechanisms
+		% Fixpoint Iteration
 
 		\begin{scope}
-			\node (relal) [draw, below = 10mm of ev_mec.north] {RelationalAlgebra};
-			\node (subst) at (ds) [draw, below of = relal] {Substitution};
+			\node (subs_var) [draw, below = 15mm of empty_sub] {\small Subs. Var};
+			\node (facts_var) at (fixpoint) [draw, below = 15mm of facts] {\small Facts. Var};
+			\node (join1) at (fixpoint) [draw, below = 4mm of facts_var] {$\text{\small join\_map}^3$};
+			\node (join2) at (fixpoint) [draw, below = 4mm of join1] {$\text{\small join\_map}^4$};
+			\node (join3) at (fixpoint) [draw, below = 4mm of join2] {$\text{\small join\_map}^5$};
 		\end{scope}
 
-		% Engines
+		% Outputs
 
 		\begin{scope}
-			\node (chibi) [draw, below = 10mm of engines.north] {Chibi};
-			\node (relational) at (engines) [draw, below of = chibi] {Relational};
-			\node (differential) at (engines) [draw, below of = relational] {Differential};
+			\node (facts_output) at (outputs) [draw] {\small Facts};
 		\end{scope}
+
+		%% Edges
+		\draw (facts) -- (facts_var);
+		\path (facts_var.east) edge[bend left] (facts_output);
+		\path (facts_var.east) edge[bend left] (join2.east);
+
+		\draw (empty_sub) -- (subs_var);
+		\path (subs_var) edge[bend right] (join1.west);
+		\path (flat_map) edge[bend left] (join1.east);
+
+		\draw (rules) -- (flat_map);
+		\path (rules) edge[bend left] (map);
+
+		\draw (join1) -- (join2);
+		\path (join2.west) edge[bend left] (subs_var.west);
+		\draw (join2) -- (join3);
+		\path (join3.west) edge[bend left] (facts_var.west);
+		\path (map) edge[bend left] (join3.east);
+
 
 	\end{tikzpicture}
-	\caption{Shapiro Components}
+	\caption{}
 	\label{fig:shapiro_comp}
 \end{figure}
+
+Figure \ref{fig:shapiro_comp} depicts the substitution-based method in differential dataflow. Superscripts denote
+points of the dataflow that require further explanation. Furthermore, for clarity, we establish the shape of the
+data, and the \verb|Var| suffix. We also note that this is a summarized description of the dataflow, with certain
+trivial, or too-implementation-oriented, parts having had been omitted.
+
+$\Sigma_0$ is the stream of empty substitutions, which at first will contain only one, indexed per rule identifier. We
+assume that rules have an unique identifier. Facts is the relation-indexed stream of facts, and rules is the stream of
+rules, notably with two indexes, superscripts $1$ and $2$.
+
+\begin{enumerate}
+	\item The first rule index indexes rules first by their identifier, and then by each of its body atoms, enumerating
+	      them sequentially, imposing an order of evaluation as the original algorithm.
+	\item The second rule index indexes by identifier and body size, being necessary to ensure that only the substitutions
+	      which have been exhaustively expanded ought to be considered for application on the rule head.
+	\item Attempts to create new atoms, that will be used to generate new substitutions
+	\item Attempts to create new substitutions
+	\item Attempts to create new ground facts
+\end{enumerate}
 
 \section{System}
 
