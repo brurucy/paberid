@@ -328,13 +328,13 @@ the body atoms. Let $EDB$ be the set of ground facts for the input relations.
 The substitution-based method computes the immediate consequence of the rule $r$ as follows:
 
 Define the initial set of substitutions as $\Sigma_0 = { \sigma_0 }$, where $\sigma_0$ is an empty substitution. For
-each body atom $b_i$, find the set of ground facts $F_i \subseteq F$ that match $b_i$.
+each body atom $b_i$, find the set of ground facts $F_j \subseteq F$ that match $b_i$.
 
 \paragraph{Algorithm I.} Substitution-based Immediate Consequence Computation
 \begin{enumerate}
 \item Initialize the initial set of substitutions $\Sigma_{0}$.
 \textbf{For} each $i = 1, 2, \ldots, m$:
-\item \textbf{For} each fact $f \in F_i$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$:
+\item \textbf{For} each fact $f \in F$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$:
 \begin{enumerate}
 	\item Generate an extension $\sigma'{i-1}$ of $\sigma{i-1}$ with the constant-to-variable homomorphisms from $f$ that are
 	      consistent with the current partial substitution $\sigma_{i-1}$.
@@ -432,8 +432,9 @@ distribution.
 
 \subsection{Differential Substitution-based Method}
 
-We now present a translation of algorithm I ported over to differential dataflow. All relational algebra
-operators are available in differential dataflow.
+We now present a translation of algorithm I to differential dataflow, by emulating sequentially iterating over
+each rule's body with relational joins, notably, all relational algebra operators are available through a map-
+reduce-like API.
 
 \begin{figure} [htb!]
 	\centering
@@ -504,40 +505,75 @@ operators are available in differential dataflow.
 
 	\end{tikzpicture}
 	\caption{}
-	\label{fig:shapiro_comp}
+	\label{fig:substitution_simple_ddflow}
 \end{figure}
 
-Figure \ref{fig:shapiro_comp} depicts the substitution-based method in differential dataflow. Superscripts denote
+Figure \ref{fig:substitution_simple_ddflow} depicts the substitution-based method in differential dataflow. Superscripts denote
 points of the dataflow that require further explanation. Furthermore, for clarity, we establish the shape of the
-data, and the \verb|Var| suffix. We also note that this is a summarized description of the dataflow, with certain
-trivial, or too-implementation-oriented, parts having had been omitted.
+data, and the \verb|Var| suffix, that both facts and substitutions eventually take up. a Variable is used to express
+recursive or iterative computations. It allows one to define iterative operations and data dependencies in the dataflow
+graph, enabling the system to track and propagate changes across iterations efficiently, with product timestamps.
 
-$\Sigma_0$ is the stream of empty substitutions, which at first will contain only one, indexed per rule identifier. We
-assume that rules have an unique identifier. Facts is the relation-indexed stream of facts, and rules is the stream of
-rules, notably with two indexes, superscripts $1$ and $2$.
+We also note that this is a summarized description, with certain trivial, or too-implementation-oriented, parts
+having had been omitted. $\Sigma_0$ is the stream of empty substitutions indexed per rule identifier, which will
+be pre populated with one substitution, the empty one. We assume that rules have an unique identifier. Facts is
+the relation-indexed stream of facts, and rules is the stream of rules, with two indexes, created with the operations
+with superscripts $1$ and $2$.
 
 \begin{enumerate}
 	\item The first rule index indexes rules first by their identifier, and then by each of its body atoms, enumerating
 	      them sequentially, imposing an order of evaluation as the original algorithm.
 	\item The second rule index indexes by identifier and body size, being necessary to ensure that only the substitutions
 	      which have been exhaustively expanded ought to be considered for application on the rule head.
-	\item Attempts to create new atoms, that will be used to generate new substitutions
-	\item Attempts to create new substitutions
-	\item Attempts to create new ground facts
+	\item \verb|join_map| is an operator that joins two collections, and then applies a function. In this situation, the
+	      function that is applied, is one that applies substitutions to the input atoms, therefore either creating new
+	      atoms, with less variables as terms, or the very same ones. This is equivalent to the necessary setup for step 1
+	      of Algorithm I to occur, making use of index $1$.
+	\item The next join creates new substitutions, based on the newly minted atoms. All current substitutions are attempted
+	      to be expanded further, with the ones being successful being emitted from the join.
+	\item This is the last step of the algorithm, where all final substitutions are applied to the head of each rule, index
+	      $2$, to then create new ground facts.
 \end{enumerate}
 
 \section{System}
+In this section we provide a technical overview of the implemented reasoners, and what is shared between them, alongside
+a novel indexing technique for the substitution-based method, that at the cost of increased memory usage, can significantly
+decrease the number of times the operation that occurs the most frequently, substitution extension, occurs.
 
-In this section we provide a technical overview of the implemented reasoners, alongside a novel optimization
-technique for the substitution-based method, that at the cost of slightly increased memory usage, avoids the
-potential polynomial blowup, making the method suitable to be used with DRED, furthermore, we then port it to
-differential dataflow
+We name Chibi the reasoner that uses the substitution-based method without differential dataflow, and differential, the one
+that does. Both of these reasoners share the implementation of the three core elements: unification, substitution application,
+and in asserting that a fact is ground. All of the aforementioned operations are trivial, and each do not require more than
+ten or so lines of code. Unification is a computationally cheap operation, given an atom, and a ground fact, the output is
+a new substitution that maps the variables of the right to the constants of the left one, all others are self descriptive,
+with substitution application merely substituting an atom's variables for the mapped variables in a substitution, and checking
+if a fact is ground is done by ensuring that no terms are variables.
 
-\subsection{Chibi}
+All three reasoners, Chibi, Differential and Relational, share the same simple in memory layout for the core elements of
+datalog, and storage, notably, in Rust terms, it is to be assumed that all referred data structures are standard library
+implementations, unless noted otherwise. Furthermore, a step of rule application is always done in parallel.
+\begin{itemize}
+	\item Constant: an enumeration of boolean, 64-bit integer or string, respectively named typed values.
+	\item Variable: a 8 bit integer, hence imposing a bound on the number of variables that a rule can have
+	\item Term: an enumeration of constant and variable
+	\item Atom: A struct with a vector of terms, and a symbol, that can be either a 64-bit integer or a string
+	\item Rule: A struct with an atom representing the head, and a vector of atoms as the body
+	\item Storage: A Hash map of hash sets, with keys representing relation names, or id, and their respective
+	      hash sets containing vectors of typed terms, ground facts.
+\end{itemize}
+Relational reasoner has one extra data structure, a btree index, that is used for sort-merge joins. Relational relies on
+naively translating datalog rules into $\mathcal{SPJ}$, without any further optimizations whatsoever, aside from inserting
+all data that is to be joined in its index, right before actually doing it. All relational operations and their evaluator
+were implemented from scratch. The point of this reasoner is to evaluate how performant the popular relational algebra
+evaluation can be in isolation, compared to the often forgotten substitution-based method, and differential.
 
-\subsection{Relational}
+Rule application until the least fixpoint is reached is done with semi-naive evaluation\cite{abiteboul}, with a program
+transformation. DRED is implemented as described in \cite{dred}, in two steps, with both the overdeletion and alternative
+derivation program being executed with semi-naive evaluation too. Both Chibi and Relational use the same function for this,
+with differential evidently not, given that it has its own iteration mechanism, as demonstrated in figure \ref{fig:substitution_simple_ddflow}.
 
-\subsection{Differential}
+\subsection{Partial Constant-based Indexing}
+
+
 
 \section{Benchmarks}
 
