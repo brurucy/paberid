@@ -331,7 +331,7 @@ each body atom $b_i$, find the set of ground facts $F_j \subseteq F$ that match 
 
 \paragraph{Algorithm I.} Substitution-based Immediate Consequence Computation
 \begin{enumerate}
-\item Initialize the initial set of substitutions $\Sigma_{0}$.
+\item Initialize the initial set of substitutions $\Sigma_{0}$. Let $F$ be the initial set of facts.
 \textbf{For} each $i = 1, 2, \ldots, m$:
 \item \textbf{For} each fact $f \in F$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$:
 \begin{enumerate}
@@ -630,9 +630,10 @@ left-hand side of unification, and $T(a, b)$, $T(b, c)$ are the candidates, no c
 in $T(a, ?y)$ would produce a substitution extension. This significantly prunes the search space, to entirely avoid unifications that
 would not yield substitution extensions.
 
-We name our approach Demand-driven Multiple-column-based Indexing, since indexes are built on-demand to address the need of indices for
+We name our approach Demand-driven Multiple-column-based Indexing, because indexes are built on-demand to address the need of indices for
 joining substitutions, that can be over multiple variables, therefore spanning over multiple columns, in each iteration. First, we demonstrate
-the technique over the same example, and then provide a new version of Algorithm I, lastly, we port it over to differential dataflow.
+the technique over the same example, and then provide a new version of Algorithm I, lastly, we modify the differential dataflow version to
+also contain this indexing.
 \begin{enumerate}
 	\item \begin{enumerate}
 		      \item Current body atom: $-R(?x, ?z)$, $\Sigma_0$: $[\{\}]$
@@ -675,14 +676,39 @@ the technique over the same example, and then provide a new version of Algorithm
 	      \end{enumerate}
 \end{enumerate}
 
+From this new example, it can be seen that the indexing scheme is relatively simple, relying on creating new indices that would allow unification
+to never wastefully occur. We now formalize it as Algorithm II:
+\paragraph{Algorithm II.} Substitution-based Immediate Consequence Computation with Indexing
+\begin{enumerate}
+	\item Initialize the initial set of substitutions $\Sigma_{0}$. Let $F$ be the initial set of facts.
+	\item Let $P : a \to [\mathbb]$ be a function mapping an atom to an array of integers representing the positions of constants within the atom's terms and
+	      $R : ([\mathbb], a) \to a$ be a function that maps an array of integers and an atom, to a subset of the atom's terms denoted by $[\mathbb]$
+	      \textbf{For} each $i = 1, 2, \ldots, m$: \begin{enumerate}
+		      \item Apply $\Sigma_{i-1}$ to the current body atom to obtain fresh atoms $\mathfrak{A}$.
+		      \item Create the first index by constructing a function $I_1 : P(a) \to 1^{\mathfrak{A}}$, where $1^{\mathfrak{A}}$ is the subset of
+		            $\mathfrak{A}$ such that all $a$ have the same $P(a)$ value.
+		      \item Create the second index by constructing a function $I_2 : P(a) \to I_3$, where $I_3 : R(F) \to 1^{F}$, and $1^{F}$ is the subset
+		            of $F$ such that all $a$ have the same $R(P(a), a)$.
+		      \item Create the last index by joining Index 1 and Index 2: $I_4(a) = (I_1(a), I_2(a))$ for each $a \in \mathfrak{A}$
+		      \item For each pair of sets in the third index, $(S_1, S_2)$, unify each element in $S_1$ and each element in $S_2$. Generate an extension
+		            $\sigma_{i-1}'$ of $\sigma_{i-1}$ with the constant-to-variable homomorphisms that are consistent with the current partial substitution $\sigma_{i-1}$.
+		      \item Add $\sigma_{i-1}'$ to the set of substitutions $\Sigma_i$.
+	      \end{enumerate}
+	\item For each final substitution $\sigma_m \in \Sigma_m$, apply it to the head atom $H$ to generate the derived facts.
+\end{enumerate}
+All indexing steps are $O(|F|)$ in time and data complexity, save for index two, that has worst-case data complexity of $O(|F| \cdot 2^{|a|}}|)$, with $2^{|a|}$
+representing the powerset of the number of terms in some atom $a$, and $F$ such that it has only atoms $a$. The product with the powerset arises due to how
+indexing occurs by mapping all unique combinations of constant terms of fresh atoms, which in the worst-case could be exponential to arity.
+
 
 
 \section{Benchmarks}
+The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
+programming language, and use the same elementary memory model, possibly strong empirical statements can be made with respect to the specificities of their implementations.
+
 
 redo all, make graphs paper worthy
 
-The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
-programming language, and use the same elementary memory model, possibly strong empirical statements can be made with respect to the specificities of their implementation.
 
 \textbf{Setup.} The experiments were run on commodity hardware, a MacbookPro with an M1 Pro processor and 16GB of ram, and in no test did swap memory was reached for.
 Rust version 1.65 was used.
