@@ -227,7 +227,6 @@ It is trivial to see that $I_C(DB)$ is monotone, and given that both the $EDB$ a
 that $IDB = \emptyset$ at the start, at some point $I_C(DB) = DB$, since there won't be new facts to be inferred. This
 point is the \textit{least fixed point} of $I_c(DB)$\cite{datalog}. Computing the \textit{least fixed point} as
 described, recursively applying the immediate consequence, is called Naive evaluation.
-
 \subsection{Semi-Naive Evaluation}
 
 The semi-naive evaluation algorithm \cite{datalog} is a widely-used technique for improving naive evaluation.
@@ -438,7 +437,7 @@ reduce-like API.
 
 \begin{figure} [htb!]
 	\centering
-	\begin{tikzpicture}[->Stealth,>=stealth',auto,node distance=6cm,
+	\begin{tikzpicture}[->Stealth,>=stealth,auto,node distance=6cm,
 			thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
 
 		%% Nodes
@@ -569,13 +568,118 @@ evaluation can be in isolation, compared to the often forgotten substitution-bas
 Rule application until the least fixpoint is reached is done with semi-naive evaluation\cite{abiteboul}, with a program
 transformation. DRED is implemented as described in \cite{dred}, in two steps, with both the overdeletion and alternative
 derivation program being executed with semi-naive evaluation too. Both Chibi and Relational use the same function for this,
-with differential evidently not, given that it has its own iteration mechanism, as demonstrated in figure \ref{fig:substitution_simple_ddflow}.
+with differential evidently not using semi-naive evaluation neither DRED, given that it has its own iteration mechanism, as
+demonstrated in figure \ref{fig:substitution_simple_ddflow}, and handling of additions and retractions.
 
-\subsection{Partial Constant-based Indexing}
+\subsection{Demand-driven Multiple-column-based Indexing}
+There is a possibly very large performance cost of the substitution-method, that can be exemplified in the specific scenario
+of DRED, that could render it unable to be used in practice. As it was introduced, substitutions are both incrementally expanded,
+and built anew, by iterating over every single body atom.
+
+In the second step of DRED, an alternate derivation program is created. This program has one extra body atom, representing
+overdeletions of the head's relation. This implies that this step could be prohibitively more expensive to evaluate than even
+evaluating the program, due to the cartesian nature of the unification step, that implies iterating over the knowledge base once
+once, for every atom. This inefficiency can be demonstrated the following example, in which the rule could be seen as the
+alternate derivation step of some rule: $R(?x, ?z) <- T(?x, ?y), T(?y, ?z)$, with $-R$ representing the overdeletion estimation
+from the previous step.
+
+Let $P = \{+R(?x, ?z) <- -R(?x, ?z), T(?x, ?y), T(?y, ?z)\}$, and $EDB = \{T(a, b), T(b, c), T(c, d), -R(a, c), -R(b, d)\}$
+
+Algorithm I will have three iterations:
+\begin{enumerate}
+	\item \begin{enumerate}
+		      \item Current body atom: $-R(?x, ?z)$, $\Sigma_0$: $[\{\}]$
+		      \item Fresh atoms - Applying all $\sigma : \Sigma_0$ to $-R(?x, ?z)$ yields $-R(?x, ?z)$
+		      \item Substitution extension: \begin{enumerate}
+			            \item unification: -R(?x, ?z) U -R(a, c) = $\{?x \rightarrow a, ?z \rightarrow c\}$
+			            \item unification: -R(?x, ?z) U -R(b, d) = $\{?x \rightarrow b, ?z \rightarrow d\}$
+		            \end{enumerate}
+	      \end{enumerate}
+	\item \begin{enumerate}
+		      \item Current body atom: $T(?x, ?y)$, $\Sigma_1$: $[\{?x \rightarrow a, ?z \rightarrow c\}, \{?x \rightarrow b, ?z \rightarrow d\}]$
+		      \item Fresh atoms - Applying all $\sigma : \Sigma_1$ to $T(?x, ?y)$ yields $T(a, ?z)$, $T(b, ?z)$
+		      \item Substitution extension: \begin{enumerate}
+			            \item unification: T(a, ?y) U T(a, b) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
+			            \item unification: T(a, ?y) U T(b, c) = none
+			            \item unification: T(a, ?y) U T(c, d) = none
+			            \item unification: T(b, ?y) U T(a, b) = none
+			            \item unification: T(b, ?y) U T(b, c) = $\{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}$
+			            \item unification: T(b, ?y) U T(c, d) = none
+		            \end{enumerate}
+	      \end{enumerate}
+	\item \begin{enumerate}
+		      \item Current body atom: $T(?y, ?z)$, $\Sigma_2$: $[\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}, \{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}]$
+		      \item Fresh atoms - Applying all $\sigma : \Sigma_2$ to $T(?y, ?z)$ yields $T(b, c)$, $T(c, d)$
+		      \item Substitution extension: \begin{enumerate}
+			            \item unification: T(b, c) U T(a, b) = none
+			            \item unification: T(b, c) U T(b, c) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
+			            \item unification: T(c, d) U T(c, d) = none
+			            \item unification: T(c, d) U T(a, b) = none
+			            \item unification: T(c, d) U T(b, c) = none
+			            \item unification: T(c, d) U T(c, d) = $\{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}$
+		            \end{enumerate}
+	      \end{enumerate}
+\end{enumerate}
+With the final substitutions being: $[\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}, \{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}]$, therefore inferring two atoms:
+$+R(a, c)$ and $+R(b, d)$. As it can be seen, the major source of inefficiency are the wasted calls to unification attempt, that could
+grow polynomially with each new atom. The solution to this issue in theory is very straightforward; to avoid the cartesian product. We
+devise a novel indexing technique specifically tailored to be portable to differential dataflow.
+
+Returning to the example, it is trivial to see that unification attempts can be made optimal by joining on bindings; If $T(a, ?y)$ is the
+left-hand side of unification, and $T(a, b)$, $T(b, c)$ are the candidates, no candidate that does not already match all constants
+in $T(a, ?y)$ would produce a substitution extension. This significantly prunes the search space, to entirely avoid unifications that
+would not yield substitution extensions.
+
+We name our approach Demand-driven Multiple-column-based Indexing, since indexes are built on-demand to address the need of indices for
+joining substitutions, that can be over multiple variables, therefore spanning over multiple columns, in each iteration. First, we demonstrate
+the technique over the same example, and then provide a new version of Algorithm I, lastly, we port it over to differential dataflow.
+\begin{enumerate}
+	\item \begin{enumerate}
+		      \item Current body atom: $-R(?x, ?z)$, $\Sigma_0$: $[\{\}]$
+		      \item Fresh atoms - Applying all $\sigma : \Sigma_0$ to $-R(?x, ?z)$ yields $-R(?x, ?z)$
+		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[] : [[?x, ?z]]\}$
+		      \item Index 2 - Index $-R$ based on all distinct values of the column keys of index 1 : $\{[]: [[a, c], [b, d]]\}$
+		      \item Index 3 - Join Index 1 with Index 2 - $\{[] : ([[?x, ?z]], \{[]: [[a, c], [b, d]]\})\}$
+		      \item Join both sides of the resulting tuples: $[([?x, ?z], [[a, c]]), ([?x, ?z], [[b, d]])]$
+		      \item Attempt to unify:
+		            \begin{enumerate}
+			            \item unification: -R(?x, ?z) U -R(a, c) = $\{?x \rightarrow a, ?z \rightarrow c\}$
+			            \item unification: -R(?x, ?z) U -R(b, d) = $\{?x \rightarrow b, ?z \rightarrow d\}$
+		            \end{enumerate}
+	      \end{enumerate}
+	\item \begin{enumerate}
+		      \item Current body atom: $T(?x, ?y)$, $\Sigma_1$: $[\{?x \rightarrow a, ?z \rightarrow c\}, \{?x \rightarrow b, ?z \rightarrow d\}]$
+		      \item Fresh atoms - Applying all $\sigma : \Sigma_1$ to $T(?x, ?y)$ yields $T(a, ?y)$, $T(b, ?y)$
+		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[0] : [[a, ?z], [b, ?z]]\}$
+		      \item Index 2 - Index $T$ based on all distinct values of the column keys of index 1 : $\{[0]: \{[a]: [[b]], [[b]]: [[c]], [c]: [[d]]\}\}$
+		      \item Index 3 - Join Index 1 with Index 2 - $\{[0] : ([[a, ?y], [b, ?y]], \{[a]: [[b]], [[b]]: [[c]], [c]: [[d]]\})\}$
+		      \item Join both sides of the resulting tuples: $[([?y], [[b]]), ([?y], [[c]])]$
+		      \item Attempt to unify:
+		            \begin{enumerate}
+			            \item unification: T(a, ?y) U T(a, b) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
+			            \item unification: T(b, ?y) U T(b, c) = $\{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}$
+		            \end{enumerate}
+	      \end{enumerate}
+	\item \begin{enumerate}
+		      \item Current body atom: $T(?y, ?z)$, $\Sigma_2$: $[\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}, \{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}]$
+		      \item Fresh atoms - Applying all $\sigma : \Sigma_2$ to $T(?y, ?z)$ yields $T(b, c)$, $T(c, d)$
+		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[0, 1] : [[b, c], [c, d]]\}$
+		      \item Index 2 - Index $T$ based on all distinct values of the column keys of index 1 : $\{[0, 1]: \{[a, b]: [[]], [b, c]: [[]], [c, d]: [[]]\}\}$
+		      \item Index 3 - Join Index 1 with Index 2 - $\{[0, 1] : ([[b, c], [c, d]], \{[a, b]: [[]], [b, c]: [[]], [c, d]: [[]]\})\}$
+		      \item Join both sides of the resulting tuples: $[([b, c], [[]]), ([c, d], [[]])]$
+		      \item Attempt to unify:
+		            \begin{enumerate}
+			            \item unification: T(b, c) U T(b, c) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
+			            \item unification: T(c, d) U T(c, d) = $\{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}$
+		            \end{enumerate}
+	      \end{enumerate}
+\end{enumerate}
 
 
 
 \section{Benchmarks}
+
+redo all, make graphs paper worthy
 
 The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
 programming language, and use the same elementary memory model, possibly strong empirical statements can be made with respect to the specificities of their implementation.
