@@ -507,11 +507,13 @@ reduce-like API.
 	\label{fig:substitution_simple_ddflow}
 \end{figure}
 
-Figure \ref{fig:substitution_simple_ddflow} depicts the substitution-based method in differential dataflow. Superscripts denote
+Figure \ref{fig:substitution_simple_ddflow} depicts the substitution-based method as a dataflow. Superscripts denote
 points of the dataflow that require further explanation. Furthermore, for clarity, we establish the shape of the
 data, and the \verb|Var| suffix, that both facts and substitutions eventually take up. a Variable is used to express
 recursive or iterative computations. It allows one to define iterative operations and data dependencies in the dataflow
-graph, enabling the system to track and propagate changes across iterations efficiently, with product timestamps.
+graph, enabling the system to track and propagate changes across iterations efficiently, with product timestamps. Each
+node either represents an operation, such as \verb|join_map|, that joins two streams and then applies a mapping function,
+and \verb|flat_map|, that maps streams of iterables and then flattens them as a single stream.
 
 We also note that this is a summarized description, with certain trivial, or too-implementation-oriented, parts
 having had been omitted. $\Sigma_0$ is the stream of empty substitutions indexed per rule identifier, which will
@@ -727,21 +729,20 @@ indexing occurs by mapping all unique combinations of constant terms of fresh at
 
 		% No Iteration
 		\begin{scope}
-			\node (heads_ucc) at (blank) [draw, below = 11mm of rules] {$\text{\small join\_map}^1$};
-			\node (ucc) at (blank) [draw, left = 3mm of heads_ucc] {$\text{\small flat\_map}^1$};
+			\node (heads_ucc) at (blank) [draw, below = 11mm of rules] {$\text{\small join\_map}^3$};
+			\node (ucc) at (blank) [draw, left = 3mm of heads_ucc] {$\text{\small flat\_map}^2$};
 			\node (heads) at (blank) [draw, below = 3.25mm of rules] {$\text{\small map}^1$};
-			\node (goals) at (blank) [draw, right = 3mm of heads_ucc] {$\text{\small flat\_map}^3$};
-			\node (index) at (blank) [draw, below = 10mm of facts] {$\text{\small join\_map}^4$};
-			\node (facts_masked) at (blank) [draw, left = 4mm of index] {$\text{\small map}^5$};
+			\node (goals) at (blank) [draw, right = 3mm of heads_ucc] {$\text{\small flat\_map}^4$};
+			\node (index) at (blank) [draw, below = 10mm of facts] {$\text{\small join\_map}^5$};
 		\end{scope}
 
 		% Fixpoint Iteration
 		\begin{scope}
 			\node (subs_var) [draw, below = 20mm of empty_sub] {\small Subs. Var};
 			\node (facts_var) at (fixpoint) [draw, below = 20mm of facts] {\small Facts. Var};
-			\node (join1) at (fixpoint) [draw, below = 4mm of facts_var] {$\text{\small join\_map}^6$};
-			\node (join2) at (fixpoint) [draw, below = 4mm of join1] {$\text{\small join\_map}^7$};
-			\node (join3) at (fixpoint) [draw, below = 4mm of join2] {$\text{\small join\_map}^8$};
+			\node (join1) at (fixpoint) [draw, below = 4mm of facts_var] {$\text{\small join\_map}$};
+			\node (join2) at (fixpoint) [draw, below = 4mm of join1] {$\text{\small join\_map}$};
+			\node (join3) at (fixpoint) [draw, below = 4mm of join2] {$\text{\small join\_map}$};
 		\end{scope}
 
 		% Outputs
@@ -751,8 +752,7 @@ indexing occurs by mapping all unique combinations of constant terms of fresh at
 		\end{scope}
 
 		%% Edges
-		\draw (facts) -- (facts_masked);
-		\draw (facts_masked) -- (index);
+		\path (facts) edge[bend right] (index.west);
 		\path (facts_var.east) edge[bend left] (facts_output);
 		\path (facts_var.east) edge[bend left] (join2.east);
 
@@ -778,14 +778,30 @@ indexing occurs by mapping all unique combinations of constant terms of fresh at
 	\label{fig:substitution_indexed_ddflow}
 \end{figure}
 
-Translating this indexing scheme to differential dataflow would possibly yield a much more efficient algorithm. An arrangement in differential dataflow is a
-pre-computed, indexed representation of a collection that allows for efficient querying and manipulation of the data. These arrangements play a crucial role
-in optimizing the performance of dataflows. By carefully choosing which arrangements to create and maintain, it is possible to minimize the computational
-overhead and reduce the need for expensive recomputations.
+Figure \ref{fig:substitution_indexed_ddflow} displays the differential dataflow version of Algorithm II, that mostly remains exactly the same, save for
+new operations happening during the phase before iteration. We now clarify the points of interest in the dataflow. There were no differences in the steps inside
+iteration, aside from joins happening through the vector of constant positions and relation symbols,
+instead of only relation symbols.
+
+\begin{enumerate}
+	\item The first \verb|map| operator remains the same, indexing rules by their identifier and body size, used to ensure
+	      that only fully expanded substitutions will be applied to rule heads. The same as superscript $2$ in \ref{fig:substitution_simple_ddflow}.
+	\item The unique column combinations of the input ruleset are computed by this operator. Unlike in the imperative description of the algorithm, where
+	      column combinations are generated in each iteration, we pre generate all of them, and index them by relation symbol.
+	\item This step joins the rule identifiers with the unique column combinations. This is only used at the very last join during iteration, to ensure that
+	      the output fact is indexed by the correct column combination.
+	\item Equivalent to superscript $1$ in \ref{fig:substitution_simple_ddflow}.
+	\item With superscript $2$, the input fact stream can be immediately indexed by the necessary constant position combinations. This is done by a join on
+	      relation symbol, that will index each fact by all column combinations.
+\end{enumerate}
+
+This dataflow is possibly much more efficient . An arrangement in differential dataflow is a pre-computed, indexed representation of a collection that allows
+for efficient querying and manipulation of the data. These arrangements play a crucial role in optimizing the performance of dataflows. By carefully choosing
+which arrangements to create and maintain, it is possible to minimize the computational overhead and reduce the need for expensive recomputations.
 
 Most specifically, arrangements dictate the level of join parallelism, and due to the fact that the join operator shards the data among workers by the key of
-the arrangement, partitioning the data to be joined by a more fine-grained key than relation symbol, such as relation symbol and constant values, as on Algorithm II,
-could unlock a higher degree of parallelism.
+the arrangement, partitioning the data to be joined by a more fine-grained key than relation symbol, such as relation symbol and positions occupied by constants,
+constant values, as on Algorithm II, a higher degree of parallelism could be unlocked.
 
 \section{Benchmarks}
 The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
