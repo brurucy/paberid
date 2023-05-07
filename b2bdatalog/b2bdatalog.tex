@@ -437,7 +437,7 @@ reduce-like API.
 
 \begin{figure} [htb!]
 	\centering
-	\begin{tikzpicture}[->Stealth,>=stealth,auto,node distance=6cm,
+	\begin{tikzpicture}[->,>=stealth,auto,node distance=6cm,
 			thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
 
 		%% Nodes
@@ -696,11 +696,96 @@ to never wastefully occur. We now formalize it as Algorithm II:
 	      \end{enumerate}
 	\item For each final substitution $\sigma_m \in \Sigma_m$, apply it to the head atom $H$ to generate the derived facts.
 \end{enumerate}
-All indexing steps are $O(|F|)$ in time and data complexity, save for index two, that has worst-case data complexity of $O(|F| \cdot 2^{|a|}}|)$, with $2^{|a|}$
+All indexing steps are $O(|F|)$ in time and data complexity, save for index two, that has worst-case data complexity of $O(|F| \cdot 2^{|a|}y)$, with $2^{|a|}$
 representing the powerset of the number of terms in some atom $a$, and $F$ such that it has only atoms $a$. The product with the powerset arises due to how
 indexing occurs by mapping all unique combinations of constant terms of fresh atoms, which in the worst-case could be exponential to arity.
 
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[->,>=stealth,auto,node distance=6cm,
+			thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
+		%% Nodes
+		\begin{scope}
+			\node (inputs) at (0, 0) [draw, dotted, rectangle, minimum width=8cm, minimum height=1cm] {};
+			\node (inputs_title) at (inputs.south east) [draw, anchor=south east] {\scriptsize Input};
 
+			\node (blank) at (inputs.south) [minimum width=8cm, minimum height=3.0cm] {};
+
+			\node (fixpoint) at (blank.south) [draw, dotted, rectangle, minimum width=8cm, minimum height=4cm, anchor=north] {};
+			\node (fixpoint_title) at (fixpoint.south east) [draw, anchor=south east] {\scriptsize Iteration};
+
+			\node (outputs) at (fixpoint.south) [draw, dotted, rectangle, minimum width=8cm, minimum height=1cm, anchor=north] {};
+			\node (outputs_title) at (outputs.south east) [draw, anchor=south east] {\scriptsize Output};
+		\end{scope}
+
+		% Inputs
+		\begin{scope}
+			\node (empty_sub) [draw, right = 0.75cm of inputs.west] {\small $\Sigma_0$};
+			\node (facts) [draw, right = 1cm of empty_sub.east] {\small Facts};
+			\node (rules) [draw, right = 2.5cm of facts.east] {\small Rules};
+		\end{scope}
+
+		% No Iteration
+		\begin{scope}
+			\node (heads_ucc) at (blank) [draw, below = 11mm of rules] {$\text{\small join\_map}^1$};
+			\node (ucc) at (blank) [draw, left = 3mm of heads_ucc] {$\text{\small flat\_map}^1$};
+			\node (heads) at (blank) [draw, below = 3.25mm of rules] {$\text{\small map}^1$};
+			\node (goals) at (blank) [draw, right = 3mm of heads_ucc] {$\text{\small flat\_map}^3$};
+			\node (index) at (blank) [draw, below = 10mm of facts] {$\text{\small join\_map}^4$};
+			\node (facts_masked) at (blank) [draw, left = 4mm of index] {$\text{\small map}^5$};
+		\end{scope}
+
+		% Fixpoint Iteration
+		\begin{scope}
+			\node (subs_var) [draw, below = 20mm of empty_sub] {\small Subs. Var};
+			\node (facts_var) at (fixpoint) [draw, below = 20mm of facts] {\small Facts. Var};
+			\node (join1) at (fixpoint) [draw, below = 4mm of facts_var] {$\text{\small join\_map}^6$};
+			\node (join2) at (fixpoint) [draw, below = 4mm of join1] {$\text{\small join\_map}^7$};
+			\node (join3) at (fixpoint) [draw, below = 4mm of join2] {$\text{\small join\_map}^8$};
+		\end{scope}
+
+		% Outputs
+
+		\begin{scope}
+			\node (facts_output) at (outputs) [draw] {\small Facts};
+		\end{scope}
+
+		%% Edges
+		\draw (facts) -- (facts_masked);
+		\draw (facts_masked) -- (index);
+		\path (facts_var.east) edge[bend left] (facts_output);
+		\path (facts_var.east) edge[bend left] (join2.east);
+
+		\path (empty_sub) edge[bend right] (subs_var);
+		\path (subs_var) edge[bend right] (join1.west);
+
+		\draw (rules) -- (ucc);
+		\draw (rules) -- (heads);
+		\draw (rules) -- (goals);
+		\draw (ucc) -- (heads_ucc);
+		\draw (heads) -- (heads_ucc);
+		\path (ucc.north) edge[bend right] (index.north);
+		\path (goals) edge[bend left] (join1.east);
+
+		\draw (index) -- (facts_var);
+		\draw (join1) -- (join2);
+		\path (join2.west) edge[bend left] (subs_var.west);
+		\draw (join2) -- (join3);
+		\path (join3.west) edge[bend left] (facts_var.west);
+		\path (heads_ucc) edge[bend left] (join3.east);
+	\end{tikzpicture}
+	\caption{}
+	\label{fig:substitution_indexed_ddflow}
+\end{figure}
+
+Translating this indexing scheme to differential dataflow would possibly yield a much more efficient algorithm. An arrangement in differential dataflow is a
+pre-computed, indexed representation of a collection that allows for efficient querying and manipulation of the data. These arrangements play a crucial role
+in optimizing the performance of dataflows. By carefully choosing which arrangements to create and maintain, it is possible to minimize the computational
+overhead and reduce the need for expensive recomputations.
+
+Most specifically, arrangements dictate the level of join parallelism, and due to the fact that the join operator shards the data among workers by the key of
+the arrangement, partitioning the data to be joined by a more fine-grained key than relation symbol, such as relation symbol and constant values, as on Algorithm II,
+could unlock a higher degree of parallelism.
 
 \section{Benchmarks}
 The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
