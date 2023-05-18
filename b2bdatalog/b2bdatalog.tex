@@ -12,6 +12,7 @@
 	Principles and Practice of Declarative Programming}{October 22--23,
 	2023}{Cascais, Lisbon, Portugal}
 
+\usepackage{multirow}
 \usepackage{microtype}
 \usepackage{tikz,tikz-qtree}
 \usetikzlibrary{positioning}
@@ -804,6 +805,73 @@ the arrangement, partitioning the data to be joined by a more fine-grained key t
 constant values, as on Algorithm II, a higher degree of parallelism could be unlocked.
 
 \section{Benchmarks}
+\begin{table*}[!ht]
+	\caption{Multi-column and multi-row table}
+	\begin{center}
+		\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+			Dataset & Program                 & Batch & \multicolumn{3}{c|}{diff} & \multicolumn{3}{c|}{diff^{I}} & \multicolumn{3}{c|}{chibi} & \multicolumn{3}{c|}{chibi^{I}} & \multicolumn{3}{c|}{rel}                                                                       \\
+			\hline
+			        &                         &       & Mat                       & +                             & -                          & Mat                            & +                        & -    & Mat  & +    & -    & Mat  & +    & -    & Mat  & +    & -    \\
+			\hline
+			LUBM1   & \multirow{6}{*}{rdfs}   & 0.50  & 1.47                      & 1.43                          & 1.40                       & 0.47                           & 0.48                     & 0.49 & 124  & 530  & 584  & 0.84 & 1.13 & 1.62 & 0.71 & 1.02 & 1.58 \\
+			        &                         & 0.75  & 2.15                      & 0.74                          & 0.73                       & 0.67                           & 0.29                     & 0.25 & 276  & 559  & 369  & 1.10 & 1.01 & 1.38 & 1.01 & 0.97 & 1.42 \\
+			        &                         & 0.90  & 2.58                      & 0.33                          & 0.34                       & 0.84                           & 0.14                     & 0.13 & 397  & 573  & 168  & 1.40 & 1.02 & 1.22 & 1.26 & 1.03 & 1.42 \\
+			        &                         & 0.99  & 2.91                      & 0.05                          & 0.05                       & 0.95                           & 0.05                     & 0.03 & 486  & 584  & 23   & 1.54 & 1.00 & 0.97 & 1.41 & 0.97 & 1.23 \\
+			        &                         & 0.999 & 2.94                      & 0.03                          & 0.01                       & 0.97                           & 0.03                     & 0.02 & 487  & 586  & 5.5  & 1.60 & 1.00 & 1.23 & 1.38 & 0.94 & 1.45 \\
+			        &                         & 1.00  & 2.89                      & 0                             & 0                          & 0.99                           & 0                        & 0    & 487  & 0    & 0    & 1.34 & 0    & 0    & 1.20 & 0    & 0    \\
+			\cline{2-18}
+			        & \multirow{6}{*}{rdfs-s} & 0.50  & 0.84                      & 1.11                          & 0.92                       & 0.27                           & 0.29                     & 0.35 & 0.72 & 1.2  & 126  & 0.65 & 1.11 & 1.67 & 0.63 & 1.25 & 1.72 \\
+			        &                         & 0.75  & 1.31                      & 0.46                          & 0.49                       & 0.35                           & 0.17                     & 0.16 & 1.11 & 1.04 & 103  & 1.11 & 1.21 & 1.3  & 0.94 & 1.03 & 1.41 \\
+			        &                         & 0.90  & 1.67                      & 0.24                          & 0.23                       & 0.40                           & 0.09                     & 0.09 & 1.3  & 1.10 & 54   & 1.12 & 1.08 & 1.2  & 1.26 & 1.16 & 1.32 \\
+			        &                         & 0.99  & 1.72                      & 0.05                          & 0.05                       & 0.44                           & 0.05                     & 0.02 & 1.5  & 1.1  & 9.5  & 1.48 & 1.09 & 1.1  & 1.28 & 1.20 & 1.58 \\
+			        &                         & 0.999 & 1.65                      & 0.03                          & 0.02                       & 0.45                           & 0.03                     & 0.02 & 1.5  & 1.0  & 2.9  & 1.39 & 1.10 & 1.0  & 1.46 & 1.32 & 1.52 \\
+			        &                         & 1.00  & 1.77                      & 0                             & 0                          & 0.45                           & 0                        & 0    & 1.2  & 0    & 0    & 1.38 & 0    & 0    & 1.12 & 0    & 0    \\
+			\cline{2-18}
+			        & \multirow{6}{*}{owl2rl} & 0.50  & 3.16                      & 8.48                          & 9.19                       & OOM                            & OOM                      & OOM  & OOT  & OOT  & OOT  & 31.1 & 85.7 & 55.9 & 32.0 & 88.1 & 16.3 \\
+			        &                         & 0.75  & 6.59                      & 4.91                          & 5.00                       & OOM                            & OOM                      & OOM  & OOT  & OOT  & OOT  & 66.8 & 71.7 & 36.4 & 85.1 & 81.3 & 16.1 \\
+			        &                         & 0.90  & 9.50                      & 2.42                          & 2.29                       & OOM                            & OOM                      & OOM  & OOT  & OOT  & OOT  & 114  & 63.5 & 15.1 & 130  & 70   & 16.3 \\
+			        &                         & 0.99  & 11.2                      & 0.04                          & 0.03                       & OOM                            & OOM                      & OOM  & OOT  & OOT  & OOT  & 114  & 60.2 & 2.52 & 156  & 34   & 0.60 \\
+			        &                         & 0.999 & 11.3                      & 0.03                          & 0.02                       & OOM                            & OOM                      & OOM  & OOT  & OOT  & OOT  & 117  & 73.3 & 1.3  & 161  & 34   & 0.61 \\
+			        &                         & 1.00  & 11.2                      & 0                             & 0                          & OOM                            & 0                        & 0    & OOT  & 0    & 0    & 138  & 0    & 0    & 162  & 0    & 0    \\
+			\hline
+			RAND-1k & \multirow{6}{*}{tc}     & 0.50  & 0.06                      & 1.07                          & 1.02                       & 0.03                           & 0.08                     & 0.10 & 0.03 & 0.48 & 1.08 & 0.01 & 0.13 & 0.17 & 0.01 & 0.13 & 0.13 \\
+			        &                         & 0.75  & 0.23                      & 0.94                          & 0.91                       & 0.05                           & 0.07                     & 0.07 & 0.14 & 0.42 & 2.25 & 0.02 & 0.12 & 0.23 & 0.02 & 0.13 & 0.16 \\
+			        &                         & 0.90  & 0.64                      & 0.56                          & 0.56                       & 0.07                           & 0.06                     & 0.05 & 0.45 & 0.48 & 5.96 & 0.08 & 0.15 & 0.70 & 0.07 & 0.15 & 0.26 \\
+			        &                         & 0.99  & 1.05                      & 0.17                          & 0.17                       & 0.08                           & 0.03                     & 0.03 & 0.77 & 0.52 & 0.72 & 0.12 & 0.16 & 0.15 & 0.11 & 0.16 & 0.16 \\
+			        &                         & 0.999 & 1.13                      & 0.03                          & 0.03                       & 0.09                           & 0.01                     & 0.01 & 0.85 & 0.43 & 0.11 & 0.16 & 0.07 & 0.06 & 0.14 & 0.05 & 0.05 \\
+			        &                         & 1.00  & 1.15                      & 0.05                          & 0.05                       & 0.10                           & 0                        & 0    & 0.86 & 0    & 0    & 0.16 & 0    & 0    & 0.14 & 0    & 0    \\
+			\hline
+			RMAT-1k & \multirow{6}{*}{tc}     & 0.50  & 1.30                      & 13.0                          & 11.2                       & 0.63                           & 2.51                     & 3.83 & 0.99 & 5.01 & 7.70 & 0.12 & 1.40 & 2.03 & 0.20 & 1.36 & 1.72 \\
+			        &                         & 0.75  & 5.29                      & 9.22                          & 8.59                       & 1.51                           & 2.13                     & 2.57 & 3.71 & 4.52 & 8.84 & 0.57 & 1.67 & 2.06 & 0.61 & 1.54 & 1.84 \\
+			        &                         & 0.90  & 8.88                      & 4.09                          & 3.91                       & 2.11                           & 1.08                     & 0.95 & 6.17 & 5.25 & 9.48 & 0.89 & 1.72 & 2.11 & 0.89 & 1.67 & 2.01 \\
+			        &                         & 0.99  & 12.0                      & 0.76                          & 0.59                       & 2.40                           & 0.06                     & 0.06 & 8.32 & 5.51 & 10.2 & 1.12 & 1.68 & 2.68 & 1.20 & 1.55 & 2.28 \\
+			        &                         & 0.999 & 12.7                      & 0.04                          & 0.04                       & 2.36                           & 0.01                     & 0.01 & 8.79 & 4.63 & 0.55 & 1.25 & 0.90 & 0.69 & 1.31 & 0.58 & 0.78 \\
+			        &                         & 1.00  & 12.8                      & 0                             & 0                          & 2.31                           & 0                        & 0    & 8.78 & 0    & 0    & 1.26 & 0    & 0    & 1.30 & 0    & 0    \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\label{tab:multicol}
+\end{table*}
+
+
+
+
+It is worth noting that the performance of DRED is entirely dependent on what data is in the update, for instance, it is possible that certain facts could trigger less candidate overdeletions than others,
+
+As we have already suggested,
+the choice of the facts in E can significantly affect the per-
+formance of the two algorithms. Thus, to estimate typical
+performance, we would have to run the algorithms on many
+random subsets of E, which is infeasible since each run can
+take a long time. However, we expect the ‘equilibrium’ point
+E to be sufficiently large to contain a mixture of ‘easy’ eq
+and ‘hard’ facts, so the performance of the two algorithms
+should not be greatly influenced by the actual choices. Con-
+sequently, we randomly selected just one ‘equilibrium’ point
+E. Furthermore, for practical reasons, we randomly se- eq
+lected subsets of E containing 100 facts, 5000 facts, and eq
+25%, 50%, and 75% of E− . 
+
 The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
 programming language, and use the same elementary memory model, possibly strong empirical statements can be made with respect to the specificities of their implementations.
 
