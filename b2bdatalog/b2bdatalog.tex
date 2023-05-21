@@ -501,8 +501,6 @@ reduce-like API.
 		\draw (join2) -- (join3);
 		\path (join3.west) edge[bend left] (facts_var.west);
 		\path (map) edge[bend left] (join3.east);
-
-
 	\end{tikzpicture}
 	\caption{}
 	\label{fig:substitution_simple_ddflow}
@@ -586,7 +584,7 @@ once, for every atom. This inefficiency can be demonstrated the following exampl
 alternate derivation step of some rule: $R(?x, ?z) <- T(?x, ?y), T(?y, ?z)$, with $-R$ representing the overdeletion estimation
 from the previous step.
 
-Let $P = \{+R(?x, ?z) <- -R(?x, ?z), T(?x, ?y), T(?y, ?z)\}$, and $EDB = \{T(a, b), T(b, c), T(c, d), -R(a, c), -R(b, d)\}$
+Let $P = \{+R(?x, ?z) \leftarrow -R(?x, ?z), T(?x, ?y), T(?y, ?z)\}$, and $EDB = \{T(a, b), T(b, c), T(c, d), -R(a, c), -R(b, d)\}$
 
 Algorithm I will have three iterations:
 \begin{enumerate}
@@ -796,7 +794,7 @@ instead of only relation symbols.
 	      relation symbol, that will index each fact by all column combinations.
 \end{enumerate}
 
-This dataflow is possibly much more efficient . An arrangement in differential dataflow is a pre-computed, indexed representation of a collection that allows
+This dataflow is possibly much more efficient. An arrangement in differential dataflow is a pre-computed, indexed representation of a collection that allows
 for efficient querying and manipulation of the data. These arrangements play a crucial role in optimizing the performance of dataflows. By carefully choosing
 which arrangements to create and maintain, it is possible to minimize the computational overhead and reduce the need for expensive recomputations.
 
@@ -805,6 +803,79 @@ the arrangement, partitioning the data to be joined by a more fine-grained key t
 constant values, as on Algorithm II, a higher degree of parallelism could be unlocked.
 
 \section{Benchmarks}
+Three thorough experiments were conducted in order to showcase relative performance, scalability, and memory usage, of all reasoners, with the intent being twofold:
+to evaluate the performance characteristics of differential dataflow, in isolation of virtually all other elements, and to establish as to whether general algorithmic
+improvements, such as the demand-driven indexing scheme, are portable to differential dataflow.
+
+\textbf{Setup.} The experiments were run on a google-cloud-provisioned x86 machine of type e2-standard-16, with 16 intel skylake cores and 64 gigabytes of RAM. Each
+benchmark measurement was taken 50 times and averaged out.
+
+\begin{exmp}{RhoDFS inference rules}
+	\tiny
+	\begin{align}
+		T(?x, ?y, ?z) \leftarrow \text{rdf}(?x, ?y, ?z)                                                       \\
+		T(?y, rdf:type, ?x) \leftarrow T(?a, rdfs:domain, ?x), T(?y, ?a, ?z)                                  \\
+		T(?z, rdf:type, ?x) \leftarrow T(?a, rdfs:range, ?x), T(?y, ?a, ?z)                                   \\
+		T(?x, rdfs:subPropertyOf, ?z) \leftarrow T(?x, rdfs:subPropertyOf, ?y), T(?y, rdfs:subPropertyOf, ?z) \\
+		T(?x, rdfs:subClassOf, ?z) \leftarrow T(?x, rdfs:subClassOf, ?y), T(?y, rdfs:subClassOf, ?z)          \\
+		T(?z, rdf:type, ?y) \leftarrow T(?x, rdfs:subClassOf, ?y), T(?z, rdf:type, ?x)                        \\
+		T(?x, ?b, ?y) \leftarrow T(?a, rdfs:subPropertyOf, ?b), T(?x, ?a, ?y)
+	\end{align}
+	\label{program:rhodfs}
+\end{exmp}
+
+\begin{exmp}{RhoDFS-s inference rules}
+	\tiny
+	\begin{align}
+		rdfs:domain(?a, ?x) \leftarrow rdf(?a, rdfs:domain, ?x)                                      \\
+		rdfs:range(?a, ?x) \leftarrow rdf(?a, rdfs:range, ?x)                                        \\
+		rdf:type(?y, ?x) \leftarrow rdf(?y, rdf:type, ?x)                                            \\
+		rdfs:subPropertyOf(?x, ?z) \leftarrow rdf(?x, rdfs:subPropertyOf, ?z)                        \\
+		rdfs:subClassOf(?x, ?z) \leftarrow rdf(?x, rdfs:subClassOf, ?z)                              \\
+		rdf:type(?y, ?x) \leftarrow rdfs:domain(?a, ?x), rdf(?y, ?a, ?z)                             \\
+		rdf:type(?z, ?x) \leftarrow rdfs:range(?a, ?x), rdf(?y, ?a, ?z)                              \\
+		rdfs:subPropertyOf(?x, ?z) \leftarrow rdfs:subPropertyOf(?x, ?y), rdfs:subPropertyOf(?y, ?z) \\
+		rdfs:subClassOf(?x, ?z) \leftarrow rdfs:subClassOf(?x, ?y), rdfs:subClassOf(?y, ?z)          \\
+		rdf:type(?z, ?y) \leftarrow rdfs:subClassOf(?x, ?y), rdf:type(?z, ?x)                        \\
+		rdf(?x, ?b, ?y) \leftarrow rdfs:subPropertyOf(?a, ?b), T(?x, ?a, ?y)
+	\end{align}
+	\label{program:rhodfss}
+\end{exmp}
+
+\begin{table}[]
+	\begin{tabular}{|l|l|l|}
+		Dataset & Area of Interest & Programs                 \\
+		LUBM    & semantic web     & RhoDFS, RhoDFS-s, OWL2RL \\
+		RMAT1K  & synthetic        & tc                       \\
+		RAND1K  & synthetic        & tc                       \\
+	\end{tabular}
+	\label{table:datasets}
+\end{table}
+
+\textbf{Datasets.} On table \ref{table:datasets} all datasets and program names, or acronyms, are shown. There are two areas of interest. The semantic web has very
+specific use-cases for datalog, and are the leading source of research in extending the datalog mathematical formalism, and in providing improvements to decades-old
+algorithms, such as DRED, with the backward-forward algorithm\cite{dredbf}. Seeking ways to introduce tuple-generating dependencies to programs, with evaluation remaining
+tractable, has been one of the most active research directions, with highly-influential papers establishing new families of datalog languages\cite{datalog_plus_minus} and
+thoroughly exploring their complexity classes alongside even further extensions\cite{sticky,warded,monadic}. These advancements have been somewhat tested in practice, albeit
+with no full reference implementation having been specified. The most comprehensive, and recent, is closed-source\cite{vadalog}. The leading datalog engine in general, is
+also closed-source\cite{rdfox}, and is tailored specifically to the semantic web.
+
+The second area of interest is of purely mathematical synthetic graph benchmarks, that allow for generating infinitely-scalable specific graph structures. all datasets however,
+including LUBM\cite{lubm}, are synthetic, with the difference being that there are multiple specific programs for RhoDFS.
+\begin{itemize}
+	\item \textbf{LUBM} is a classic inference benchmark dataset for both RhoDFS and OWL2RL rulesets. The data is divided in two parts, the TBox, terminological box, that holds
+	      an ontology able to describe universities, and the ABox, assertional box, that asserts facts about universities using the terminology in the TBox. The RhoDFS ruleset, depicted
+	      on \ref{program:rhodfs}, is relatively simple, but complex, there being only a single relation, that is mutually recursive in every single rule. RhoDFS-s \ref{program:rhodfss} is an improved version of RhoDFS,
+	      that creates new relations for every single constant combination in the original program, avoiding every body atom implying a full dataset, mimicking the relational selection. The
+	      last ruleset, OWL2RL, has over 100 rules and is by far the most complex, representing the lower bound of OWL2RL implications, specific of the LUBM Tbox. More information on converting
+	      description logic entailments to datalog can be found on\cite{descr_to_dlog}.
+	\item \textbf{RMAT1k}. is a graph generated by the \verb|rmat| profile of the GT\cite{gtgraph} graph generator, used to benchmark various other reasoners\cite{recstep}\cite{bigdatalog}.
+	      The dataset is a graph with ten times the number of edges as vertices, that follows an inverse power-law distribution.
+	\item \textbf{RAND1k} is also a graph generated with the \verb|rand| profile of GT. The dataset is comprised of a graph that has one thousand edges, with each
+	      having 0.01 probability of being connected to every other. In spite of having a small number of nodes, it is incredibly dense, with the output of the transitive closure program having almost
+	      a hundred times more edges than the initial graph.
+\end{itemize}
+
 \begin{table*}[!ht]
 	\caption{Multi-column and multi-row table}
 	\begin{center}
@@ -850,13 +921,10 @@ constant values, as on Algorithm II, a higher degree of parallelism could be unl
 			\hline
 		\end{tabular}
 	\end{center}
-	\label{tab:multicol}
+	\label{tab:mainbenchmark}
 \end{table*}
 
-
-
-
-It is worth noting that the performance of DRED is entirely dependent on what data is in the update, for instance, it is possible that certain facts could trigger less candidate overdeletions than others,
+On table \ref{tab:mainbenchmark}, the most relevant benchmark can be found.
 
 As we have already suggested,
 the choice of the facts in E can significantly affect the per-
@@ -869,34 +937,12 @@ and ‘hard’ facts, so the performance of the two algorithms
 should not be greatly influenced by the actual choices. Con-
 sequently, we randomly selected just one ‘equilibrium’ point
 E. Furthermore, for practical reasons, we randomly se- eq
-lected subsets of E containing 100 facts, 5000 facts, and eq
+lected subsets of E containing 100 facts, 5000 facts, and e
 25%, 50%, and 75% of E− . 
 
-The aim of the experiments is to showcase relative performance, and scalability. Given that all reasoners to be compared share as much code as possible, are written in the same
-programming language, and use the same elementary memory model, possibly strong empirical statements can be made with respect to the specificities of their implementations.
 
 
 redo all, make graphs paper worthy
-
-
-\textbf{Setup.} The experiments were run on commodity hardware, a MacbookPro with an M1 Pro processor and 16GB of ram, and in no test did swap memory was reached for.
-Rust version 1.65 was used.
-
-\begin{table}[]
-	\begin{tabular}{llll}
-		Dataset    & Area             & Programs   \\
-		linux      & program analysis & CSPA, CSDA \\
-		postgresql & program analysis & CSPA, CSDA \\
-		httpd      & program analysis & CSPA, CSDA \\
-		LUBM       & semantic web     & RhoDFS
-	\end{tabular}
-	\label{table:datasets}
-\end{table}
-
-\textbf{Datasets.} On table \ref{table:datasets} all datasets and program names, or acronyms, are shown. There are two areas of interest. The first is program analysis, a highly active research
-field that has propelled significant advancements in datalog reasoners, such as \cite{incA}, an incremental datalog engine extended with lattices and recursive aggregates, and
-souffle\cite{souffle}, a priceless source of more than half a dozen papers on the engineering aspects of a reasoner. While the latter's point is to run pre-defined programs over
-large datasets, the former is meant for more dynamic scenarios, such as in running and maintaining program analyses.
 
 The semantic web has very unique use-cases for datalog, and are the leading source of research in extending datalog. Seeking ways to introduce tuple-generating dependencies to
 programs, with evaluation remaining tractable, has been one of the most active research directions, with highly-influential papers establishing new families of datalog
@@ -904,45 +950,6 @@ languages\cite{datalog_plus_minus} and thoroughly exploring their complexity cla
 
 These advancements have been somewhat tested in practice, albeit with no full reference implementation having been specified. The most comprehensive, and recent, is closed-source\cite{vadalog}.
 The leading datalog engine in general, is also closed-source\cite{rdfox}, and is tailored specifically to the semantic web.
-
-\begin{exmp}{Context-sensitive Points-to Analysis Program}
-	\tiny
-	\begin{align}
-		valueFlow(?x, ?y) \leftarrow assign(?x, ?y)                                                 \\
-		valueFlow(?x, ?z) \leftarrow assign(?x, ?y), memoryAlias(?y, ?z)                            \\
-		valueFlow(?x, ?z) \leftarrow valueFlow(?x, ?y), valueFlow(?y, ?z)                           \\
-		memoryAlias(?x, ?w) \leftarrow dereference(?x, ?y), valueAlias(?y, ?z), dereference(?z, ?w) \\
-		valueAlias(?y, ?z) \leftarrow valueFlow(?x, ?y), valueFlow(?x, ?z)                          \\
-		valueAlias(?y, ?z) \leftarrow valueFlow(?x, ?y), memoryAlias(?x, ?w), valueFlow(?w, ?z)     \\
-		valueFlow(?x, ?x) \leftarrow assign(?x, ?y)                                                 \\
-		valueFlow(?x, ?x) \leftarrow assign(?y, ?x)                                                 \\
-		memoryAlias(?x, ?x) \leftarrow assign(?y, ?x)                                               \\
-		memoryAlias(?x, ?x) \leftarrow assign(?x, ?y)
-	\end{align}
-	\label{program:cspa}
-\end{exmp}
-
-\begin{exmp}{Context-sensitive Dataflow Analysis}
-	\tiny
-	\begin{align}
-		null(?x, ?y) \leftarrow nullEdge(?x, ?y) \\
-		null(?x, ?y) \leftarrow null(?x, ?y), arc(?y, ?z)
-	\end{align}
-	\label{program:csda}
-\end{exmp}
-
-\begin{exmp}{RhoDFS inference rules}
-	\tiny
-	\begin{align}
-		A(?y, rdf:type, ?x) \leftarrow T(?a, rdfs:domain, ?x), A(?y, ?a, ?z)                                  \\
-		A(?z, rdf:type, ?x) \leftarrow T(?a, rdfs:range, ?x), A(?y, ?a, ?z)                                   \\
-		T(?x, rdfs:subPropertyOf, ?z) \leftarrow T(?x, rdfs:subPropertyOf, ?y), T(?y, rdfs:subPropertyOf, ?z) \\
-		T(?x, rdfs:subClassOf, ?z) \leftarrow T(?x, rdfs:subClassOf, ?y), T(?y, rdfs:subClassOf, ?z)          \\
-		A(?z, rdf:type, ?y) \leftarrow T(?x, rdfs:subClassOf, ?y), A(?z, rdf:type, ?x)                        \\
-		A(?x, ?b, ?y) \leftarrow T(?a, rdfs:subPropertyOf, ?b), A(?x, ?a, ?y)
-	\end{align}
-	\label{program:rhodfs}
-\end{exmp}
 
 The first program, \ref{program:cspa}\cite{graspan}, expresses pointer analysis, whose goal is to establish which assignments yield value aliases and memory aliases as a reachability problem. Program \ref{program:csda} directly models checking a program's control-flow graph for null edges as a simple transitive-closure computation. The last program, \ref{program:rhodfs}, is used to materialize the non-trivial inference rules from RDFS\cite{rdfs}, a popular data modelling logic for adding semantics to RDF\cite{rdf} data.
 
