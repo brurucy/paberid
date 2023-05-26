@@ -197,7 +197,7 @@ and makes use of its most advanced feature, incremental stream processing.
 \section{Background}
 
 \textit{Datalog}\cite{datalog} is a declarative programming language. A program $P$ is a set of
-rules $r$, with each $r$ being a restriction of tuple-generating dependencies: \[\bigwedge_{i=1}^kB_i(x_1, ..., x_j) \rightarrow H(x_1, ..., x_j)\]
+rules $r$, with each $r$ being a restriction of tuple-generating dependencies: \[H(x_1, ..., x_j) \leftarrow \bigwedge_{i=1}^kB_i(x_1, ..., x_j) \]
 with $k$, $j$ as finite integers, $x$ as terms, and each $B_i$ and $H$ as predicates. A term can belong
 either to the set of variables, or constants. The set of all $B_i$ is called the \textit{body}, and $H$ the \textit{head}.
 
@@ -206,13 +206,11 @@ thereby not there being the possibility for existential variables to exist, conv
 all rules are datalog.
 
 \begin{exmp}{Datalog Program}\label{ex1}
-	\[
-		P = \left\{  \begin{array}{l}
-			\text{SubClassOf}(?x, ?y) \wedge \text{SubClassOf}(?y, ?z) \rightarrow \text{SubClassOf}(?x, ?z) \\
-		\end{array}\right\}
-	\]
+	\begin{align*}
+		P = \{\text{SubClassOf}(?x, ?y) \leftarrow & \text{SubClassOf}(?x, ?y), \text{SubClassOf}(?y, ?z) \}
+	\end{align*}
 \end{exmp}
-Example \ref{ex1} shows a simple valid recursive program. The only rule denotes that \textit{for all x, y, z, if x is
+Example \ref{ex1} shows a simple valid recursive program. The single rule denotes that \textit{for all x, y, z, if x is
 	in a SubClassOf relation with y, and y is in a SubClassOf relation with z, then it follows that x is in a subClassOf
 	relation with z}.
 
@@ -240,13 +238,13 @@ delta program will generate one new $\Delta$rule for each $b_j$ in each rule bod
 represent that only facts that have been recently inferred are being taken into account.
 
 \begin{exmp}{Semi-naive Evaluation Delta Program}
-	\tiny
-	\begin{align}
-		P = \{ TC(?x, ?z) \leftarrow TC(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                           \\
-		r_0 = TC(?x, ?y) \leftarrow Edge(?x, ?y)                                                                                                                       \\
-		\Delta r_1 = TC(?x, ?z) \leftarrow \Delta TC(?x, ?y), TC(?y, ?z)                                                                                     \nonumber \\
-		\Delta r_2 = TC(?x, ?z) \leftarrow TC(?x, ?y), \Delta TC(?y, ?z)
-	\end{align}
+	\begin{align*}
+		P = \{TC(?x, ?y) \leftarrow        & Edge(?x, ?y)                  \\
+		TC(?x, ?z) \leftarrow              & TC(?x, ?y), TC(?y, ?z) \}     \\
+		r_0 = TC(?x, ?y) \leftarrow        & Edge(?x, ?y)                  \\
+		\Delta r_1 = TC(?x, ?z) \leftarrow & \Delta TC(?x, ?y), TC(?y, ?z) \\
+		\Delta r_2 = TC(?x, ?z) \leftarrow & TC(?x, ?y), \Delta TC(?y, ?z)
+	\end{align*}
 	\label{exsne}
 \end{exmp}
 
@@ -272,13 +270,13 @@ overdeletion program will generate one new $-$rule for each $b_j$ in each rule b
 that if such fact were to be deleted, then $h(r_i)$ would not hold true.
 
 \begin{exmp}{DRED Overdeletion Program}
-	\tiny
-	\begin{align}
-		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                \\
-		-r_0 = -TC(?x, ?y) \leftarrow -Edge(?x, ?y)                                                                                                           \\
-		-r_1 = -TC(?x, ?z) \leftarrow -Edge(?x, ?y), TC(?y, ?z)                                                                                     \nonumber \\
-		-r_2 = -TC(?x, ?z) \leftarrow Edge(?x, ?y), -TC(?y, ?z)
-	\end{align}
+	\begin{align*}
+		P = \{TC(?x, ?y) \leftarrow   & Edge(?x, ?y)              \\
+		TC(?x, ?z) \leftarrow         & TC(?x, ?y), TC(?y, ?z) \} \\
+		-r_0 = -TC(?x, ?y) \leftarrow & -Edge(?x, ?y)             \\
+		-r_1 = -TC(?x, ?z) \leftarrow & -Edge(?x, ?y), TC(?y, ?z) \\
+		-r_2 = -TC(?x, ?z) \leftarrow & Edge(?x, ?y), -TC(?y, ?z)
+	\end{align*}
 	\label{ex6}
 \end{exmp}
 
@@ -291,13 +289,13 @@ still hold true. The alternative derivation program will generate one new $+$rul
 one extra $-$ head predicate per body, representing an overdeleted fact. The $+$ program requires the overdeleted
 facts to not be present.
 
-\begin{exmp}{DRED Alternative Rederivation}
-	\tiny
-	\begin{align}
-		P = \{ TC(?x, ?z) \leftarrow Edge(?x, ?y), TC(?y, ?z); TC(?x, ?y) \leftarrow Edge(?x, ?y) \} \nonumber                                                           \\
-		r_0 = +TC(?x, ?y) \leftarrow -TC(?x, ?y), Edge(?x, ?y)                                                                                                           \\
-		r_1 = +TC(?x, ?z) \leftarrow -TC(?x, ?z), Edge(?x, ?y), TC(?y, ?z)                                                                                     \nonumber \\
-	\end{align}
+\begin{exmp}{DRED Alternative Derivation Program}
+	\begin{align*}
+		P = \{TC(?x, ?y) \leftarrow  & Edge(?x, ?y)                          \\
+		TC(?x, ?z) \leftarrow        & TC(?x, ?y), TC(?y, ?z) \}             \\
+		r_0 = +TC(?x, ?y) \leftarrow & -TC(?x, ?y), Edge(?x, ?y)             \\
+		r_1 = +TC(?x, ?z) \leftarrow & -TC(?x, ?z), Edge(?x, ?y), TC(?y, ?z)
+	\end{align*}
 	\label{ex7}
 \end{exmp}
 
@@ -309,7 +307,7 @@ rule $r_0$, then there is an alternative derivation for \verb|TC(3, 4)|.
 As it can be seen, computing the maintenance of the materialization implies evaluating a program bigger than the
 materialization itself, however, due to the fact that it is evaluated with semi-naive evaluation, the asymptotic
 complexity remains the same\cite{complexity_of_dred}. Nonetheless, in practice, deletion is often much slower than
-addition, as it can be trivially seen by the worst-possible scenario, in which all facts are deleted, where while
+addition, as it can be trivially seen by the worst-possible scenario, in which all facts are deleted, whereby while
 materialization would be free, DRED would inquire an expensive overdeletion computation.
 
 \subsection{Substitution-based evaluation}
@@ -330,7 +328,7 @@ The substitution-based method computes the immediate consequence of the rule $r$
 Define the initial set of substitutions as $\Sigma_0 = { \sigma_0 }$, where $\sigma_0$ is an empty substitution. For
 each body atom $b_i$, find the set of ground facts $F_j \subseteq F$ that match $b_i$.
 
-\paragraph{Algorithm I.} Substitution-based Immediate Consequence Computation
+\paragraph{Algorithm I} Substitution-based Immediate Consequence Computation
 \begin{enumerate}
 \item Initialize the initial set of substitutions $\Sigma_{0}$. Let $F$ be the initial set of facts.
 \textbf{For} each $i = 1, 2, \ldots, m$:
@@ -642,7 +640,11 @@ also contain this indexing.
 		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[] : [[?x, ?z]]\}$
 		      \item Index 2 - Index $-R$ based on all distinct values of the column keys of index 1 : $\{[]: [[a, c], [b, d]]\}$
 		      \item Index 3 - Join Index 1 with Index 2 - $\{[] : ([[?x, ?z]], \{[]: [[a, c], [b, d]]\})\}$
-		      \item Join both sides of the resulting tuples: $[([?x, ?z], [[a, c]]), ([?x, ?z], [[b, d]])]$
+		      \item Join both sides of the resulting tuples:
+		            \begin{itemize}
+			            \item left: $([?x, ?z], [[a, c]])$
+			            \item right: $([?x, ?z], [[b, d]])$
+		            \end{itemize}
 		      \item Attempt to unify:
 		            \begin{enumerate}
 			            \item unification: -R(?x, ?z) U -R(a, c) = $\{?x \rightarrow a, ?z \rightarrow c\}$
@@ -653,9 +655,17 @@ also contain this indexing.
 		      \item Current body atom: $T(?x, ?y)$, $\Sigma_1$: $[\{?x \rightarrow a, ?z \rightarrow c\}, \{?x \rightarrow b, ?z \rightarrow d\}]$
 		      \item Fresh atoms - Applying all $\sigma : \Sigma_1$ to $T(?x, ?y)$ yields $T(a, ?y)$, $T(b, ?y)$
 		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[0] : [[a, ?z], [b, ?z]]\}$
-		      \item Index 2 - Index $T$ based on all distinct values of the column keys of index 1 : $\{[0]: \{[a]: [[b]], [[b]]: [[c]], [c]: [[d]]\}\}$
-		      \item Index 3 - Join Index 1 with Index 2 - $\{[0] : ([[a, ?y], [b, ?y]], \{[a]: [[b]], [[b]]: [[c]], [c]: [[d]]\})\}$
-		      \item Join both sides of the resulting tuples: $[([?y], [[b]]), ([?y], [[c]])]$
+		      \item Index 2 - Index $T$ based on all distinct values of the column keys of index 1  $\{[0]: \{[a]: [[b]], [[b]]: [[c]], [c]: [[d]]\}\}$
+		      \item Index 3 - Join Index 1 with Index 2:
+		            \begin{itemize}
+			            \item left: $([?y], [[b]]])$
+			            \item right: $([?y], [[c]]])$
+		            \end{itemize}$\{[0] : ([[a, ?y], [b, ?y]], \{[a]: [[b]], [[b]]: [[c]], [c]: [[d]]\})\}$
+		      \item Join both sides of the resulting tuples:
+		            \begin{itemize}
+			            \item left: $([?y], [[b]]])$
+			            \item right: $([?y], [[c]]])$
+		            \end{itemize}
 		      \item Attempt to unify:
 		            \begin{enumerate}
 			            \item unification: T(a, ?y) U T(a, b) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
@@ -809,37 +819,43 @@ improvements, such as the demand-driven indexing scheme, are portable to DD.
 \textbf{Setup.} The experiments were run on a google-cloud-provisioned x86 machine of type e2-standard-16, with 16 intel skylake cores and 64 gigabytes of RAM. Each
 benchmark measurement was taken 50 times and averaged out.
 \begin{exmp}{RhoDFS inference rules}
-	\tiny
 	\begin{align*}
-		T(?x, ?y, ?z) \leftarrow \text{rdf}(?x, ?y, ?z)                                \\
-		T(?y, rdf:type, ?x) \leftarrow T(?a, rdfs:domain, ?x), T(?y, ?a, ?z)           \\
-		T(?z, rdf:type, ?x) \leftarrow T(?a, rdfs:range, ?x), T(?y, ?a, ?z)            \\
-		T(?x, rdfs:subPropertyOf, ?z) \leftarrow T(?x, rdfs:subPropertyOf, ?y),        \\
-		T(?y, rdfs:subPropertyOf, ?z)                                                  \\
-		T(?x, rdfs:subClassOf, ?z) \leftarrow T(?x, rdfs:subClassOf, ?y),              \\
-		T(?y, rdfs:subClassOf, ?z)                                                     \\
-		T(?z, rdf:type, ?y) \leftarrow T(?x, rdfs:subClassOf, ?y), T(?z, rdf:type, ?x) \\
-		T(?x, ?b, ?y) \leftarrow T(?a, rdfs:subPropertyOf, ?b), T(?x, ?a, ?y)
+		T(?x, ?y, ?z) \leftarrow                 & \text{rdf}(?x, ?y, ?z)         \\
+		T(?y, rdf:type, ?x) \leftarrow           & T(?a, rdfs:domain, ?x),        \\
+		                                         & T(?y, ?a, ?z)                  \\
+		T(?z, rdf:type, ?x) \leftarrow           & T(?a, rdfs:range, ?x),         \\
+		                                         & T(?y, ?a, ?z)                  \\
+		T(?x, rdfs:subPropertyOf, ?z) \leftarrow & T(?x, rdfs:subPropertyOf, ?y), \\
+		                                         & T(?y, rdfs:subPropertyOf, ?z)  \\
+		T(?x, rdfs:subClassOf, ?z) \leftarrow    & T(?x, rdfs:subClassOf, ?y),    \\
+		                                         & T(?y, rdfs:subClassOf, ?z)     \\
+		T(?z, rdf:type, ?y) \leftarrow           & T(?x, rdfs:subClassOf, ?y),    \\
+		                                         & T(?z, rdf:type, ?x)            \\
+		T(?x, ?b, ?y) \leftarrow                 & T(?a, rdfs:subPropertyOf, ?b), \\
+		                                         & T(?x, ?a, ?y)
 	\end{align*}
 	\label{program:rhodfs}
 \end{exmp}
 
 \begin{exmp}{RhoDFS-s inference rules}
-	\tiny
 	\begin{align*}
-		rdfs:domain(?a, ?x) \leftarrow rdf(?a, rdfs:domain, ?x)               \\
-		rdfs:range(?a, ?x) \leftarrow rdf(?a, rdfs:range, ?x)                 \\
-		rdf:type(?y, ?x) \leftarrow rdf(?y, rdf:type, ?x)                     \\
-		rdfs:subPropertyOf(?x, ?z) \leftarrow rdf(?x, rdfs:subPropertyOf, ?z) \\
-		rdfs:subClassOf(?x, ?z) \leftarrow rdf(?x, rdfs:subClassOf, ?z)       \\
-		rdf:type(?y, ?x) \leftarrow rdfs:domain(?a, ?x), rdf(?y, ?a, ?z)      \\
-		rdf:type(?z, ?x) \leftarrow rdfs:range(?a, ?x), rdf(?y, ?a, ?z)       \\
-		rdfs:subPropertyOf(?x, ?z) \leftarrow rdfs:subPropertyOf(?x, ?y),     \\
-		rdfs:subPropertyOf(?y, ?z)                                            \\
-		rdfs:subClassOf(?x, ?z) \leftarrow rdfs:subClassOf(?x, ?y),           \\
-		rdfs:subClassOf(?y, ?z)                                               \\
-		rdf:type(?z, ?y) \leftarrow rdfs:subClassOf(?x, ?y), rdf:type(?z, ?x) \\
-		rdf(?x, ?b, ?y) \leftarrow rdfs:subPropertyOf(?a, ?b), T(?x, ?a, ?y)
+		rdfs:domain(?a, ?x) \leftarrow        & rdf(?a, rdfs:domain, ?x)        \\
+		rdfs:range(?a, ?x) \leftarrow         & rdf(?a, rdfs:range, ?x)         \\
+		rdf:type(?y, ?x) \leftarrow           & rdf(?y, rdf:type, ?x)           \\
+		rdfs:subPropertyOf(?x, ?z) \leftarrow & rdf(?x, rdfs:subPropertyOf, ?z) \\
+		rdfs:subClassOf(?x, ?z) \leftarrow    & rdf(?x, rdfs:subClassOf, ?z)    \\
+		rdf:type(?y, ?x) \leftarrow           & rdfs:domain(?a, ?x),            \\
+		                                      & rdf(?y, ?a, ?z)                 \\
+		rdf:type(?z, ?x) \leftarrow           & rdfs:range(?a, ?x),             \\
+		                                      & rdf(?y, ?a, ?z)                 \\
+		rdfs:subPropertyOf(?x, ?z) \leftarrow & rdfs:subPropertyOf(?x, ?y),     \\
+		                                      & rdfs:subPropertyOf(?y, ?z)      \\
+		rdfs:subClassOf(?x, ?z) \leftarrow    & rdfs:subClassOf(?x, ?y),        \\
+		                                      & rdfs:subClassOf(?y, ?z)         \\
+		rdf:type(?z, ?y) \leftarrow           & rdfs:subClassOf(?x, ?y),        \\
+		                                      & rdf:type(?z, ?x)                \\
+		rdf(?x, ?b, ?y) \leftarrow            & rdfs:subPropertyOf(?a, ?b),     \\
+		                                      & T(?x, ?a, ?y)
 	\end{align*}
 	\label{program:rhodfss}
 \end{exmp}
@@ -856,8 +872,8 @@ benchmark measurement was taken 50 times and averaged out.
 		\hline
 		RAND1K  & synthetic        & tc                       \\
 		\hline
-		\label{tab:datasets}
 	\end{tabular}
+	\label{tab:datasets}
 \end{table*}
 
 \textbf{Datasets.} On table \ref{tab:datasets} all datasets and program names, or acronyms, are shown. There are two areas of interest. The semantic web has very
@@ -885,7 +901,7 @@ including LUBM\cite{lubm}, are synthetic, with the difference being that there a
 \end{itemize}
 
 \subsection{Runtime comparison}
-\begin{table*}[!ht]
+\begin{table*}
 	\caption{Runtime Experimental Results}
 	\begin{center}
 		\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
@@ -975,7 +991,7 @@ The results of the previous subsection cannot be seen in an entirely positive li
 in-memory indexes to keep track of all changes, and as it was seen, it entirely failed a benchmark due to running out of memory, thus, in this section we analyze the results of
 measuring peak memory usage over the previous experiments.
 
-\begin{table*}[!ht]
+\begin{table*}
 	\caption{Memory usage experimental results}
 	\begin{center}
 		\begin{tabular}{|c|c|c|c|c|c|c|}
