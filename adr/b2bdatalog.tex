@@ -104,45 +104,45 @@ to it is the notion of fine-grained tracking, with partially-ordered timestamps,
 collections of data, rather than entire collections themselves. This approach facilitates efficient updates in response
 to changes in the underlying data\cite{differential_dataflow}.
 
-In the context of datalog, differential dataflow presents an opportunity to address the performance challenges
+In the context of datalog, differential dataflow (DD) presents an opportunity to address the performance challenges
 arising from handling additions and deletions. Contrary to traditional methods, such as semi-naive evaluation for
 additions and delete-rederive for deletions, differential dataflow provides a unified and efficient approach to
 incremental view maintenance.
 
-The utilization of partially ordered timestamps and arrangements allows differential dataflow to precisely
+The utilization of partially ordered timestamps and arrangements allows DD to precisely
 identify affected parts of the computation and to recompute only the necessary components. This leads to
 a more efficient handling of incremental updates in Datalog evaluation, as the system can focus on affected
 sub-computations rather than re-evaluating the entire program. Furthermore, there also is first-class support
 for both automatic parallelism and distributed computing, contributing to enhanced performance and scalability.
 
-DDLog\cite{ddlog} has been the only attempt at building a datalog engine that utilized differential dataflow.
+DDLog\cite{ddlog} has been the only attempt at building a datalog engine that utilized DD.
 Similarly to the high-profile reasoner Souffle\cite{souffle}, it is a compiler, in which a datalog program
 becomes an executable low-level language program, C++ in Souffle's case, and Rust for DDLog. The rationale for
-the language choice, is that differential dataflow's canonical implementation lives as a heavily optimized
+the language choice, is that DD's canonical implementation lives as a heavily optimized
 map-reduce-like framework written in Rust.
 
 Notably, given that DDLog is a compiler, it is not suited for situations where either the program is expected
 to be dynamic, with rules being added or removed, or where new programs ought to be evaluated during run
 time, therefore restricting its use case to the specific scenarios where such drawbacks are acceptable.
 
-There has been no study evaluating the isolated benefit of differential dataflow to datalog evaluation. Therefore
-the suitability of differential dataflow in this context remains unclear, emphasizing the importance of further
+There has been no study evaluating the isolated benefit of DD to datalog evaluation. Therefore
+the suitability of DD in this context remains unclear, emphasizing the importance of further
 research on its potential benefits and limitations in incremental view maintenance.
 \paragraph{Contributions.} In this work, we directly address the posited research question by developing a datalog
-interpreter utilizing differential dataflow. We then compare our implementation with other prototypical datalog
+interpreter utilizing DD. We then compare our implementation with other prototypical datalog
 interpreters, created from scratch, that share as many components as it is reasonable, in order to isolate
-the effect of differential dataflow in both runtime performance and memory efficiency. This allows us to more
-accurately empirically assess how does differential dataflow in itself fare against more traditional approaches.
+the effect of DD in both runtime performance and memory efficiency. This allows us to more
+accurately empirically assess how does DD in itself fare against more traditional approaches.
 
-Unlike DDLog, which compiles a datalog program into its evaluation as a fixed differential dataflow program, our
-approach involves writing a single differential dataflow program capable of evaluating any datalog program. This
+Unlike DDLog, which compiles a datalog program into its evaluation as a fixed DD program, our
+approach involves writing a single DD program capable of evaluating any datalog program. This
 eliminates the need for compilation and provides the additional benefit of incremental maintenance for both rule
 removals and additions.
 \paragraph{Structure of the paper.}
 \begin{itemize}
 	\item{\textbf{Background.}} A brief recapitulation of the general background, with datalog, its evaluation
 	methods, and the delete-rederive method being formally introduced.
-	\item{\textbf{Differential Evaluation.}} Differential Dataflow, and the translation of datalog evaluation to
+	\item{\textbf{Differential Evaluation.}} DD, and the translation of datalog evaluation to
 	a dataflow is showcased and explained.
 	\item{\textbf{System.}} The developed interpreters are described, alongside with all optimizations and
 	benchmark-relevant information.
@@ -151,21 +151,21 @@ removals and additions.
 \end{itemize}
 \section{Related Works}
 
-\textbf{Differential Dataflow Applications and Related Works.} There are two relevant differential dataflow projects that are worth
-mentioning. One of them is Graspan, a parallel graph processing system that uses differential dataflow for efficient
+\textbf{DD Applications and Related Works.} There are two relevant DD projects that are worth
+mentioning. One of them is Graspan, a parallel graph processing system that uses DD for efficient
 incremental computation of static program analyses over large codebases.
 
 Graspan models the program analysis problem as a reachability problem on a graph, where nodes represent program elements
-and edges represent the relationships between these elements. It leverages differential dataflow to incrementally update
+and edges represent the relationships between these elements. It leverages DD to incrementally update
 the analysis results in response to changes in the input graph, which can be due to code modifications or updates to
 the analysis rules. Graspan has demonstrated its ability to scale to large codebases and provide low-latency updates
 for various static analyses, including points-to analysis, control-flow analysis, and data-flow analysis.
 
 Another project of interest is DBSP\cite{dbsp}, a recent development, that started from the need for a more concise
-theoretical definition of differential dataflow. All of DBSP operators are based on differential dataflow's, however, its
+theoretical definition of DD. All of DBSP operators are based on DD's, however, its
 computational model is less powerful as it does not allow updates to past values in a stream, and it is also assumed that
 inputs arrive in time order. DBSP can express both incremental and non-incremental computations, with the former not being
-possible in differential dataflow.
+possible in DD.
 
 \textbf{Datalog engines.} There are two kinds of datalog engines. The first encompasses those that compile
 a datalog program to usually a systems-level programming language, and the second are interpreters, able to
@@ -176,8 +176,8 @@ C++ code. It incorporates several optimization techniques, such as parallel exec
 structures\cite{souffle_btree}, and nearly optimal join ordering\cite{souffle_join}. Notably, its development has
 been an unparalleled source of articles on the engineering of reasoners.
 
-DDLog As previously mentioned, compiles datalog to differential dataflow, achieving efficient differential data updates
-for datalog programs. It demonstrates the applicability of differential dataflow in the context of declarative logic
+DDLog As previously mentioned, compiles datalog to DD, achieving efficient differential data updates
+for datalog programs. It demonstrates the applicability of DD in the context of declarative logic
 programming and incremental view maintenance.
 
 The majority of reasoners recently developed have been mostly interpreters, further split into distributed or
@@ -377,13 +377,13 @@ operators. This form is very often seen in practice, being equivalent to \verb|S
 queries, and highly benefits from being equivalent to conjunctive queries, that are equivalent to single-rule and
 non-recursive datalog programs.
 
-Differential dataflow either implements, or makes it trivial to do so, all of the aforementioned relational algebra
+DD either implements, or makes it trivial to do so, all of the aforementioned relational algebra
 operations, but lifted to the multiset domain, which implies that there must be some additional step to fit them
 into datalog's set semantics.
 
 \section{Differential Evaluation}
 
-\subsection{Differential dataflow} is a computational model that generalizes incremental processing to
+\subsection{Differential Dataflow} is a computational model that generalizes incremental processing to
 times that are possibly partially ordered, and specifically operates over multisets of differences, which
 can be either additions or retractions, instead of over the full data.
 
@@ -395,10 +395,10 @@ also therefore holds that the value of $C_t$ can be reconstructed by the followi
 
 Let $A$ and $B$ be collections, and $\mathcal{OP}$ be some operator that maps a collection to some other
 collection, or itself. Assuming $B$ to be the output of $\mathcal{OP}$ applied over $A$, computations in
-differential dataflow follow the following: \[A_t = \sum_{i \leq t} \delta B_i = \mathcal{OP}(\sum_{i \leq t} \delta A_i)\]
+DD follow the following: \[A_t = \sum_{i \leq t} \delta B_i = \mathcal{OP}(\sum_{i \leq t} \delta A_i)\]
 with $\mathcal{OP}$ being proportional to $\delta A_t$, and not $A_t$.
 
-Notably, a core premise of the canonical differential dataflow implementation, is in cleverly, and efficiently,
+Notably, a core premise of the canonical DD implementation, is in cleverly, and efficiently,
 maintaining $\delta B$ and $\delta A$, specifically in the context of iterative dataflows, due to $t$ being
 partially ordered.
 
@@ -407,7 +407,7 @@ regular semi-naive evaluation, even though rule application might happen in para
 evaluated after $\alpha_{t}$ is, and the data used to compute each will always consist of all extensional and
 intensional, previously inferred, facts.
 
-In contrast, program evaluation could be written as a differential dataflow dataflow with two timestamps, $t$,
+In contrast, program evaluation could be written as a DD dataflow with two timestamps, $t$,
 representing the time of arrival of the update, and $\langle a, b \rangle$, the product that keeps track of the
 fixpoint evaluation, with $a$ being equal to $t$, and $b$ representing the current iteration count, respecting
 the following partial order: \[\langle a_i, b_j \rangle \leq \langle c_k, d_l \rangle \iff a_i \leq c_k \wedge b_j \leq d_l\]
@@ -432,7 +432,7 @@ distribution.
 
 \subsection{Differential Substitution-based Method}
 
-We now present a translation of algorithm I to differential dataflow, by emulating sequentially iterating over
+We now present a translation of algorithm I to DD, by emulating sequentially iterating over
 each rule's body with relational joins, notably, all relational algebra operators are available through a map-
 reduce-like API.
 
@@ -540,7 +540,7 @@ In this section we provide a technical overview of the implemented reasoners, an
 a novel indexing technique for the substitution-based method, that at the cost of increased memory usage, can significantly
 decrease the number of times the operation that occurs the most frequently, substitution extension, occurs.
 
-We name Chibi the reasoner that uses the substitution-based method without differential dataflow, and differential, the one
+We name Chibi the reasoner that uses the substitution-based method without DD, and differential, the one
 that does. Both of these reasoners share the implementation of the three core elements: unification, substitution application,
 and in asserting that a fact is ground. All of the aforementioned operations are trivial, and each do not require more than
 ten or so lines of code. Unification is a computationally cheap operation, given an atom, and a ground fact, the output is
@@ -624,7 +624,7 @@ Algorithm I will have three iterations:
 With the final substitutions being: $[\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}, \{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}]$, therefore inferring two atoms:
 $+R(a, c)$ and $+R(b, d)$. As it can be seen, the major source of inefficiency are the wasted calls to unification attempt, that could
 grow polynomially with each new atom. The solution to this issue in theory is very straightforward; to avoid the cartesian product. We
-devise a novel indexing technique specifically tailored to be portable to differential dataflow.
+devise a novel indexing technique specifically tailored to be portable to DD.
 
 Returning to the example, it is trivial to see that unification attempts can be made optimal by joining on bindings; If $T(a, ?y)$ is the
 left-hand side of unification, and $T(a, b)$, $T(b, c)$ are the candidates, no candidate that does not already match all constants
@@ -633,7 +633,7 @@ would not yield substitution extensions.
 
 We name our approach Demand-driven Multiple-column-based Indexing, because indexes are built on-demand to address the need of indices for
 joining substitutions, that can be over multiple variables, therefore spanning over multiple columns, in each iteration. First, we demonstrate
-the technique over the same example, and then provide a new version of Algorithm I, lastly, we modify the differential dataflow version to
+the technique over the same example, and then provide a new version of Algorithm I, lastly, we modify the DD version to
 also contain this indexing.
 \begin{enumerate}
 	\item \begin{enumerate}
@@ -776,7 +776,7 @@ indexing occurs by mapping all unique combinations of constant terms of fresh at
 	\label{fig:substitution_indexed_ddflow}
 \end{figure}
 
-Figure \ref{fig:substitution_indexed_ddflow} displays the differential dataflow version of Algorithm II, that mostly remains exactly the same, save for
+Figure \ref{fig:substitution_indexed_ddflow} displays the DD version of Algorithm II, that mostly remains exactly the same, save for
 new operations happening during the phase before iteration. We now clarify the points of interest in the dataflow. There were no differences in the steps inside
 iteration, aside from joins happening through the vector of constant positions and relation symbols,
 instead of only relation symbols.
@@ -793,7 +793,7 @@ instead of only relation symbols.
 	      relation symbol, that will index each fact by all column combinations.
 \end{enumerate}
 
-This dataflow is possibly much more efficient. An arrangement in differential dataflow is a pre-computed, indexed representation of a collection that allows
+This dataflow is possibly much more efficient. An arrangement in DD is a pre-computed, indexed representation of a collection that allows
 for efficient querying and manipulation of the data. These arrangements play a crucial role in optimizing the performance of dataflows. By carefully choosing
 which arrangements to create and maintain, it is possible to minimize the computational overhead and reduce the need for expensive recomputations.
 
@@ -803,8 +803,8 @@ constant values, as on Algorithm II, a higher degree of parallelism could be unl
 
 \section{Benchmarks}
 Three thorough experiments were conducted in order to showcase relative performance, scalability, and memory usage, of all reasoners, with the intent being twofold:
-to evaluate the performance characteristics of differential dataflow, in isolation of virtually all other elements, and to establish as to whether general algorithmic
-improvements, such as the demand-driven indexing scheme, are portable to differential dataflow.
+to evaluate the performance characteristics of DD, in isolation of virtually all other elements, and to establish as to whether general algorithmic
+improvements, such as the demand-driven indexing scheme, are portable to DD.
 
 \textbf{Setup.} The experiments were run on a google-cloud-provisioned x86 machine of type e2-standard-16, with 16 intel skylake cores and 64 gigabytes of RAM. Each
 benchmark measurement was taken 50 times and averaged out.
@@ -844,7 +844,8 @@ benchmark measurement was taken 50 times and averaged out.
 	\label{program:rhodfss}
 \end{exmp}
 
-\begin{table}[]
+\begin{table*}
+	\caption{Dataset Overview}
 	\begin{tabular}{|c|c|c|}
 		\hline
 		Dataset & Area of Interest & Programs                 \\
@@ -855,11 +856,11 @@ benchmark measurement was taken 50 times and averaged out.
 		\hline
 		RAND1K  & synthetic        & tc                       \\
 		\hline
+		\label{tab:datasets}
 	\end{tabular}
-	\label{table:datasets}
-\end{table}
+\end{table*}
 
-\textbf{Datasets.} On table \ref{table:datasets} all datasets and program names, or acronyms, are shown. There are two areas of interest. The semantic web has very
+\textbf{Datasets.} On table \ref{tab:datasets} all datasets and program names, or acronyms, are shown. There are two areas of interest. The semantic web has very
 specific use-cases for datalog, and are the leading source of research in extending the datalog mathematical formalism, and in providing improvements to decades-old
 algorithms, such as DRED, with the backward-forward algorithm\cite{dredbf}. Seeking ways to introduce tuple-generating dependencies to programs, with evaluation remaining
 tractable, has been one of the most active research directions, with highly-influential papers establishing new families of datalog languages\cite{datalog_plus_minus} and
@@ -885,7 +886,7 @@ including LUBM\cite{lubm}, are synthetic, with the difference being that there a
 
 \subsection{Runtime comparison}
 \begin{table*}[!ht]
-	\caption{Multi-column and multi-row table}
+	\caption{Runtime Experimental Results}
 	\begin{center}
 		\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 			\hline
@@ -939,7 +940,7 @@ incremental materialization, of 25\% of the data, the remaining amount, also usi
 the 25\% that has been added. This provides a comprehensive and thorough overview of the performance of DRED and semi-naive evaluation, compared to differential
 dataflow, which offers an alternative to both.
 
-Notably, the selection of facts in + and - can dramatically influence the performance of both DRED and differential dataflow. However, conducting extensive performance
+Notably, the selection of facts in + and - can dramatically influence the performance of both DRED and DD. However, conducting extensive performance
 estimations by running the algorithms on numerous random subsets of the data is impractical due to the extensive duration required to run the entire benchmark, coupled
 with the factorial number of possible permutations. Thus, we chose to just select random subsets of the data that contained 50\%, 25\%, 10\%, 1\%, and 0.1\% of its
 original size, as update sizes.
@@ -970,25 +971,25 @@ of the data.
 
 \subsection{Peak memory usage comparison.}
 
-The results of the previous subsection cannot be seen in an entirely positive light without there being consideration for memory usage. Differential dataflow relies on multiple
+The results of the previous subsection cannot be seen in an entirely positive light without there being consideration for memory usage. DD relies on multiple
 in-memory indexes to keep track of all changes, and as it was seen, it entirely failed a benchmark due to running out of memory, thus, in this section we analyze the results of
 measuring peak memory usage over the previous experiments.
 
 \begin{table*}[!ht]
-	\caption{Multi-column and multi-row table}
+	\caption{Memory usage experimental results}
 	\begin{center}
 		\begin{tabular}{|c|c|c|c|c|c|c|}
 			\hline
-			Dataset                  & Program & diff & $\text{diff}^{I}$ & chibi & $\text{chibi}^{I}$ & rel   \\
+			Dataset                & Program & diff & $\text{diff}^{I}$ & chibi & $\text{chibi}^{I}$ & rel   \\
 			\hline
-			\multirow{3}{*}{LUBM1}   & rdfs    & 488  & 466               & 631   & 941                & 722   \\
-			                         & rdfs-s  & 495  & 383               & 573   & 665                & 579   \\
-			                         & owl2rl  & 446  & OOM               & 42190 & 29269              & 25450 \\
+			\multirow{3}{*}{LUBM1} & rdfs    & 488  & 466               & 631   & 941                & 722   \\
+			                       & rdfs-s  & 495  & 383               & 573   & 665                & 579   \\
+			                       & owl2rl  & 446  & OOM               & 42190 & 29269              & 25450 \\
 			\cline{2-7}
 			\hline
-			\multirow{3}{*}{RAND-1k} & tc      & 90   & 85                & 41    & 47                 & 31    \\
+			RAND-1k                & tc      & 90   & 85                & 41    & 47                 & 31    \\
 			\hline
-			\multirow{3}{*}{RMAT-1k} & tc      & 434  & 521               & 265   & 285                & 258   \\
+			RMAT-1k                & tc      & 434  & 521               & 265   & 285                & 258   \\
 			\hline
 		\end{tabular}
 	\end{center}
@@ -1003,7 +1004,7 @@ there are major differences in runtime performance between them, with the most e
 slower, while using almost 50\% more memory. Interestingly, diff performed significantly better for the owl2rl program, consuming 100 times less memory than chibi and rel. It
 is likely that this is due to the aforementioned aggressive compaction mechanism by the in-memory LSM trees. Notably, the indexed version of diff, $\text{diff}^{I}$, ran out of
 memory (OOM) for this program, indicating possible limitations of the indexing method for handling complex queries in large datasets, which conversely is not true in the case
-of $\text{chibi}^{I}$, therefore being an issue with the differential dataflow implementation in itself.
+of $\text{chibi}^{I}$, therefore being an issue with the DD implementation in itself.
 
 In both the RAND-1k and RMAT-1k datasets, all differential reasoners consume at least twice as much memory as all other reasoners, while performing similarly for initial
 materialization runtime. This posits an interesting counterpoint to the dominance in both memory usage and runtime shown with more complex programs. The reason for this
@@ -1011,19 +1012,19 @@ discrepancy, is that the TC program has a very large number of iterations, there
 a new difference being stored, memory usage can grow at a fast pace.
 
 While there are major differences in runtime among all reasoners, with some being orders of magnitude faster, the same cannot be said about memory usage, which save for a
-very large program, there are no clear winners, implying that the memory requirements for differential dataflow in itself are not greater than regular reasoners, save for
+very large program, there are no clear winners, implying that the memory requirements for DD in itself are not greater than regular reasoners, save for
 highly-iterative dataflows, and remains proportional to the computation. The starkest example of this is for the owl2rl program, which in spite of containing over a hundred
 rules, does not output much more data than rdfs/rdfs-s.
 
 \section{Conclusion}
 
 In this article we introduced a novel datalog reasoner, with two different algorithms, whose core value proposition is in it using the promising, but relatively obscure,
-differential dataflow model of computation, and evaluated it against two other reference implementations that shared as many components as reasonable. We also described an
+DD model of computation, and evaluated it against two other reference implementations that shared as many components as reasonable. We also described an
 indexing method that significantly sped up a often overlooked method of implementing reasoning, the substitution method, that was shown to have solved many pathological
-performance issues in benchmarks, at very little cost of extra memory. In all experiments, all differential dataflow based reasoners implemented bested their non differential
+performance issues in benchmarks, at very little cost of extra memory. In all experiments, all DD based reasoners implemented bested their non differential
 counterparts, showing unparalleled scalability over increasing update sizes, alongside virtually no performance differences between additions and retraction, while remaining
 competitive in memory usage. There are multiple ways in which the work could be expanded in the future, such as in porting it over to support negation and more expressive
-variants of datalog, and most importantly, making it distributed, which differential dataflow provides out of the box.
+variants of datalog, and most importantly, making it distributed, which DD provides out of the box.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{software}

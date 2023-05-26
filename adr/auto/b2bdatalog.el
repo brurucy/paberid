@@ -27,7 +27,7 @@
     "fig:substitution_indexed_ddflow"
     "program:rhodfs"
     "program:rhodfss"
-    "table:datasets"
+    "tab:datasets"
     "tab:mainbenchmark"
     "tab:memorybenchmark")
    (LaTeX-add-environments
