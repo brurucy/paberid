@@ -12,6 +12,8 @@
 	Principles and Practice of Declarative Programming}{October 22--23,
 	2023}{Cascais, Lisbon, Portugal}
 
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{multirow}
 \usepackage{microtype}
 \usepackage{tikz,tikz-qtree}
@@ -23,6 +25,8 @@
 \usepackage[ruled, vlined, linesnumbered]{algorithm2e}
 \SetKw{True}{true}
 \SetKw{False}{false}
+\SetKwInOut{Output}{Output}
+\SetKwInOut{Input}{Input}
 \SetKwData{typeInt}{Int}
 \SetKwData{typeRat}{Rat}
 \SetKwData{Defined}{Defined}
@@ -325,22 +329,27 @@ the body atoms. Let $EDB$ be the set of ground facts for the input relations.
 
 The substitution-based method computes the immediate consequence of the rule $r$ as follows:
 
-Define the initial set of substitutions as $\Sigma_0 = { \sigma_0 }$, where $\sigma_0$ is an empty substitution. For
-each body atom $b_i$, find the set of ground facts $F_j \subseteq F$ that match $b_i$.
+Define the initial set of substitutions as $\Sigma_0 = \{ \sigma_0 \}$, where $\sigma_0$ is an empty substitution. For
+each body atom $b_m$, find the set of ground facts $F_j \subseteq F$ that match $b_m$.
 
-\paragraph{Algorithm I} Substitution-based Immediate Consequence Computation
-\begin{enumerate}
-\item Initialize the initial set of substitutions $\Sigma_{0}$. Let $F$ be the initial set of facts.
-\textbf{For} each $i = 1, 2, \ldots, m$:
-\item \textbf{For} each fact $f \in F$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$:
-\begin{enumerate}
-	\item Generate an extension $\sigma'{i-1}$ of $\sigma{i-1}$ with the constant-to-variable homomorphisms from $f$ that are
-	      consistent with the current partial substitution $\sigma_{i-1}$.
-	\item If the extension is successful (i.e., $\sigma'{i-1}$ is a valid substitution), add $\sigma'{i-1}$ to the set of
-	      substitutions $\Sigma_i$.
-	      \end {enumerate}
-	\item For each final substitution $\sigma_m \in \Sigma_m$, apply it to the head atom $H$ to generate the derived facts.
-\end{enumerate}
+\begin{algorithm}[H]
+	\SetAlgoLined
+	\Input{$\Sigma_{0}$, set of ground facts $F$, head atom $h$, body atom list $B$}
+	\Output{Immediate Consequence $I$}
+	\For{each $i = 1, 2, \ldots, m$}{
+	\For{each fact $f \in F$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$}{
+	Generate an extension $\sigma'_{i-1}$ of $\sigma_{i-1}$ with the constant-to-variable homomorphisms from $f$ that are consistent with the current body atom $b_m$;
+
+	\If{$\sigma'_{i-1}$ is a valid substitution)}{
+	$\Sigma_i = \Sigma_{i - 1} \cup \sigma'_{i-1}$;
+	}
+	}
+	\For{each final substitution $\sigma_m \in \Sigma_m$}{
+		$I = I \cup \sigma_m{H}$
+	}
+	}
+	\caption{Substitution-based Immediate Consequence}
+\end{algorithm}
 
 There is a noteworthy performance issue that arises due to the interaction between the substitution-based method
 and DRED. During the alternate derivation phase, the new program has one more body atom. This can be prohibitively
@@ -688,25 +697,44 @@ also contain this indexing.
 \end{enumerate}
 
 From this new example, it can be seen that the indexing scheme is relatively simple, relying on creating new indices that would allow unification
-to never wastefully occur. We now formalize it as Algorithm II:
-\paragraph{Algorithm II.} Substitution-based Immediate Consequence Computation with Indexing
+to never wastefully occur. We now structure it as Algorithm II.
+
+Let $P : a \to [\mathbb{N}]$ be a function mapping an atom to an array of integers representing the positions of constants within the atom's terms, and
+$R : ([\mathbb{N}], a) \to C$ another function, that maps an array of integers and an atom, to a subset of the atom's terms $c$ denoted by $C$.
+
+The algorithm relies on two main indexes:
 \begin{enumerate}
-	\item Initialize the initial set of substitutions $\Sigma_{0}$. Let $F$ be the initial set of facts.
-	\item Let $P : a \to [\mathbb]$ be a function mapping an atom to an array of integers representing the positions of constants within the atom's terms and
-	      $R : ([\mathbb], a) \to a$ be a function that maps an array of integers and an atom, to a subset of the atom's terms denoted by $[\mathbb]$
-	      \textbf{For} each $i = 1, 2, \ldots, m$: \begin{enumerate}
-		      \item Apply $\Sigma_{i-1}$ to the current body atom to obtain fresh atoms $\mathfrak{A}$.
-		      \item Create the first index by constructing a function $I_1 : P(a) \to 1^{\mathfrak{A}}$, where $1^{\mathfrak{A}}$ is the subset of
-		            $\mathfrak{A}$ such that all $a$ have the same $P(a)$ value.
-		      \item Create the second index by constructing a function $I_2 : P(a) \to I_3$, where $I_3 : R(F) \to 1^{F}$, and $1^{F}$ is the subset
-		            of $F$ such that all $a$ have the same $R(P(a), a)$.
-		      \item Create the last index by joining Index 1 and Index 2: $I_4(a) = (I_1(a), I_2(a))$ for each $a \in \mathfrak{A}$
-		      \item For each pair of sets in the third index, $(S_1, S_2)$, unify each element in $S_1$ and each element in $S_2$. Generate an extension
-		            $\sigma_{i-1}'$ of $\sigma_{i-1}$ with the constant-to-variable homomorphisms that are consistent with the current partial substitution $\sigma_{i-1}$.
-		      \item Add $\sigma_{i-1}'$ to the set of substitutions $\Sigma_i$.
-	      \end{enumerate}
-	\item For each final substitution $\sigma_m \in \Sigma_m$, apply it to the head atom $H$ to generate the derived facts.
+	\item $I_1 : P(a) \to 1^{\mathfrak{A}}$, where $1^{\mathfrak{A}}$ is the subset of
+	      $\mathfrak{A}$ such that all $a$ have the same $P(a)$ value.
+	\item $I_2 : P(a) \to I_3$, where $I_3 : R(F) \to 1^{F}$, and $1^{F}$ is the subset
+	      of $F$ such that all $a$ have the same $R(P(a), a)$.
 \end{enumerate}
+
+\begin{algorithm}[H]
+	\SetAlgoLined
+	\Input{$\Sigma_{0}$, set of ground facts $F$, head atom $H$, body atom list $B$}
+	\Output{Immediate Consequence $I$}
+	\For{each $i = 1, 2, \ldots, m$}{
+	Apply $\Sigma_{i-1}$ to the current body atom to obtain fresh atoms $\mathfrak{A}$\;
+	Create the first index $I_1 : P(a) \to 1^{\mathfrak{A}}$\;
+	Create the second index $I_2 : P(a) \to I_3$, where $I_3 : R(F) \to 1^{F}$\;
+	Create the last index by joining Index 1 and Index 2: $I_4(a) = (I_1(a), I_2(a))$ for each $a \in \mathfrak{A}$\;
+	\For{$(S_1, S_2) \in I_4$}{
+	Unify each element in $S_1$ with each element in $S_2$\;
+
+	Generate an extension $\sigma'_{i-1}$ of $\sigma_{i-1}$ with the constant-to-variable homomorphisms from $f$ that are consistent with the current body atom $b_m$;
+
+	\If{$\sigma'_{i-1}$ is a valid substitution}{
+	$\Sigma_i = \Sigma_{i - 1} \cup \sigma'_{i-1}$\;
+	}
+	}
+	\For{each final substitution $\sigma_m \in \Sigma_m$}{
+		$I = I \cup \sigma_m{H}$
+	}
+	}
+	\caption{Substitution-based Immediate Consequence with Demand-driven Multiple-column-based Indexing}
+\end{algorithm}
+
 All indexing steps are $O(|F|)$ in time and data complexity, save for index two, that has worst-case data complexity of $O(|F| \cdot 2^{|a|}y)$, with $2^{|a|}$
 representing the powerset of the number of terms in some atom $a$, and $F$ such that it has only atoms $a$. The product with the powerset arises due to how
 indexing occurs by mapping all unique combinations of constant terms of fresh atoms, which in the worst-case could be exponential to arity.
@@ -820,7 +848,7 @@ improvements, such as the demand-driven indexing scheme, are portable to DD.
 benchmark measurement was taken 50 times and averaged out.
 \begin{exmp}{RhoDFS inference rules}
 	\begin{align*}
-		T(?x, ?y, ?z) \leftarrow                 & \text{rdf}(?x, ?y, ?z)         \\
+		T(?x, ?y, ?z) \leftarrow                 & rdf(?x, ?y, ?z)                \\
 		T(?y, rdf:type, ?x) \leftarrow           & T(?a, rdfs:domain, ?x),        \\
 		                                         & T(?y, ?a, ?z)                  \\
 		T(?z, rdf:type, ?x) \leftarrow           & T(?a, rdfs:range, ?x),         \\
@@ -1012,8 +1040,8 @@ measuring peak memory usage over the previous experiments.
 	\label{tab:memorybenchmark}
 \end{table*}
 
-Table \ref{tab:memorybenchmark} presents the peak memory usage for each of the methods and programs across different datasets. Memory usage is presented in megabytes. The
-original dataset occupies 20 megabytes of disk space.
+Table \ref{tab:memorybenchmark} presents the peak memory usage for each of the methods and programs across different datasets. Memory usage is presented in megabytes. LUBM1
+occupies 20 megabytes of disk space, RAND-1k and RMAT-1k, respectively, 100 kilobytes.
 
 For LUBM1, with the 'rdfs' and 'rdfs-s' programs, all reasoners performed comparably with each other, with respect to memory usage, however, as seen on the previous table,
 there are major differences in runtime performance between them, with the most extreme example being for chibi and $\text{diff}^{I}$, in which the former is over 1000x times
