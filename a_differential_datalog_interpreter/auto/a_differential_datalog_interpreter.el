@@ -10,7 +10,6 @@
     "acmart"
     "acmart10"
     "amsmath"
-    "amssymb"
     "multirow"
     "microtype"
     "tikz"
@@ -27,11 +26,11 @@
     "ex7"
     "fig:substitution_simple_ddflow"
     "fig:substitution_indexed_ddflow"
-    "program:rhodfs"
-    "program:rhodfss"
     "tab:datasets"
     "tab:mainbenchmark"
-    "tab:memorybenchmark")
+    "tab:memorybenchmark"
+    "program:rhodfs"
+    "program:rhodfss")
    (LaTeX-add-environments
     "exmp")
    (LaTeX-add-bibliographies
