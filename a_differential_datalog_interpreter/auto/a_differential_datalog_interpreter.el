@@ -2,7 +2,7 @@
  "a_differential_datalog_interpreter"
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-class-options
-                     '(("acmart" "sigconf" "screen" "review" "natbib")))
+                     '(("acmart" "sigconf" "screen" "review=false" "natbib")))
    (TeX-add-to-alist 'LaTeX-provided-package-options
                      '(("algorithm2e" "ruled" "vlined" "linesnumbered")))
    (TeX-run-style-hooks
@@ -24,6 +24,8 @@
     "exsne"
     "ex6"
     "ex7"
+    "alg:one"
+    "tab:prod_order"
     "fig:substitution_simple_ddflow"
     "fig:substitution_indexed_ddflow"
     "tab:datasets"
@@ -32,7 +34,8 @@
     "program:rhodfs"
     "program:rhodfss")
    (LaTeX-add-environments
-    "exmp")
+    "exmp"
+    "prog")
    (LaTeX-add-bibliographies
     "software"))
  :latex)

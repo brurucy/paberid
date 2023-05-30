@@ -1,4 +1,4 @@
-\documentclass[sigconf,screen,review,natbib]{acmart}
+\documentclass[sigconf,screen,review=false,natbib]{acmart}
 \AtBeginDocument{%
 \providecommand\BibTeX{{%
 \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
@@ -21,6 +21,7 @@
 \usepackage{subfig}
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}[section]
+\newtheorem{prog}{Program}[section]
 \usepackage[ruled, vlined, linesnumbered]{algorithm2e}
 \SetKw{True}{true}
 \SetKw{False}{false}
@@ -50,7 +51,7 @@
 	\city{Wuppertal}
 	\country{Germany}
 }
-\email{merlin.kramer@gmail.com}
+\email{merlin.kramer@d10.pw}
 
 \author{Kalmer Apinis}
 \affiliation{%
@@ -97,9 +98,11 @@ this issue by computing the materialization adjustment through the generation of
 calculating all possible deletions, and then determining alternative derivations. The difference between these
 sets represents the actual facts to be deleted.
 
-However, using two distinct algorithms for additions and deletions results in different performance characteristics,
-potentially causing severe biases. For example, when a large portion of ground facts are deleted, delete-rederive
-could be significantly more expensive than re-materializing.
+Using two distinct algorithms for additions and deletions results in different performance characteristics,
+potentially causing severe biases. For example, when a large portion of ground facts are deleted, such as more than
+ten percent, a not very realistic value, delete-rederive could be significantly more expensive than recomputing from
+scratch, since computing all overdeletions, and alternative derivations, might take longer than re-materialization in itself,
+for as there can be cases where a small portion of ground facts have a high impact on the number of inferred facts.
 
 A promising way to tackle incremental maintenance in a more uniform manner is to use differential dataflow, a
 programming model that efficiently processes and maintains large-scale possibly recursive dataflow computations. Central
@@ -209,105 +212,108 @@ thereby not there being the possibility for existential variables to exist, conv
 all rules are datalog.
 \begin{exmp}{Datalog Program}\label{ex1}
 	\begin{align*}
-		P = \{\text{SubClassOf}(?x, ?y) \leftarrow & \text{SubClassOf}(?x, ?y), \text{SubClassOf}(?y, ?z) \}
+		P = \{TC(?x, ?y) \leftarrow & Edge(?x, ?y)              \\
+		TC(?x, ?z) \leftarrow       & TC(?x, ?y), TC(?y, ?z) \} \\
 	\end{align*}
 \end{exmp}
-Example \ref{ex1} shows a simple valid recursive program. The single rule denotes that \textit{for all x, y, z, if x is
-	in a SubClassOf relation with y, and y is in a SubClassOf relation with z, then it follows that x is in a subClassOf
-	relation with z}.
+Example \ref{ex1} shows a simple valid recursive program. The first rule denotes that \textit{for all x and y, if x is
+	in a Edge relation with y, then it follows that x is in a TC relation with y}, and the second \textit{for all x, y, z, if
+	x is in a TC relation with y, and y is in a TC relation with z, then it follows that x is in a TC relation with z}.
 
 Programs denote implications over a store of ground facts. This store is called the extensional database, $EDB$, and the result
 of evaluating a program over some $EDB$ is the $IDB$, the intensional database.
 
 Let $DB = EDB \cup IDB$, and for there to be a program $P$. We define the \textit{immediate consequence} of $P$ over $DB$ as
 all facts that are either in $DB$, or stem from the result of applying the rules in $P$ to $DB$. The \textit{immediate consequence operator}
-$\textbf{I}_C(DB)$ is the union of $DB$ and its immediate consequence, and the $IDB$, at the moment of the
-application of $\textbf{I}_C(DB)$ is the difference of the union of all previous $DB$ with the $EDB$.
+$\textbf{I}_C(DB)$ is the union of $DB$ and its immediate consequence. The $IDB$, at the moment of the application of $\textbf{I}_C(DB)$, is
+the difference of the union of all previous $DB$ with the $EDB$, therefore consisting only of the inferred facts.
 
 It is trivial to see that $I_C(DB)$ is monotone, and given that both the $EDB$ and $P$ are finite sets, and
 that $IDB = \emptyset$ at the start, at some point $I_C(DB) = DB$, since there won't be new facts to be inferred. This
 point is the \textit{least fixed point} of $I_c(DB)$\cite{datalog}. Computing the \textit{least fixed point} as
-described, recursively applying the immediate consequence, is called Naive evaluation.
+described, recursively applying the immediate consequence operator, is called naive evaluation, which is not often
+used in practice, since in every iteration not only does it infer new facts, but also recomputes all previously
+inferred ones.
 \subsection{Semi-Naive Evaluation}
-The semi-naive evaluation algorithm \cite{datalog} is a widely-used technique for improving naive evaluation.
-Given a Datalog program $P$ and an $EDB$, the algorithm iteratively computes the $IDB$ in the same manner as
-naive evaluation, with the addition of maintaining a set of new delta facts $\Delta^+$ that are generated in
-each iteration, that are utilized in a new delta program $\Delta^+P$.
+The semi-naive evaluation algorithm \cite{datalog} is a widely-used technique for improving naive evaluation,
+that directly addresses, but does not solve entirely, its major inefficiency, redundant recomputations of previously
+inferred facts. Given a Datalog program $P$ and an $EDB$, the algorithm iteratively computes the $IDB$ in the same manner
+as naive evaluation, with the addition of maintaining a set of new delta facts $\Delta$ that are generated in each
+iteration.
 
-Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the
-delta program will generate one new $\Delta$rule for each $b_j$ in each rule body $b(r_i)$, in order to
-represent that only facts that have been recently inferred are being taken into account.
+Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $H(r)$, the delta program
+will generate one new $\Delta$rule for each $IDB$ relation $b_j$ in each rule body $b(r_i)$, in order to represent that only
+facts that have been recently inferred are to be taken into account for subsequent iterations.
 \begin{exmp}{Semi-naive Evaluation Delta Program}
 	\begin{align*}
-		P = \{TC(?x, ?y) \leftarrow        & Edge(?x, ?y)                  \\
-		TC(?x, ?z) \leftarrow              & TC(?x, ?y), TC(?y, ?z) \}     \\
 		r_0 = TC(?x, ?y) \leftarrow        & Edge(?x, ?y)                  \\
 		\Delta r_1 = TC(?x, ?z) \leftarrow & \Delta TC(?x, ?y), TC(?y, ?z) \\
 		\Delta r_2 = TC(?x, ?z) \leftarrow & TC(?x, ?y), \Delta TC(?y, ?z)
 	\end{align*}
 	\label{exsne}
 \end{exmp}
-In theory, the semi-naive evaluation algorithm improves the efficiency of Datalog evaluation by avoiding
-the recomputation of facts that have already been derived in previous iterations. This method is particularly
-efficient for certain classes of Datalog programs that are common in practice. Example \ref{exsne} shows
-the generated $\Delta$ program. It is worth noting, that there are substantial implementation challenges in order
-to ensure that its overhead is not larger than the performance gains, since it possibly requires multiple
-indexes and set operations to keep track of the most recently inferred facts, hence, it could be that in practice
-naive evaluation might outperform it.
+With example \ref{ex1} as the baseline, \ref{exsne} is its resulting delta program. While semi-naive evaluation indeed reduces
+the number of inferred redundant facts, it is particularly efficient for a certain class of simple Datalog programs that are common
+in practice, namely linear programs, which are those in which each rule has at most one IDB relation in its body, therefore
+generating only one delta rule per rule, instead of multiple, as in the example.
 
+In spite of being asymptotically better than naive evaluation, there are substantial implementation challenges that need to be
+addressed in order to ensure that the overhead is not larger than possible performance gains, since it requires multiple
+indexes, each delta relation, and efficient set operations to keep track of the most recently inferred facts. This is of utmost
+importance when using semi-naive evaluation as a method to incrementally handle additions to the $EDB$.
+
+It often occurs that a materialization needs to be adjusted, either to additions or retractions of ground facts. Both semi-naive
+and naive evaluation are iterative, thus additions can be dealt with by simply having their computations restarted, with the former
+having the entire $IDB$ as the initial set of delta facts, instead of the empty set. The major goal of continuing the computation is
+such that it will be more efficient than restarting the materialization altogether.
 \subsection{Delete-Rederive}
-Both the regular semi-naive and naive evaluation methods are already incremental, and easily handles the
-addition of data. One merely has to continue the evaluation with all previous data as the most recent delta.
+While both aforementioned evaluation methods provide mechanisms to incrementally adjust materialization to new ground facts, neither
+support retraction of ground facts, a problem that is significantly more involved, since a single fact might have multiple possible
+derivations.
 
-The most used method for handling deletions is a bottom-up algorithm\cite{dred} that uses semi-naive evaluation
-to evaluate two new programs, one that computes all possible deletions that could stem from the deletion of the
-facts being retracted, and then another that attempts to find alternative derivations to the overdeleted ones.
+The most used method is a bottom-up algorithm\cite{dred} that relies on evaluating two new programs, one that computes all possible
+deletions that could stem from the deletion of the facts being retracted, and then another that attempts to find alternative derivations
+to the overdeleted ones.
 
 Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the
 overdeletion program will generate one new $-$rule for each $b_j$ in each rule body $b(r_i)$, in order to represent
 that if such fact were to be deleted, then $h(r_i)$ would not hold true.
 \begin{exmp}{DRED Overdeletion Program}
 	\begin{align*}
-		P = \{TC(?x, ?y) \leftarrow   & Edge(?x, ?y)              \\
-		TC(?x, ?z) \leftarrow         & TC(?x, ?y), TC(?y, ?z) \} \\
 		-r_0 = -TC(?x, ?y) \leftarrow & -Edge(?x, ?y)             \\
 		-r_1 = -TC(?x, ?z) \leftarrow & -Edge(?x, ?y), TC(?y, ?z) \\
 		-r_2 = -TC(?x, ?z) \leftarrow & Edge(?x, ?y), -TC(?y, ?z)
 	\end{align*}
 	\label{ex6}
 \end{exmp}
-On example \ref{ex6} negative predicates represent overdeletion targets. For instance, if \verb|Edge(2, 3)| is
-being deleted, then \verb|TC(2, 3)| will be deleted, and any other inferred fact that depends on it. Given that
-it is a regular datalog program, it can be efficiently evaluated with semi-naive evaluation.
+On example \ref{ex6} negative predicates represent overdeletion targets for example \ref{ex1}. For instance, if \verb|Edge(2, 3)| is
+being deleted, then \verb|TC(2, 3)| will be deleted, and any other inferred fact that depends on it. Given that it is a regular datalog
+program, it can be efficiently evaluated with semi-naive evaluation, or any other evaluation algorithm.
 
 The next step is to compute the alternative derivations of the deleted facts, since some overdeleted facts might
 still hold true. The alternative derivation program will generate one new $+$rule for each $r_i$ in $P$, with
 one extra $-$ head predicate per body, representing an overdeleted fact. The $+$ program requires the overdeleted
-facts to not be present.
+facts to already not be present.
 \begin{exmp}{DRED Alternative Derivation Program}
 	\begin{align*}
-		P = \{TC(?x, ?y) \leftarrow  & Edge(?x, ?y)                          \\
-		TC(?x, ?z) \leftarrow        & TC(?x, ?y), TC(?y, ?z) \}             \\
 		r_0 = +TC(?x, ?y) \leftarrow & -TC(?x, ?y), Edge(?x, ?y)             \\
 		r_1 = +TC(?x, ?z) \leftarrow & -TC(?x, ?z), Edge(?x, ?y), TC(?y, ?z)
 	\end{align*}
 	\label{ex7}
 \end{exmp}
-The output relations from example \ref{ex7} represent the data that has to be put back into the materialization.
-The rationale for alternative derivations is that, for $r_1$, for instance, if the edge \verb|TC(3, 4)| was
-overdeleted, because of there being \verb|Edge(1, 2)| and \verb|TC(2, 3)|, if \verb|Edge(3, 4)| was not deleted, by
-rule $r_0$, then there is an alternative derivation for \verb|TC(3, 4)|.
+The output relations from example \ref{ex7} represent the data that has to be put back into the materialization for example \ref{ex1}. The
+rationale for alternative derivations is that, for $r_1$, for instance, if the edge \verb|TC(3, 4)| was overdeleted, because of there being
+\verb|Edge(1, 2)| and \verb|TC(2, 3)|, if \verb|Edge(3, 4)| was not deleted, by rule $r_0$, then there is an alternative derivation for \verb|TC(3, 4)|.
 
 As it can be seen, computing the maintenance of the materialization implies evaluating a program bigger than the
 materialization itself, however, due to the fact that it is evaluated with semi-naive evaluation, the asymptotic
 complexity remains the same. Nonetheless, in practice, deletion is often much slower than addition, as it can be
 trivially seen by the worst-possible scenario, in which all facts are deleted, whereby while materialization would
-be free, DRED would inquire an expensive overdeletion computation.
-
+be free, DRED would inquire an expensive fact-by-fact deletion operation.
 \subsection{Substitution-based evaluation}
-The most impactful aspect of both of the introduced evaluation mechanisms is the implementation
-of $I_c$ itself. The two most high-profile methods to do so are either purely evaluating the rules, or
-rewriting them in some other imperative formalism, such as relational algebra, and executing it.
+The most impactful aspect of all of the introduced evaluation mechanisms is the implementation of $I_c$ itself. The two
+most high-profile methods to do so are either purely evaluating the rules, or rewriting them in some other imperative
+formalism, such as relational algebra, and executing it.
 
 The substitution-based\cite{datalog} method is the simplest example of the former. A substitution $\sigma$ is
 a homomorphism $[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is
@@ -321,7 +327,6 @@ The substitution-based method computes the immediate consequence of the rule $r$
 
 Define the initial set of substitutions as $\Sigma_0 = \{ \sigma_0 \}$, where $\sigma_0$ is an empty substitution. For
 each body atom $b_m$, find the set of ground facts $F_j \subseteq F$ that match $b_m$.
-
 \begin{algorithm}
 	\SetAlgoLined
 	\Input{$\Sigma_{0}$, set of ground facts $F$, head atom $h$, body atom list $B$}
@@ -330,7 +335,7 @@ each body atom $b_m$, find the set of ground facts $F_j \subseteq F$ that match 
 	\For{each fact $f \in F$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$}{
 	Generate an extension $\sigma'_{i-1}$ of $\sigma_{i-1}$ with the constant-to-variable homomorphisms from $f$ that are consistent with the current body atom $b_m$;
 
-	\If{$\sigma'_{i-1}$ is a valid substitution)}{
+	\If{$\sigma'_{i-1}$ is a valid substitution}{
 	$\Sigma_i = \Sigma_{i - 1} \cup \sigma'_{i-1}$;
 	}
 	}
@@ -339,80 +344,76 @@ each body atom $b_m$, find the set of ground facts $F_j \subseteq F$ that match 
 	}
 	}
 	\caption{Substitution-based Immediate Consequence}
+	\label{alg:one}
 \end{algorithm}
-There is a noteworthy performance issue that arises due to the interaction between the substitution-based method
-and DRED. During the alternate derivation phase, the new program has one more body atom. This can be prohibitively
-more expensive to evaluate than the original program, since one extra body atom implies one extra iteration, which
-could generate a polynomial number of substitutions, due to the cartesian product nature of each step.
-
+Algorithm \ref{alg:one} is the formal specification of the substitution-based method. There is a noteworthy performance issue
+that arises due to the interaction between it and DRED. During the alternate derivation phase, the new program has
+one more body atom. This can be prohibitively more expensive to evaluate than the original program, since one extra
+body atom implies one extra iteration, which could generate a polynomial number of substitutions, due to the cartesian
+product nature of each step.
 \subsection{Relational algebra rewriting method}
-Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed
-arity, relations. It is the most popular database formalism that there is, with virtually every single
-major database system adhering to the relational model\cite{pg,mysql,sqlserver} and using SQL as a
-declarative syntax for relational algebra.
+The de-facto datalog evaluation method, that virtually all recent reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle} abide by, is to rewrite datalog rules into relational
+algebra, a well-known technique, to efficiently compute their evaluation, due to the extensive industrial and academic
+research poured into developing data processing frameworks that handle very large amounts of data, and the techniques
+that have arisen from those.
 
-The translation of datalog rules to relational algebra equations is a well-known technique, and has been
-the most successful strategy employed by the vast majority of all current state-of-the-art reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle}
-mostly due to the extensive industrial and academic research into developing data processing frameworks
-that process very large amounts of data, and the techniques that have arisen from those.
+Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed arity, relations. It
+is the most popular database formalism that there is, with virtually every single major database system adhering to the
+relational model\cite{pg,mysql,sqlserver} and using SQL as a declarative syntax.
 
-Let $R$ and $T$ be relations with arity $r$ and $t$, $\theta$ be a binary operation with a boolean output, $R(i)$ be
-the i-th column, all terms in the i-th position of every tuple in $R$, and $R[h, ..., k]$ be the subset of $R$ such
-that only the columns $h, ..., k$ remain, and Const the set of all constant terms. The following are the most
-relevant relational algebra operators and their semantics:
-\begin{itemize}
-	\item Selection by column $\sigma_{i=j)}(R) = \{ a \in R | a(i) == a(j) \}$
-	\item Selection by value $\sigma_{i=k}(R) = \{a \in R | a(i) == k \}$
-	\item Projection $\pi_{h, ..., k}(R) = \{(R(i), ..., R(j), \overrightarrow{C}) |  i, j >= 1 \wedge i, j <= r\ \wedge \forall c \in C. c \in \text{Const}$
-	\item Product $\times(R, T) = \{(a, b) | a \in R \wedge b \in T \}$
-	\item Join $\Join_{i=j} = \{(a, b) | a \in R \wedge b \in T \wedge a(i) == b(j)\}$
-\end{itemize}
-A relational algebra expression is in the $\mathcal{SPJ}$ form if it consists solely of select, project and join
-operators. This form is very often seen in practice, being equivalent to \verb|SELECT ... FROM ... WHERE ...| SQL
-queries, and highly benefits from being equivalent to conjunctive queries, that are equivalent to single-rule and
-non-recursive datalog programs.
-
-DD either implements, or makes it trivial to do so, all of the aforementioned relational algebra
-operations, but lifted to the multiset domain, which implies that there must be some additional step to fit them
-into datalog's set semantics.
-
+DD either implements, or makes it trivial to do so, all relevant-to-datalog relational algebra operators, therefore
+providing convenient tools to manually specify the evaluation of a datalog program as a dataflow. It nonetheless does
+not directly make writing the interpreter more convenient, only a compiler.
 \section{Differential Evaluation}
-\subsection{Differential Dataflow} is a computational model that generalizes incremental processing to
-times that are possibly partially ordered, and specifically operates over multisets of differences, which
-can be either additions or retractions, instead of over the full data.
+\textbf{Differential Dataflow} is a computational framework that generalizes incremental processing to times that are
+possibly partially ordered, and specifically operates over generalized multisets.
 
-Let $C$ be a multiset, referred to as a collection, with $C_t$ being its value at a partially ordered
-time $t$, and $C_t(b)$ being the unsigned integer representing weight of some record $b \in C_t$. We
-establish that the difference of some collection $C$ at time $t$, named $\delta C_t$, is defined as: \[\delta C_t = C_t - C_{t - 1}\],
-notably, differences can be both positive, representing additions, or negative, retractions, and it
-also therefore holds that the value of $C_t$ can be reconstructed by the following equivalence: \[C_t = \sum_{i \leq t}\delta C_{i}\]
+Let $C$ be a multiset, referred to as a collection, with $C_t$ being its value at a partially ordered time $t$, and
+$C_t(b)$ being the monoid representing the multiplicity of some record $b \in C_t$. We establish that the difference of
+some collection $C$ at time $t$, named $\delta C_t$, is defined as: \[\delta C_t = C_t - C_{t - 1}\] It also therefore
+holds that the value of $C_t$ can be reconstructed by the following equivalence: \[C_t = \sum_{i \leq t}\delta C_{i}\]
+We utilize plain multiset semantics with signed integers as multiplicity.
 
 Let $A$ and $B$ be collections, and $\mathcal{OP}$ be some operator that maps a collection to some other
 collection, or itself. Assuming $B$ to be the output of $\mathcal{OP}$ applied over $A$, computations in
-DD follow the following: \[A_t = \sum_{i \leq t} \delta B_i = \mathcal{OP}(\sum_{i \leq t} \delta A_i)\]
-with $\mathcal{OP}$ being proportional to $\delta A_t$, and not $A_t$.
+DD follow the following: \[B_t = \mathcal{OP}(A_t) = \mathcal{OP}(\sum_{i \leq t} \delta A_i) = \sum_{i \leq t} \mathcal{OP}(\delta A_i)\]
+with $\mathcal{OP}$ being proportional to $\delta A_t$, and not $A_t$. Stateful Operators, such as the
+relational join, require more involved differentiation steps.
 
-Notably, a core premise of the canonical DD implementation, is in cleverly, and efficiently,
-maintaining $\delta B$ and $\delta A$, specifically in the context of iterative dataflows, due to $t$ being
-partially ordered.
+A core premise of the canonical DD implementation, is in cleverly, and efficiently, maintaining $\delta B$
+and $\delta A$, specifically in the context of iterative dataflows, due to $t$ being partially ordered.
 
 Let's assume that a datalog program is being evaluated, and five fact updates, labeled as $\alpha_t$ arrive. In
 regular semi-naive evaluation, even though rule application might happen in parallel, $\alpha_{t + 1}$ will only be
-evaluated after $\alpha_{t}$ is, and the data used to compute each will always consist of all extensional and
-intensional, previously inferred, facts.
+evaluated after $\alpha_{t}$'s evaluation has finished, and the data used to compute each will always consist of all
+extensional and intensional(previously inferred) facts.
 
-In contrast, program evaluation could be written as a DD dataflow with two timestamps, $t$,
-representing the time of arrival of the update, and $\langle a, b \rangle$, the product that keeps track of the
-fixpoint evaluation, with $a$ being equal to $t$, and $b$ representing the current iteration count, respecting
-the following partial order: \[\langle a_i, b_j \rangle \leq \langle c_k, d_l \rangle \iff a_i \leq c_k \wedge b_j \leq d_l\]
-
-If we treat $\alpha_0$, $\alpha_1$, $\alpha_2$, $\alpha_3$ and $\alpha_4$ as differences with the following
-respective timestamps: \[\langle 0, 0 \rangle, \langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 1, 2 \rangle\]
-it is noticeable that $\alpha_1$ and $\alpha_4$ are comparable, but both of them, and vice-versa, are
-incomparable with respect to $\alpha_2$ and $\alpha_3$. This, in turn, has two consequences in differential
-dataflow. First, that the computation of both $\alpha_3$ and $\alpha_2$ happened independent of each other,
-meaning both could have been computed in parallel, and, most importantly, that neither appeared in each other's
-computation:
+In contrast, program evaluation could be written as a DD dataflow with a (partially ordered) product order timestamp $\langle  t, a \rangle$
+with $t$ being the time of arrival of the update, and $a$ keeping track of iteration. Product order is defined as: \[\langle t_i, a_j \rangle \leq \langle c_k, d_l \rangle \iff t_i \leq c_k \wedge a_j \leq d_l\]
+\begin{table}
+	\caption{Product Order Truth Table}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		$\leq$                 & $\langle 0, 0 \rangle$ & $\langle 0, 1 \rangle$ & $\langle 0, 2 \rangle$ & $\langle 1, 1 \rangle$ & $\langle 2, 1 \rangle$ \\
+		\hline
+		$\langle 0, 0 \rangle$ & 1                      & 1                      & 1                      & 1                      & 1                      \\
+		\hline
+		$\langle 0, 1 \rangle$ & 0                      & 1                      & 1                      & 1                      & 1                      \\
+		\hline
+		$\langle 0, 2 \rangle$ & 0                      & 0                      & 1                      & 0                      & 0                      \\
+		\hline
+		$\langle 1, 1 \rangle$ & 0                      & 0                      & 0                      & 1                      & 1                      \\
+		\hline
+		$\langle 2, 1 \rangle$ & 0                      & 0                      & 0                      & 0                      & 1                      \\
+		\hline
+	\end{tabular}
+	\label{tab:prod_order}
+\end{table}
+If we treat $\alpha_0$, $\alpha_1$, $\alpha_2$, $\alpha_3$, $\alpha_4$ as differences with the following
+respective timestamps: \[\langle 0, 0 \rangle, \langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 2, 1 \rangle\]
+it is noticeable, from table \ref{tab:prod_order}, that neither $\alpha_2$ is visible from $\alpha_3$, nor that $\alpha_3$ is visible
+from $\alpha_2$. This, in turn, has an important consequence in differential dataflow, that the computation of both $\alpha_3$ and
+$\alpha_2$ happened independent of each other, meaning both may be computed in parallel:
 \begin{align*}
 	\alpha_2 & = \delta A_{0, 2} = A_{0, 2} - (\delta A_{0, 0} + \delta A_{0, 1} )                  \\
 	\alpha_3 & = \delta A_{1, 1} = A_{1, 1} - (\delta A_{0, 0} + \delta A_{0, 1} + \delta A_{1, 0})
@@ -420,13 +421,13 @@ computation:
 Within the context of datalog, the aforementioned evaluation semantics provide a full alternative to the way
 incremental datalog evaluation is currently done, most specifically, the practical advantage of differential
 dataflow, is that instead of using semi-naive evaluation and DRED, one can just describe the evaluation process
-as a dataflow, and have both additions and deletions handled in the same way, with automatic parallelism and
-distribution.
+as a dataflow, and have both additions and retractions handled in the same way, with efficient parallelism and
+symmetric handling of updates.
 \subsection{Differential Substitution-based Method}
 We now present a translation of algorithm I to DD, by emulating sequentially iterating over
 each rule's body with relational joins, notably, all relational algebra operators are available through a map-
 reduce-like API.
-\begin{figure} [htb!]
+\begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}[->,>=stealth,auto,node distance=6cm,
 			thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
@@ -497,68 +498,67 @@ reduce-like API.
 \end{figure}
 Figure \ref{fig:substitution_simple_ddflow} depicts the substitution-based method as a dataflow. Superscripts denote
 points of the dataflow that require further explanation. Furthermore, for clarity, we establish the shape of the
-data, and the \verb|Var| suffix, that both facts and substitutions eventually take up. a Variable is used to express
-recursive or iterative computations. It allows one to define iterative operations and data dependencies in the dataflow
-graph, enabling the system to track and propagate changes across iterations efficiently, with product timestamps. Each
-node either represents an operation, such as \verb|join_map|, that joins two streams and then applies a mapping function,
-and \verb|flat_map|, that maps streams of iterables and then flattens them as a single stream.
+data, and the meaning of the \verb|Var| suffix, that both facts and substitutions eventually take up. a Variable is used
+to express recursive or iterative computations. It allows one to define iterative operations and data dependencies in
+the dataflow graph, enabling the system to track and propagate changes across iterations efficiently, with product
+timestamps. Each node either represents an operation, such as \verb|join_map|, that joins indexed collections and
+then applies a mapping function to the join output, or \verb|flat_map|, that given a function that outputs an iterable, applies
+it over a collection, and flattens each element's output to be part of a single collection.
 
-We also note that this is a summarized description, with certain trivial, or too-implementation-oriented, parts
-having had been omitted. $\Sigma_0$ is the stream of empty substitutions indexed per rule identifier, which will
-be pre populated with one substitution, the empty one. We assume that rules have an unique identifier. Facts is
-the relation-indexed stream of facts, and rules is the stream of rules, with two indexes, created with the operations
-with superscripts $1$ and $2$.
+We also note that this is a summarized description, where certain trivial, or too-implementation-specific parts
+have been omitted. $\Sigma_0$ is the stream of empty substitutions indexed per rule identifier, which is pre-populated
+with one empty substitution per rule. We assume that rules have an unique identifier. Facts is the relation-indexed
+stream of facts, and rules is the stream of rules, with two indexes, created with the operations with superscripts $1$ and $2$.
 \begin{enumerate}
 	\item The first rule index indexes rules first by their identifier, and then by each of its body atoms, enumerating
 	      them sequentially, imposing an order of evaluation as the original algorithm.
 	\item The second rule index indexes by identifier and body size, being necessary to ensure that only the substitutions
-	      which have been exhaustively expanded ought to be considered for application on the rule head.
-	\item \verb|join_map| is an operator that joins two collections, and then applies a function. In this situation, the
-	      function that is applied, is one that applies substitutions to the input atoms, therefore either creating new
+	      which have been exhaustively expanded ought to be considered for application to the rule head.
+	\item In the first join, the function that is applied, is one that applies substitutions to the input atoms, therefore either creating new
 	      atoms, with less variables as terms, or the very same ones. This is equivalent to the necessary setup for step 1
-	      of Algorithm I to occur, making use of index $1$.
+	      of Algorithm \ref{alg:one} to occur, making use of index 1.
 	\item The next join creates new substitutions, based on the newly minted atoms. All current substitutions are attempted
-	      to be expanded further, with the ones being successful being emitted from the join.
+	      to be expanded further, with the successful ones being emitted from the join.
 	\item This is the last step of the algorithm, where all final substitutions are applied to the head of each rule, index
-	      $2$, to then create new ground facts.
+	      2, to then create new ground facts.
 \end{enumerate}
+With the dataflow being specified, over the next section we elaborate on the commonalities and differences with the other implementations.
 \section{System}
 In this section we provide a technical overview of the implemented reasoners, and what is shared between them, alongside
 a novel indexing technique for the substitution-based method, that at the cost of increased memory usage, can significantly
 decrease the number of times the operation that occurs the most frequently, substitution extension, occurs.
 
-We name Chibi the reasoner that uses the substitution-based method without DD, and differential, the one
-that does. Both of these reasoners share the implementation of the three core elements: unification, substitution application,
-and in asserting that a fact is ground. All of the aforementioned operations are trivial, and each do not require more than
-ten or so lines of code. Unification is a computationally cheap operation, given an atom, and a ground fact, the output is
-a new substitution that maps the variables of the right to the constants of the left one, all others are self descriptive,
-with substitution application merely substituting an atom's variables for the mapped variables in a substitution, and checking
-if a fact is ground is done by ensuring that no terms are variables.
+The reasoner that uses the substitution-based method without DD is named Chibi, differential is the one that does. Both of these
+reasoners share the implementation of the three core elements: unification, substitution application, and in asserting that a
+fact is ground. All of the aforementioned operations are trivial, and each do not require more than ten or so lines of code. Unification
+is a computationally cheap operation, given an atom, and a ground fact, the output is a new substitution that maps the variables
+of the right to the constants of the left one. All others are self descriptive, with substitution application merely substituting
+an atom's variables for the mapped variables in a substitution. Checking if a fact is ground is done by ensuring that no terms
+are variables.
 
-All three reasoners, Chibi, Differential and Relational, share the same simple in memory layout for the core elements of
-datalog, and storage, notably, in Rust terms, it is to be assumed that all referred data structures are standard library
-implementations, unless noted otherwise. Furthermore, a step of rule application is always done in parallel.
+Chibi, Differential and Relational all share the same memory layout for the core elements of datalog and storage. In Rust terms, it
+is to be assumed that all referred data structures are standard library implementations unless stated otherwise. Furthermore, a step
+of rule application is always done in parallel.
 \begin{itemize}
-	\item Constant: an enumeration of boolean, 64-bit integer or string, respectively named typed values.
-	\item Variable: a 8 bit integer, hence imposing a bound on the number of variables that a rule can have
+	\item Constant: an enumeration of boolean, 64-bit integer or string, respectively named typed values
+	\item Variable: an 8 bit integer, hence imposing a bound on the number of variables that a rule can have
 	\item Term: an enumeration of constant and variable
 	\item Atom: A struct with a vector of terms, and a symbol, that can be either a 64-bit integer or a string
 	\item Rule: A struct with an atom representing the head, and a vector of atoms as the body
 	\item Storage: A Hash map of hash sets, with keys representing relation names, or id, and their respective
-	      hash sets containing vectors of typed terms, ground facts.
+	      hash sets containing vectors of typed terms, ground facts
 \end{itemize}
 Relational reasoner has one extra data structure, a btree index, that is used for sort-merge joins. Relational relies on
-naively translating datalog rules into $\mathcal{SPJ}$, without any further optimizations whatsoever, aside from inserting
+naively translating datalog rules into relational algebra, without any further optimizations whatsoever, aside from inserting
 all data that is to be joined in its index, right before actually doing it. All relational operations and their evaluator
 were implemented from scratch. The point of this reasoner is to evaluate how performant the popular relational algebra
-evaluation can be in isolation, compared to the often forgotten substitution-based method, and differential.
+evaluation can be in isolation, compared to the often forgotten substitution-based method.
 
 Rule application until the least fixpoint is reached is done with semi-naive evaluation\cite{abiteboul}, with a program
 transformation. DRED is implemented as described in \cite{dred}, in two steps, with both the overdeletion and alternative
 derivation program being executed with semi-naive evaluation too. Both Chibi and Relational use the same function for this,
-with differential evidently not using semi-naive evaluation neither DRED, given that it has its own iteration mechanism, as
-demonstrated in figure \ref{fig:substitution_simple_ddflow}, and handling of additions and retractions.
-
+with differential evidently not using semi-naive evaluation nor DRED, given that it has its own iteration mechanism, heavily
+inspired by semi-naive evaluation, which already handles retractions.
 \subsection{Demand-driven Multiple-column-based Indexing}
 There is a possibly very large performance cost of the substitution-method, that can be exemplified in the specific scenario
 of DRED, that could render it unable to be used in practice. As it was introduced, substitutions are both incrementally expanded,
@@ -566,72 +566,69 @@ and built anew, by iterating over every single body atom.
 
 In the second step of DRED, an alternate derivation program is created. This program has one extra body atom, representing
 overdeletions of the head's relation. This implies that this step could be prohibitively more expensive to evaluate than even
-evaluating the program, due to the cartesian nature of the unification step, that implies iterating over the knowledge base once
-once, for every atom. This inefficiency can be demonstrated the following example, in which the rule could be seen as the
-alternate derivation step of some rule: $R(?x, ?z) <- T(?x, ?y), T(?y, ?z)$, with $-R$ representing the overdeletion estimation
-from the previous step.
+evaluating the program, due to the cartesian nature of the unification step, that implies iterating over the knowledge base once, for
+every atom. This inefficiency can be demonstrated with the following example, in which the rule could be seen as the alternate derivation
+step of some rule: $R(?x, ?z) <- T(?x, ?y), T(?y, ?z)$, with $-R$ representing the overdeletion estimation from the previous step.
 
 Let $P = \{+R(?x, ?z) \leftarrow -R(?x, ?z), T(?x, ?y), T(?y, ?z)\}$, and $EDB = \{T(a, b), T(b, c), T(c, d), -R(a, c), -R(b, d)\}$
-
-Algorithm I will have three iterations:
+Algorithm \ref{alg:one} will have three iterations:
 \begin{enumerate}
 	\item \begin{enumerate}
 		      \item Current body atom: $-R(?x, ?z)$, $\Sigma_0$: $[\{\}]$
 		      \item Fresh atoms - Applying all $\sigma : \Sigma_0$ to $-R(?x, ?z)$ yields $-R(?x, ?z)$
 		      \item Substitution extension: \begin{enumerate}
-			            \item unification: -R(?x, ?z) U -R(a, c) = $\{?x \rightarrow a, ?z \rightarrow c\}$
-			            \item unification: -R(?x, ?z) U -R(b, d) = $\{?x \rightarrow b, ?z \rightarrow d\}$
+			            \item unification: -R(?x, ?z) $\cup$ -R(a, c) = $\{?x \rightarrow a, ?z \rightarrow c\}$
+			            \item unification: -R(?x, ?z) $\cup$ -R(b, d) = $\{?x \rightarrow b, ?z \rightarrow d\}$
 		            \end{enumerate}
 	      \end{enumerate}
 	\item \begin{enumerate}
 		      \item Current body atom: $T(?x, ?y)$, $\Sigma_1$: $[\{?x \rightarrow a, ?z \rightarrow c\}, \{?x \rightarrow b, ?z \rightarrow d\}]$
 		      \item Fresh atoms - Applying all $\sigma : \Sigma_1$ to $T(?x, ?y)$ yields $T(a, ?z)$, $T(b, ?z)$
 		      \item Substitution extension: \begin{enumerate}
-			            \item unification: T(a, ?y) U T(a, b) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
-			            \item unification: T(a, ?y) U T(b, c) = none
-			            \item unification: T(a, ?y) U T(c, d) = none
-			            \item unification: T(b, ?y) U T(a, b) = none
-			            \item unification: T(b, ?y) U T(b, c) = $\{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}$
-			            \item unification: T(b, ?y) U T(c, d) = none
+			            \item unification: T(a, ?y) $\cup$ T(a, b) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
+			            \item unification: T(a, ?y) $\cup$ T(b, c) = none
+			            \item unification: T(a, ?y) $\cup$ T(c, d) = none
+			            \item unification: T(b, ?y) $\cup$ T(a, b) = none
+			            \item unification: T(b, ?y) $\cup$ T(b, c) = $\{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}$
+			            \item unification: T(b, ?y) $\cup$ T(c, d) = none
 		            \end{enumerate}
 	      \end{enumerate}
 	\item \begin{enumerate}
 		      \item Current body atom: $T(?y, ?z)$, $\Sigma_2$: $[\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}, \{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}]$
 		      \item Fresh atoms - Applying all $\sigma : \Sigma_2$ to $T(?y, ?z)$ yields $T(b, c)$, $T(c, d)$
 		      \item Substitution extension: \begin{enumerate}
-			            \item unification: T(b, c) U T(a, b) = none
-			            \item unification: T(b, c) U T(b, c) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
-			            \item unification: T(c, d) U T(c, d) = none
-			            \item unification: T(c, d) U T(a, b) = none
-			            \item unification: T(c, d) U T(b, c) = none
-			            \item unification: T(c, d) U T(c, d) = $\{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}$
+			            \item unification: T(b, c) $\cup$ T(a, b) = none
+			            \item unification: T(b, c) $\cup$ T(b, c) = $\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}$
+			            \item unification: T(c, d) $\cup$ T(c, d) = none
+			            \item unification: T(c, d) $\cup$ T(a, b) = none
+			            \item unification: T(c, d) $\cup$ T(b, c) = none
+			            \item unification: T(c, d) $\cup$ T(c, d) = $\{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}$
 		            \end{enumerate}
 	      \end{enumerate}
 \end{enumerate}
 With the final substitutions being: $[\{?x \rightarrow a, ?y \rightarrow b, ?z \rightarrow c\}, \{?x \rightarrow b, ?y \rightarrow c, ?z \rightarrow d\}]$, therefore inferring two atoms:
-$+R(a, c)$ and $+R(b, d)$. As it can be seen, the major source of inefficiency are the wasted calls to unification attempt, that could
-grow polynomially with each new atom. The solution to this issue in theory is very straightforward; to avoid the cartesian product. We
-devise a novel indexing technique specifically tailored to be portable to DD.
+$+R(a, c)$ and $+R(b, d)$. The major source of inefficiency are calls to unification attempt, that yield no new substitution. The number
+of unification attempts could grow quadratically with each next body atom. The solution to this issue is straightforward; to
+avoid the cartesian product. We devise a novel indexing technique specifically tailored to be portable to DD.
 
-Returning to the example, it is trivial to see that unification attempts can be made optimal by joining on bindings; If $T(a, ?y)$ is the
+Returning to the example, it is trivial to see that wasteful unification attempts can be prevented by joining on bindings; If $T(a, ?y)$ is the
 left-hand side of unification, and $T(a, b)$, $T(b, c)$ are the candidates, no candidate that does not already match all constants
-in $T(a, ?y)$ would produce a substitution extension. This significantly prunes the search space, to entirely avoid unifications that
-would not yield substitution extensions.
+in $T(a, ?y)$ would produce a substitution extension.
 
 We name our approach Demand-driven Multiple-column-based Indexing, because indexes are built on-demand to address the need of indices for
-joining substitutions, that can be over multiple variables, therefore spanning over multiple columns, in each iteration. First, we demonstrate
-the technique over the same example, and then provide a new version of Algorithm I, lastly, we modify the DD version to
-also contain this indexing.
+joining substitutions, that can be over multiple constants, therefore spanning over multiple columns, in each iteration. For each rule we determine
+the column combinations that will be used in such a join, and maintain one globally shared index for each unique column combination. First, we
+demonstrate the technique over the same example, and then provide a new version of Algorithm \ref{alg:one}.
 \begin{enumerate}
 	\item \begin{enumerate}
 		      \item Current body atom: $-R(?x, ?z)$, $\Sigma_0$: $[\{\}]$
 		      \item Fresh atoms - Applying all $\sigma : \Sigma_0$ to $-R(?x, ?z)$ yields $-R(?x, ?z)$
 		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[] : [[?x, ?z]]\}$
-		      \item Index 2 - Index $-R$ based on all distinct values of the column keys of index 1 : $\{[]: [[a, c], [b, d]]\}$
-		      \item Index 3 - Join Index 1 with Index 2:
+		      \item Index 2 - Index $-R$ based on all distinct values of the column keys of index 1 : $\{[]: [[a, c] : [[]], [b, d] : [[]]]\}$
+		      \item Index 4 - Join Index 1 with Index 2:
 		            \begin{enumerate}
-			            \item $([?x, ?z], [[a, c]])$
-			            \item $([?x, ?z], [[b, d]])$
+			            \item $([?x, ?z], [[a, c] : [[]]])$
+			            \item $([?x, ?z], [[b, d] : [[]]])$
 		            \end{enumerate}
 		      \item Attempt to unify:
 		            \begin{enumerate}
@@ -642,12 +639,12 @@ also contain this indexing.
 	\item \begin{enumerate}
 		      \item Current body atom: $T(?x, ?y)$, $\Sigma_1$: $[\{?x \rightarrow a, ?z \rightarrow c\}, \{?x \rightarrow b, ?z \rightarrow d\}]$
 		      \item Fresh atoms - Applying all $\sigma : \Sigma_1$ to $T(?x, ?y)$ yields $T(a, ?y)$, $T(b, ?y)$
-		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[0] : [[a, ?z], [b, ?z]]\}$
-		      \item Index 2 - Index $T$ based on all distinct values of the column keys of index 1  $\{[0]: \{[a]: [[b]], [[b]]: [[c]], [c]: [[d]]\}\}$
-		      \item Index 3 - Join Index 1 with Index 2:
+		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[0] : [[a, ?y], [b, ?y]]\}$
+		      \item Index 2 - Index $T$ based on all distinct values of the column keys of index 1  $\{[0]: \{[a]: [[b]], [b]: [[c]], [c]: [[d]]\}\}$
+		      \item Index 4 - Join Index 1 with Index 2:
 		            \begin{enumerate}
-			            \item $([?y], [[b]]])$
-			            \item $([?y], [[c]]])$
+			            \item $([a, ?y], [[a] : [[b]]]])$
+			            \item $([b, ?y], [[b] : [[c]]]])$
 		            \end{enumerate}
 		      \item Attempt to unify:
 		            \begin{enumerate}
@@ -660,10 +657,10 @@ also contain this indexing.
 		      \item Fresh atoms - Applying all $\sigma : \Sigma_2$ to $T(?y, ?z)$ yields $T(b, c)$, $T(c, d)$
 		      \item Index 1 - Index all fresh atoms with the positions of their constant terms as keys: $\{[0, 1] : [[b, c], [c, d]]\}$
 		      \item Index 2 - Index $T$ based on all distinct values of the column keys of index 1 : $\{[0, 1]: \{[a, b]: [[]], [b, c]: [[]], [c, d]: [[]]\}\}$
-		      \item Index 3 - Join Index 1 with Index 2:
+		      \item Index 4 - Join Index 1 with Index 2:
 		            \begin{enumerate}
-			            \item $([b, c], [[]])$
-			            \item $([c, d], [[]])$
+			            \item $([b, c], [[b, c]: [[]]])$
+			            \item $([c, d], [[c, d]: [[]]])$
 		            \end{enumerate}
 		      \item Attempt to unify:
 		            \begin{enumerate}
@@ -673,16 +670,16 @@ also contain this indexing.
 	      \end{enumerate}
 \end{enumerate}
 From this new example, it can be seen that the indexing scheme is relatively simple, relying on creating new indices that would allow unification
-to never wastefully occur. We now structure it as Algorithm II.
+to never wastefully occur. We now structure it as Algorithm \ref{alg:two}.
 
-Let $P : a \to [\mathbb{N}]$ be a function mapping an atom to an array of integers representing the positions of constants within the atom's terms, and
-$R : ([\mathbb{N}], a) \to C$ another function, that maps an array of integers and an atom, to a subset of the atom's terms $c$ denoted by $C$.
+Let $P : a \to [\mathbb{N}]$ be a function mapping an atom to an array of integers representing the positions of constants within the atom's
+terms, and $R : ([\mathbb{N}], a) \to C$ another function, that maps an array of integers and an atom, to a subset of the atom's terms $c$ denoted by $C$.
 
 The algorithm relies on two main indexes:
 \begin{enumerate}
-	\item $I_1 : P(a) \to 1^{\mathfrak{A}}$, where $1^{\mathfrak{A}}$ is the subset of
-	      $\mathfrak{A}$ such that all $a$ have the same $P(a)$ value.
-	\item $I_2 : P(a) \to I_3$, where $I_3 : R(F) \to 1^{F}$, and $1^{F}$ is the subset
+	\item $I_1 : P(a) \to 1^{F}$, where $1^{F}$ is the subset of
+	      $F$ such that all $a$ have the same $P(a)$ value.
+	\item $I_2 : P(a) \to I_3$, where $I_3 : R(F) \to 1^{F}$ is a nested index, and $1^{F}$ is the subset
 	      of $F$ such that all $a$ have the same $R(P(a), a)$.
 \end{enumerate}
 \begin{algorithm}
@@ -708,10 +705,11 @@ The algorithm relies on two main indexes:
 	}
 	}
 	\caption{Substitution-based Immediate Consequence with Demand-driven Multiple-column-based Indexing}
+	\ref{alg:two}
 \end{algorithm}
-All indexing steps are $O(|F|)$ in time and data complexity, save for index two, that has worst-case data complexity of $O(|F| \cdot 2^{|a|}y)$, with $2^{|a|}$
+All indexing steps are $O(|F|)$ in time and data complexity, save for index two, that has worst-case data complexity of $O(|F| \cdot 2^{|a|})$, with $2^{|a|}$
 representing the powerset of the number of terms in some atom $a$, and $F$ such that it has only atoms $a$. The product with the powerset arises due to how
-indexing occurs by mapping all unique combinations of constant terms of fresh atoms, which in the worst-case could be exponential to arity.
+indexing occurs by mapping all unique combinations of constant terms of fresh atoms, which in the worst-case could be exponential to the arity.
 \begin{figure}
 	\centering
 	\begin{tikzpicture}[->,>=stealth,auto,node distance=6cm,
@@ -749,7 +747,7 @@ indexing occurs by mapping all unique combinations of constant terms of fresh at
 		% Fixpoint Iteration
 		\begin{scope}
 			\node (subs_var) [draw, below = 20mm of empty_sub] {\small Subs. Var};
-			\node (facts_var) at (fixpoint) [draw, below = 20mm of facts] {\small Facts. Var};
+			\node (facts_var) at (fixpoint) [draw, below = 20mm of facts] {$\text{\small Facts. Var}^6$};
 			\node (join1) at (fixpoint) [draw, below = 4mm of facts_var] {$\text{\small join\_map}$};
 			\node (join2) at (fixpoint) [draw, below = 4mm of join1] {$\text{\small join\_map}$};
 			\node (join3) at (fixpoint) [draw, below = 4mm of join2] {$\text{\small join\_map}$};
@@ -787,28 +785,26 @@ indexing occurs by mapping all unique combinations of constant terms of fresh at
 	\caption{Substitution method with indexing dataflow}
 	\label{fig:substitution_indexed_ddflow}
 \end{figure}
-Figure \ref{fig:substitution_indexed_ddflow} displays the DD version of Algorithm II, that mostly remains exactly the same, save for
-new operations happening during the phase before iteration. We now clarify the points of interest in the dataflow. There were no differences in the steps inside
-iteration, aside from joins happening through the vector of constant positions and relation symbols,
-instead of only relation symbols.
+Figure \ref{fig:substitution_indexed_ddflow} displays the DD version of Algorithm \ref{alg:two}, that mostly remains exactly the same, save for new
+operations happening during the phase before iteration. We now clarify the points of interest in the new dataflow. There were no differences in
+the steps inside iteration, aside from joins happening through the vector of constant positions and relation symbols, instead of only relation symbols.
 \begin{enumerate}
 	\item The first \verb|map| operator remains the same, indexing rules by their identifier and body size, used to ensure
 	      that only fully expanded substitutions will be applied to rule heads. The same as superscript $2$ in \ref{fig:substitution_simple_ddflow}.
-	\item The unique column combinations of the input ruleset are computed by this operator. Unlike in the imperative description of the algorithm, where
-	      column combinations are generated in each iteration, we pre generate all of them, and index them by relation symbol.
+	\item The unique column combinations of the input ruleset are computed by this operator.
 	\item This step joins the rule identifiers with the unique column combinations. This is only used at the very last join during iteration, to ensure that
 	      the output fact is indexed by the correct column combination.
 	\item Equivalent to superscript $1$ in \ref{fig:substitution_simple_ddflow}.
 	\item With superscript $2$, the input fact stream can be immediately indexed by the necessary constant position combinations. This is done by a join on
 	      relation symbol, that will index each fact by all column combinations.
+	\item Facts. var, unlike in Algorithm \ref{alg:one}'s dataflow, which was only indexed by relation, is now indexed by each unique column combination.
 \end{enumerate}
-This dataflow is possibly much more efficient. An arrangement in DD is a pre-computed, indexed representation of a collection that allows
-for efficient querying and manipulation of the data. These arrangements play a crucial role in optimizing the performance of dataflows. By carefully choosing
-which arrangements to create and maintain, it is possible to minimize the computational overhead and reduce the need for expensive recomputations.
+This dataflow is possibly much more efficient. An arrangement in DD is a pre-computed, indexed representation of a collection that allows for efficient
+querying and manipulation of the data. These arrangements play a crucial role in the performance of joins. By carefully choosing which arrangements to
+create and maintain, it is possible to keep joins efficient, without unnecessarily wasting memory.
 
-Most specifically, arrangements dictate the level of join parallelism, by the fact that the join operator shards the data among workers by the key of
-the arrangement, partitioning the data to be joined by a more fine-grained key than relation symbol, such as relation symbol and positions occupied by constants,
-constant values, as on Algorithm II, a higher degree of parallelism could be unlocked.
+Most specifically, arrangements dictate the level of join efficiency. The fact that the join operator indexes the data by a more fine-grained key than relation
+symbol, such as relation symbol and positions occupied by constant values, allows is to be much more restrictive than cartesian product.
 \section{Evaluation}
 Three thorough experiments were conducted in order to showcase relative performance, scalability, and memory usage, of all reasoners, with the intent being twofold:
 to evaluate the performance characteristics of DD, in isolation of virtually all other elements, and to establish as to whether general algorithmic
@@ -816,47 +812,7 @@ improvements, such as the demand-driven indexing scheme, are portable to DD.
 
 \textbf{Setup.} The experiments were run on a google-cloud-provisioned x86 machine of type e2-standard-16, with 16 intel skylake cores and 64 gigabytes of RAM. Each
 benchmark measurement was taken 70 times, with the 20 measurements of most variance removed, and averaged out.
-% \begin{exmp}{RhoDFS inference rules}
-% 	\begin{align*}
-% 		T(?x, ?y, ?z) \leftarrow                 & rdf(?x, ?y, ?z)                \\
-% 		T(?y, rdf:type, ?x) \leftarrow           & T(?a, rdfs:domain, ?x),        \\
-% 		                                         & T(?y, ?a, ?z)                  \\
-% 		T(?z, rdf:type, ?x) \leftarrow           & T(?a, rdfs:range, ?x),         \\
-% 		                                         & T(?y, ?a, ?z)                  \\
-% 		T(?x, rdfs:subPropertyOf, ?z) \leftarrow & T(?x, rdfs:subPropertyOf, ?y), \\
-% 		                                         & T(?y, rdfs:subPropertyOf, ?z)  \\
-% 		T(?x, rdfs:subClassOf, ?z) \leftarrow    & T(?x, rdfs:subClassOf, ?y),    \\
-% 		                                         & T(?y, rdfs:subClassOf, ?z)     \\
-% 		T(?z, rdf:type, ?y) \leftarrow           & T(?x, rdfs:subClassOf, ?y),    \\
-% 		                                         & T(?z, rdf:type, ?x)            \\
-% 		T(?x, ?b, ?y) \leftarrow                 & T(?a, rdfs:subPropertyOf, ?b), \\
-% 		                                         & T(?x, ?a, ?y)
-% 	\end{align*}
-% 	\label{program:rhodfs}
-% \end{exmp}
-% \begin{exmp}{RhoDFS-s inference rules}
-% 	\begin{align*}
-% 		rdfs:domain(?a, ?x) \leftarrow        & rdf(?a, rdfs:domain, ?x)        \\
-% 		rdfs:range(?a, ?x) \leftarrow         & rdf(?a, rdfs:range, ?x)         \\
-% 		rdf:type(?y, ?x) \leftarrow           & rdf(?y, rdf:type, ?x)           \\
-% 		rdfs:subPropertyOf(?x, ?z) \leftarrow & rdf(?x, rdfs:subPropertyOf, ?z) \\
-% 		rdfs:subClassOf(?x, ?z) \leftarrow    & rdf(?x, rdfs:subClassOf, ?z)    \\
-% 		rdf:type(?y, ?x) \leftarrow           & rdfs:domain(?a, ?x),            \\
-% 		                                      & rdf(?y, ?a, ?z)                 \\
-% 		rdf:type(?z, ?x) \leftarrow           & rdfs:range(?a, ?x),             \\
-% 		                                      & rdf(?y, ?a, ?z)                 \\
-% 		rdfs:subPropertyOf(?x, ?z) \leftarrow & rdfs:subPropertyOf(?x, ?y),     \\
-% 		                                      & rdfs:subPropertyOf(?y, ?z)      \\
-% 		rdfs:subClassOf(?x, ?z) \leftarrow    & rdfs:subClassOf(?x, ?y),        \\
-% 		                                      & rdfs:subClassOf(?y, ?z)         \\
-% 		rdf:type(?z, ?y) \leftarrow           & rdfs:subClassOf(?x, ?y),        \\
-% 		                                      & rdf:type(?z, ?x)                \\
-% 		rdf(?x, ?b, ?y) \leftarrow            & rdfs:subPropertyOf(?a, ?b),     \\
-% 		                                      & T(?x, ?a, ?y)
-% 	\end{align*}
-% 	\label{program:rhodfss}
-% \end{exmp}
-\begin{table*}
+\begin{table}
 	\caption{Dataset Overview}
 	\begin{tabular}{|c|c|c|}
 		\hline
@@ -870,7 +826,7 @@ benchmark measurement was taken 70 times, with the 20 measurements of most varia
 		\hline
 	\end{tabular}
 	\label{tab:datasets}
-\end{table*}
+\end{table}
 
 \textbf{Datasets.} On table \ref{tab:datasets} all datasets and program names, or acronyms, are shown. There are two areas of interest. The semantic web has very
 specific use-cases for datalog, and are the leading source of research in extending the datalog mathematical formalism, and in providing improvements to decades-old
@@ -982,7 +938,7 @@ of the data.
 The results of the previous subsection cannot be seen in an entirely positive light without there being consideration for memory usage. DD relies on multiple
 in-memory indexes to keep track of all changes, and as it was seen, it entirely failed a benchmark due to running out of memory, thus, in this section we analyze the results of
 measuring peak memory usage over the previous experiments.
-\begin{table*}
+\begin{table}
 	\caption{Memory usage experimental results}
 	\begin{center}
 		\begin{tabular}{|c|c|c|c|c|c|c|}
@@ -1001,7 +957,7 @@ measuring peak memory usage over the previous experiments.
 		\end{tabular}
 	\end{center}
 	\label{tab:memorybenchmark}
-\end{table*}
+\end{table}
 Table \ref{tab:memorybenchmark} presents the peak memory usage for each of the methods and programs across different datasets. Memory usage is presented in megabytes. LUBM1
 occupies 20 megabytes of disk space, RAND-1k and RMAT-1k, respectively, 100 kilobytes.
 
@@ -1036,7 +992,7 @@ variants of datalog, and most importantly, making it distributed, which DD provi
 \appendix
 
 \section{Programs}
-\begin{exmp}{RhoDFS inference rules}
+\begin{prog}{RhoDFS inference rules}
 	\begin{align*}
 		T(?x, ?y, ?z) \leftarrow                 & rdf(?x, ?y, ?z)                \\
 		T(?y, rdf:type, ?x) \leftarrow           & T(?a, rdfs:domain, ?x),        \\
@@ -1053,8 +1009,8 @@ variants of datalog, and most importantly, making it distributed, which DD provi
 		                                         & T(?x, ?a, ?y)
 	\end{align*}
 	\label{program:rhodfs}
-\end{exmp}
-\begin{exmp}{RhoDFS-s inference rules}
+\end{prog}
+\begin{prog}{RhoDFS-s inference rules}
 	\begin{align*}
 		rdfs:domain(?a, ?x) \leftarrow        & rdf(?a, rdfs:domain, ?x)        \\
 		rdfs:range(?a, ?x) \leftarrow         & rdf(?a, rdfs:range, ?x)         \\
@@ -1075,7 +1031,7 @@ variants of datalog, and most importantly, making it distributed, which DD provi
 		                                      & T(?x, ?a, ?y)
 	\end{align*}
 	\label{program:rhodfss}
-\end{exmp}
+\end{prog}
 
 \end{document}
 \endinput
