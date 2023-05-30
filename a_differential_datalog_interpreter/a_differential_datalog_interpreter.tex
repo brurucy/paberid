@@ -1,4 +1,4 @@
-\documentclass[sigconf,screen,review,natbib]{acmart}
+\documentclass[sigconf,screen,review=false,natbib]{acmart}
 \AtBeginDocument{%
 \providecommand\BibTeX{{%
 \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
@@ -21,6 +21,7 @@
 \usepackage{subfig}
 \theoremstyle{definition}
 \newtheorem{exmp}{Example}[section]
+\newtheorem{prog}{Program}[section]
 \usepackage[ruled, vlined, linesnumbered]{algorithm2e}
 \SetKw{True}{true}
 \SetKw{False}{false}
@@ -97,9 +98,11 @@ this issue by computing the materialization adjustment through the generation of
 calculating all possible deletions, and then determining alternative derivations. The difference between these
 sets represents the actual facts to be deleted.
 
-However, using two distinct algorithms for additions and deletions results in different performance characteristics,
-potentially causing severe biases. For example, when a large portion of ground facts are deleted, delete-rederive
-could be significantly more expensive than re-materializing.
+Using two distinct algorithms for additions and deletions results in different performance characteristics,
+potentially causing severe biases. For example, when a large portion of ground facts are deleted, such as more than
+ten percent, a not very realistic value, delete-rederive could be significantly more expensive than recomputing from
+scratch, since computing all overdeletions, and alternative derivations, might take longer than re-materialization in itself,
+for as there can be cases where a small portion of ground facts have a high impact on the number of inferred facts.
 
 A promising way to tackle incremental maintenance in a more uniform manner is to use differential dataflow, a
 programming model that efficiently processes and maintains large-scale possibly recursive dataflow computations. Central
@@ -209,52 +212,54 @@ thereby not there being the possibility for existential variables to exist, conv
 all rules are datalog.
 \begin{exmp}{Datalog Program}\label{ex1}
 	\begin{align*}
-		P = \{\text{SubClassOf}(?x, ?y) \leftarrow & \text{SubClassOf}(?x, ?y), \text{SubClassOf}(?y, ?z) \}
+		P = \{TC(?x, ?y) \leftarrow & Edge(?x, ?y)              \\
+		TC(?x, ?z) \leftarrow       & TC(?x, ?y), TC(?y, ?z) \} \\
 	\end{align*}
 \end{exmp}
-Example \ref{ex1} shows a simple valid recursive program. The single rule denotes that \textit{for all x, y, z, if x is
-	in a SubClassOf relation with y, and y is in a SubClassOf relation with z, then it follows that x is in a subClassOf
-	relation with z}.
+Example \ref{ex1} shows a simple valid recursive program. The first rule denotes that \textit{for all x and y, if x is
+	in a Edge relation with y, then it follows that x is in a TC relation with y}, and the second \textit{for all x, y, z, if
+	x is in a TC relation with y, and y is in a TC relation with z, then it follows that x is in a TC relation with z}.
 
 Programs denote implications over a store of ground facts. This store is called the extensional database, $EDB$, and the result
 of evaluating a program over some $EDB$ is the $IDB$, the intensional database.
 
 Let $DB = EDB \cup IDB$, and for there to be a program $P$. We define the \textit{immediate consequence} of $P$ over $DB$ as
 all facts that are either in $DB$, or stem from the result of applying the rules in $P$ to $DB$. The \textit{immediate consequence operator}
-$\textbf{I}_C(DB)$ is the union of $DB$ and its immediate consequence, and the $IDB$, at the moment of the
-application of $\textbf{I}_C(DB)$ is the difference of the union of all previous $DB$ with the $EDB$.
+$\textbf{I}_C(DB)$ is the union of $DB$ and its immediate consequence. The $IDB$, at the moment of the application of $\textbf{I}_C(DB)$, is
+the difference of the union of all previous $DB$ with the $EDB$, therefore consisting only of the inferred facts.
 
 It is trivial to see that $I_C(DB)$ is monotone, and given that both the $EDB$ and $P$ are finite sets, and
 that $IDB = \emptyset$ at the start, at some point $I_C(DB) = DB$, since there won't be new facts to be inferred. This
 point is the \textit{least fixed point} of $I_c(DB)$\cite{datalog}. Computing the \textit{least fixed point} as
-described, recursively applying the immediate consequence, is called Naive evaluation.
+described, recursively applying the immediate consequence operator, is called naive evaluation, which is not often
+used in practice, since in every iteration not only does it infer new facts, but also recomputes all previously
+inferred ones.
 \subsection{Semi-Naive Evaluation}
-The semi-naive evaluation algorithm \cite{datalog} is a widely-used technique for improving naive evaluation.
-Given a Datalog program $P$ and an $EDB$, the algorithm iteratively computes the $IDB$ in the same manner as
-naive evaluation, with the addition of maintaining a set of new delta facts $\Delta^+$ that are generated in
-each iteration, that are utilized in a new delta program $\Delta^+P$.
+The semi-naive evaluation algorithm \cite{datalog} is a widely-used technique for improving naive evaluation,
+that directly addresses, but does not solve entirely, its major inefficiency, redundant recomputations of previously
+inferred facts. Given a Datalog program $P$ and an $EDB$, the algorithm iteratively computes the $IDB$ in the same manner
+as naive evaluation, with the addition of maintaining a set of new delta facts $\Delta$ that are generated in each
+iteration.
 
-Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the
-delta program will generate one new $\Delta$rule for each $b_j$ in each rule body $b(r_i)$, in order to
-represent that only facts that have been recently inferred are being taken into account.
+Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $H(r)$, the delta program
+will generate one new $\Delta$rule for each $IDB$ relation $b_j$ in each rule body $b(r_i)$, in order to represent that only
+facts that have been recently inferred are to be taken into account for subsequent iterations.
 \begin{exmp}{Semi-naive Evaluation Delta Program}
 	\begin{align*}
-		P = \{TC(?x, ?y) \leftarrow        & Edge(?x, ?y)                  \\
-		TC(?x, ?z) \leftarrow              & TC(?x, ?y), TC(?y, ?z) \}     \\
 		r_0 = TC(?x, ?y) \leftarrow        & Edge(?x, ?y)                  \\
 		\Delta r_1 = TC(?x, ?z) \leftarrow & \Delta TC(?x, ?y), TC(?y, ?z) \\
 		\Delta r_2 = TC(?x, ?z) \leftarrow & TC(?x, ?y), \Delta TC(?y, ?z)
 	\end{align*}
 	\label{exsne}
 \end{exmp}
-In theory, the semi-naive evaluation algorithm improves the efficiency of Datalog evaluation by avoiding
-the recomputation of facts that have already been derived in previous iterations. This method is particularly
-efficient for certain classes of Datalog programs that are common in practice. Example \ref{exsne} shows
-the generated $\Delta$ program. It is worth noting, that there are substantial implementation challenges in order
-to ensure that its overhead is not larger than the performance gains, since it possibly requires multiple
-indexes and set operations to keep track of the most recently inferred facts, hence, it could be that in practice
-naive evaluation might outperform it.
+With example \ref{ex1} as the baseline, \ref{exsne} is its resulting delta program. While semi-naive evaluation indeed reduces
+the number of inferred redundant facts, it is particularly efficient for certain classes of Datalog programs that are common
+in practice, namely linear programs, which are those in which each rule has at most one IDB relation in its body, therefore
+generating only one delta rule per rule, instead of multiple, as in the example.
 
+There are substantial implementation challenges in order to ensure that the semi-naive evaluation overhead is not larger than
+the performance gains, since it requires multiple indexes, each delta relation, and efficient set operations to keep track of
+the most recently inferred facts.
 \subsection{Delete-Rederive}
 Both the regular semi-naive and naive evaluation methods are already incremental, and easily handles the
 addition of data. One merely has to continue the evaluation with all previous data as the most recent delta.
@@ -816,46 +821,6 @@ improvements, such as the demand-driven indexing scheme, are portable to DD.
 
 \textbf{Setup.} The experiments were run on a google-cloud-provisioned x86 machine of type e2-standard-16, with 16 intel skylake cores and 64 gigabytes of RAM. Each
 benchmark measurement was taken 70 times, with the 20 measurements of most variance removed, and averaged out.
-% \begin{exmp}{RhoDFS inference rules}
-% 	\begin{align*}
-% 		T(?x, ?y, ?z) \leftarrow                 & rdf(?x, ?y, ?z)                \\
-% 		T(?y, rdf:type, ?x) \leftarrow           & T(?a, rdfs:domain, ?x),        \\
-% 		                                         & T(?y, ?a, ?z)                  \\
-% 		T(?z, rdf:type, ?x) \leftarrow           & T(?a, rdfs:range, ?x),         \\
-% 		                                         & T(?y, ?a, ?z)                  \\
-% 		T(?x, rdfs:subPropertyOf, ?z) \leftarrow & T(?x, rdfs:subPropertyOf, ?y), \\
-% 		                                         & T(?y, rdfs:subPropertyOf, ?z)  \\
-% 		T(?x, rdfs:subClassOf, ?z) \leftarrow    & T(?x, rdfs:subClassOf, ?y),    \\
-% 		                                         & T(?y, rdfs:subClassOf, ?z)     \\
-% 		T(?z, rdf:type, ?y) \leftarrow           & T(?x, rdfs:subClassOf, ?y),    \\
-% 		                                         & T(?z, rdf:type, ?x)            \\
-% 		T(?x, ?b, ?y) \leftarrow                 & T(?a, rdfs:subPropertyOf, ?b), \\
-% 		                                         & T(?x, ?a, ?y)
-% 	\end{align*}
-% 	\label{program:rhodfs}
-% \end{exmp}
-% \begin{exmp}{RhoDFS-s inference rules}
-% 	\begin{align*}
-% 		rdfs:domain(?a, ?x) \leftarrow        & rdf(?a, rdfs:domain, ?x)        \\
-% 		rdfs:range(?a, ?x) \leftarrow         & rdf(?a, rdfs:range, ?x)         \\
-% 		rdf:type(?y, ?x) \leftarrow           & rdf(?y, rdf:type, ?x)           \\
-% 		rdfs:subPropertyOf(?x, ?z) \leftarrow & rdf(?x, rdfs:subPropertyOf, ?z) \\
-% 		rdfs:subClassOf(?x, ?z) \leftarrow    & rdf(?x, rdfs:subClassOf, ?z)    \\
-% 		rdf:type(?y, ?x) \leftarrow           & rdfs:domain(?a, ?x),            \\
-% 		                                      & rdf(?y, ?a, ?z)                 \\
-% 		rdf:type(?z, ?x) \leftarrow           & rdfs:range(?a, ?x),             \\
-% 		                                      & rdf(?y, ?a, ?z)                 \\
-% 		rdfs:subPropertyOf(?x, ?z) \leftarrow & rdfs:subPropertyOf(?x, ?y),     \\
-% 		                                      & rdfs:subPropertyOf(?y, ?z)      \\
-% 		rdfs:subClassOf(?x, ?z) \leftarrow    & rdfs:subClassOf(?x, ?y),        \\
-% 		                                      & rdfs:subClassOf(?y, ?z)         \\
-% 		rdf:type(?z, ?y) \leftarrow           & rdfs:subClassOf(?x, ?y),        \\
-% 		                                      & rdf:type(?z, ?x)                \\
-% 		rdf(?x, ?b, ?y) \leftarrow            & rdfs:subPropertyOf(?a, ?b),     \\
-% 		                                      & T(?x, ?a, ?y)
-% 	\end{align*}
-% 	\label{program:rhodfss}
-% \end{exmp}
 \begin{table*}
 	\caption{Dataset Overview}
 	\begin{tabular}{|c|c|c|}
@@ -1036,7 +1001,7 @@ variants of datalog, and most importantly, making it distributed, which DD provi
 \appendix
 
 \section{Programs}
-\begin{exmp}{RhoDFS inference rules}
+\begin{prog}{RhoDFS inference rules}
 	\begin{align*}
 		T(?x, ?y, ?z) \leftarrow                 & rdf(?x, ?y, ?z)                \\
 		T(?y, rdf:type, ?x) \leftarrow           & T(?a, rdfs:domain, ?x),        \\
@@ -1053,8 +1018,8 @@ variants of datalog, and most importantly, making it distributed, which DD provi
 		                                         & T(?x, ?a, ?y)
 	\end{align*}
 	\label{program:rhodfs}
-\end{exmp}
-\begin{exmp}{RhoDFS-s inference rules}
+\end{prog}
+\begin{prog}{RhoDFS-s inference rules}
 	\begin{align*}
 		rdfs:domain(?a, ?x) \leftarrow        & rdf(?a, rdfs:domain, ?x)        \\
 		rdfs:range(?a, ?x) \leftarrow         & rdf(?a, rdfs:range, ?x)         \\
@@ -1075,7 +1040,7 @@ variants of datalog, and most importantly, making it distributed, which DD provi
 		                                      & T(?x, ?a, ?y)
 	\end{align*}
 	\label{program:rhodfss}
-\end{exmp}
+\end{prog}
 
 \end{document}
 \endinput

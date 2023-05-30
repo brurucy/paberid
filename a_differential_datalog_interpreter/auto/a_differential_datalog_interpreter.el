@@ -2,7 +2,7 @@
  "a_differential_datalog_interpreter"
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-class-options
-                     '(("acmart" "sigconf" "screen" "review" "natbib")))
+                     '(("acmart" "sigconf" "screen" "review=false" "natbib")))
    (TeX-add-to-alist 'LaTeX-provided-package-options
                      '(("algorithm2e" "ruled" "vlined" "linesnumbered")))
    (TeX-run-style-hooks
@@ -32,7 +32,8 @@
     "program:rhodfs"
     "program:rhodfss")
    (LaTeX-add-environments
-    "exmp")
+    "exmp"
+    "prog")
    (LaTeX-add-bibliographies
     "software"))
  :latex)
