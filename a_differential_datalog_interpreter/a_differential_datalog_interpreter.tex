@@ -253,66 +253,67 @@ facts that have been recently inferred are to be taken into account for subseque
 	\label{exsne}
 \end{exmp}
 With example \ref{ex1} as the baseline, \ref{exsne} is its resulting delta program. While semi-naive evaluation indeed reduces
-the number of inferred redundant facts, it is particularly efficient for certain classes of Datalog programs that are common
+the number of inferred redundant facts, it is particularly efficient for a certain class of simple Datalog programs that are common
 in practice, namely linear programs, which are those in which each rule has at most one IDB relation in its body, therefore
 generating only one delta rule per rule, instead of multiple, as in the example.
 
-There are substantial implementation challenges in order to ensure that the semi-naive evaluation overhead is not larger than
-the performance gains, since it requires multiple indexes, each delta relation, and efficient set operations to keep track of
-the most recently inferred facts.
-\subsection{Delete-Rederive}
-Both the regular semi-naive and naive evaluation methods are already incremental, and easily handles the
-addition of data. One merely has to continue the evaluation with all previous data as the most recent delta.
+In spite of being asymptotically better than naive evaluation, there are substantial implementation challenges that need to be
+addressed in order to ensure that the overhead is not larger than possible performance gains, since it requires multiple
+indexes, each delta relation, and efficient set operations to keep track of the most recently inferred facts. This is of utmost
+importance when using semi-naive evaluation as a method to incrementally handle additions to the $EDB$.
 
-The most used method for handling deletions is a bottom-up algorithm\cite{dred} that uses semi-naive evaluation
-to evaluate two new programs, one that computes all possible deletions that could stem from the deletion of the
-facts being retracted, and then another that attempts to find alternative derivations to the overdeleted ones.
+It often occurs that a materialization needs to be adjusted, either to additions or retractions of ground facts. Both semi-naive
+and naive evaluation are iterative, thus additions can be dealt with by simply having their computations restarted, with the former
+having the entire $IDB$ as the initial set of delta facts, instead of the empty set. The major goal of continuing the computation is
+such that it will be more efficient than restarting the materialization altogether.
+\subsection{Delete-Rederive}
+While both aforementioned evaluation methods provide mechanisms to incrementally adjust materialization to new ground facts, neither
+support retraction of ground facts, a problem that is significantly more involved, since a single fact might have multiple possible
+derivations.
+
+The most used method is a bottom-up algorithm\cite{dred} that relies on evaluating two new programs, one that computes all possible
+deletions that could stem from the deletion of the facts being retracted, and then another that attempts to find alternative derivations
+to the overdeleted ones.
 
 Given a program $P$ with rules $r_0, ..., r_n$, with bodies $b(r) = \{b_0, ..., b_k\}$ and heads $h(r)$, the
 overdeletion program will generate one new $-$rule for each $b_j$ in each rule body $b(r_i)$, in order to represent
 that if such fact were to be deleted, then $h(r_i)$ would not hold true.
 \begin{exmp}{DRED Overdeletion Program}
 	\begin{align*}
-		P = \{TC(?x, ?y) \leftarrow   & Edge(?x, ?y)              \\
-		TC(?x, ?z) \leftarrow         & TC(?x, ?y), TC(?y, ?z) \} \\
 		-r_0 = -TC(?x, ?y) \leftarrow & -Edge(?x, ?y)             \\
 		-r_1 = -TC(?x, ?z) \leftarrow & -Edge(?x, ?y), TC(?y, ?z) \\
 		-r_2 = -TC(?x, ?z) \leftarrow & Edge(?x, ?y), -TC(?y, ?z)
 	\end{align*}
 	\label{ex6}
 \end{exmp}
-On example \ref{ex6} negative predicates represent overdeletion targets. For instance, if \verb|Edge(2, 3)| is
-being deleted, then \verb|TC(2, 3)| will be deleted, and any other inferred fact that depends on it. Given that
-it is a regular datalog program, it can be efficiently evaluated with semi-naive evaluation.
+On example \ref{ex6} negative predicates represent overdeletion targets for example \ref{ex1}. For instance, if \verb|Edge(2, 3)| is
+being deleted, then \verb|TC(2, 3)| will be deleted, and any other inferred fact that depends on it. Given that it is a regular datalog
+program, it can be efficiently evaluated with semi-naive evaluation, or any other evaluation algorithm.
 
 The next step is to compute the alternative derivations of the deleted facts, since some overdeleted facts might
 still hold true. The alternative derivation program will generate one new $+$rule for each $r_i$ in $P$, with
 one extra $-$ head predicate per body, representing an overdeleted fact. The $+$ program requires the overdeleted
-facts to not be present.
+facts to already not be present.
 \begin{exmp}{DRED Alternative Derivation Program}
 	\begin{align*}
-		P = \{TC(?x, ?y) \leftarrow  & Edge(?x, ?y)                          \\
-		TC(?x, ?z) \leftarrow        & TC(?x, ?y), TC(?y, ?z) \}             \\
 		r_0 = +TC(?x, ?y) \leftarrow & -TC(?x, ?y), Edge(?x, ?y)             \\
 		r_1 = +TC(?x, ?z) \leftarrow & -TC(?x, ?z), Edge(?x, ?y), TC(?y, ?z)
 	\end{align*}
 	\label{ex7}
 \end{exmp}
-The output relations from example \ref{ex7} represent the data that has to be put back into the materialization.
-The rationale for alternative derivations is that, for $r_1$, for instance, if the edge \verb|TC(3, 4)| was
-overdeleted, because of there being \verb|Edge(1, 2)| and \verb|TC(2, 3)|, if \verb|Edge(3, 4)| was not deleted, by
-rule $r_0$, then there is an alternative derivation for \verb|TC(3, 4)|.
+The output relations from example \ref{ex7} represent the data that has to be put back into the materialization for example \ref{ex1}. The
+rationale for alternative derivations is that, for $r_1$, for instance, if the edge \verb|TC(3, 4)| was overdeleted, because of there being
+\verb|Edge(1, 2)| and \verb|TC(2, 3)|, if \verb|Edge(3, 4)| was not deleted, by rule $r_0$, then there is an alternative derivation for \verb|TC(3, 4)|.
 
 As it can be seen, computing the maintenance of the materialization implies evaluating a program bigger than the
 materialization itself, however, due to the fact that it is evaluated with semi-naive evaluation, the asymptotic
 complexity remains the same. Nonetheless, in practice, deletion is often much slower than addition, as it can be
 trivially seen by the worst-possible scenario, in which all facts are deleted, whereby while materialization would
-be free, DRED would inquire an expensive overdeletion computation.
-
+be free, DRED would inquire an expensive fact-by-fact deletion operation.
 \subsection{Substitution-based evaluation}
-The most impactful aspect of both of the introduced evaluation mechanisms is the implementation
-of $I_c$ itself. The two most high-profile methods to do so are either purely evaluating the rules, or
-rewriting them in some other imperative formalism, such as relational algebra, and executing it.
+The most impactful aspect of all of the introduced evaluation mechanisms is the implementation of $I_c$ itself. The two
+most high-profile methods to do so are either purely evaluating the rules, or rewriting them in some other imperative
+formalism, such as relational algebra, and executing it.
 
 The substitution-based\cite{datalog} method is the simplest example of the former. A substitution $\sigma$ is
 a homomorphism $[x_1 \rightarrow y_1, ..., x_i \rightarrow y_i]$, such that $x_i$ is a variable, and $y_i$ is
@@ -326,7 +327,6 @@ The substitution-based method computes the immediate consequence of the rule $r$
 
 Define the initial set of substitutions as $\Sigma_0 = \{ \sigma_0 \}$, where $\sigma_0$ is an empty substitution. For
 each body atom $b_m$, find the set of ground facts $F_j \subseteq F$ that match $b_m$.
-
 \begin{algorithm}
 	\SetAlgoLined
 	\Input{$\Sigma_{0}$, set of ground facts $F$, head atom $h$, body atom list $B$}
@@ -349,38 +349,19 @@ There is a noteworthy performance issue that arises due to the interaction betwe
 and DRED. During the alternate derivation phase, the new program has one more body atom. This can be prohibitively
 more expensive to evaluate than the original program, since one extra body atom implies one extra iteration, which
 could generate a polynomial number of substitutions, due to the cartesian product nature of each step.
-
 \subsection{Relational algebra rewriting method}
-Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed
-arity, relations. It is the most popular database formalism that there is, with virtually every single
-major database system adhering to the relational model\cite{pg,mysql,sqlserver} and using SQL as a
-declarative syntax for relational algebra.
+The de-facto datalog evaluation method, that virtually all recent reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle} abide by, is to rewrite datalog rules into relational
+algebra, a well-known technique, to efficiently compute their evaluation, due to the extensive industrial and academic
+research poured into developing data processing frameworks that handle very large amounts of data, and the techniques
+that have arisen from those.
 
-The translation of datalog rules to relational algebra equations is a well-known technique, and has been
-the most successful strategy employed by the vast majority of all current state-of-the-art reasoners\cite{bigdatalog, cog, nexus, recstep, dcdatalog, souffle}
-mostly due to the extensive industrial and academic research into developing data processing frameworks
-that process very large amounts of data, and the techniques that have arisen from those.
+Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tuples with fixed arity, relations. It
+is the most popular database formalism that there is, with virtually every single major database system adhering to the
+relational model\cite{pg,mysql,sqlserver} and using SQL as a declarative syntax.
 
-Let $R$ and $T$ be relations with arity $r$ and $t$, $\theta$ be a binary operation with a boolean output, $R(i)$ be
-the i-th column, all terms in the i-th position of every tuple in $R$, and $R[h, ..., k]$ be the subset of $R$ such
-that only the columns $h, ..., k$ remain, and Const the set of all constant terms. The following are the most
-relevant relational algebra operators and their semantics:
-\begin{itemize}
-	\item Selection by column $\sigma_{i=j)}(R) = \{ a \in R | a(i) == a(j) \}$
-	\item Selection by value $\sigma_{i=k}(R) = \{a \in R | a(i) == k \}$
-	\item Projection $\pi_{h, ..., k}(R) = \{(R(i), ..., R(j), \overrightarrow{C}) |  i, j >= 1 \wedge i, j <= r\ \wedge \forall c \in C. c \in \text{Const}$
-	\item Product $\times(R, T) = \{(a, b) | a \in R \wedge b \in T \}$
-	\item Join $\Join_{i=j} = \{(a, b) | a \in R \wedge b \in T \wedge a(i) == b(j)\}$
-\end{itemize}
-A relational algebra expression is in the $\mathcal{SPJ}$ form if it consists solely of select, project and join
-operators. This form is very often seen in practice, being equivalent to \verb|SELECT ... FROM ... WHERE ...| SQL
-queries, and highly benefits from being equivalent to conjunctive queries, that are equivalent to single-rule and
-non-recursive datalog programs.
-
-DD either implements, or makes it trivial to do so, all of the aforementioned relational algebra
-operations, but lifted to the multiset domain, which implies that there must be some additional step to fit them
-into datalog's set semantics.
-
+DD either implements, or makes it trivial to do so, all relevant-to-datalog relational algebra operations, therefore
+providing convenient tools to manually specify the evaluation of a datalog program as a datalog. It nonetheless does
+not directly make writing the interpreter easier, only a compiler.
 \section{Differential Evaluation}
 \subsection{Differential Dataflow} is a computational model that generalizes incremental processing to
 times that are possibly partially ordered, and specifically operates over multisets of differences, which
