@@ -335,7 +335,7 @@ each body atom $b_m$, find the set of ground facts $F_j \subseteq F$ that match 
 	\For{each fact $f \in F$ and each partial substitution $\sigma_{i-1} \in \Sigma_{i-1}$}{
 	Generate an extension $\sigma'_{i-1}$ of $\sigma_{i-1}$ with the constant-to-variable homomorphisms from $f$ that are consistent with the current body atom $b_m$;
 
-	\If{$\sigma'_{i-1}$ is a valid substitution)}{
+	\If{$\sigma'_{i-1}$ is a valid substitution}{
 	$\Sigma_i = \Sigma_{i - 1} \cup \sigma'_{i-1}$;
 	}
 	}
@@ -359,46 +359,59 @@ Relational Algebra\cite{codd_1970} explicitly denotes operations over sets of tu
 is the most popular database formalism that there is, with virtually every single major database system adhering to the
 relational model\cite{pg,mysql,sqlserver} and using SQL as a declarative syntax.
 
-DD either implements, or makes it trivial to do so, all relevant-to-datalog relational algebra operations, therefore
-providing convenient tools to manually specify the evaluation of a datalog program as a datalog. It nonetheless does
-not directly make writing the interpreter easier, only a compiler.
+DD either implements, or makes it trivial to do so, all relevant-to-datalog relational algebra operators, therefore
+providing convenient tools to manually specify the evaluation of a datalog program as a dataflow. It nonetheless does
+not directly make writing the interpreter more convenient, only a compiler.
 \section{Differential Evaluation}
-\subsection{Differential Dataflow} is a computational model that generalizes incremental processing to
-times that are possibly partially ordered, and specifically operates over multisets of differences, which
-can be either additions or retractions, instead of over the full data.
+\textbf{Differential Dataflow} is a computational framework that generalizes incremental processing to times that are
+possibly partially ordered, and specifically operates over generalized multisets.
 
-Let $C$ be a multiset, referred to as a collection, with $C_t$ being its value at a partially ordered
-time $t$, and $C_t(b)$ being the unsigned integer representing weight of some record $b \in C_t$. We
-establish that the difference of some collection $C$ at time $t$, named $\delta C_t$, is defined as: \[\delta C_t = C_t - C_{t - 1}\],
-notably, differences can be both positive, representing additions, or negative, retractions, and it
-also therefore holds that the value of $C_t$ can be reconstructed by the following equivalence: \[C_t = \sum_{i \leq t}\delta C_{i}\]
+Let $C$ be a multiset, referred to as a collection, with $C_t$ being its value at a partially ordered time $t$, and
+$C_t(b)$ being the monoid representing the multiplicity of some record $b \in C_t$. We establish that the difference of
+some collection $C$ at time $t$, named $\delta C_t$, is defined as: \[\delta C_t = C_t - C_{t - 1}\] It also therefore
+holds that the value of $C_t$ can be reconstructed by the following equivalence: \[C_t = \sum_{i \leq t}\delta C_{i}\]
+We utilize plain multiset semantics with signed integers as multiplicity.
 
 Let $A$ and $B$ be collections, and $\mathcal{OP}$ be some operator that maps a collection to some other
 collection, or itself. Assuming $B$ to be the output of $\mathcal{OP}$ applied over $A$, computations in
-DD follow the following: \[A_t = \sum_{i \leq t} \delta B_i = \mathcal{OP}(\sum_{i \leq t} \delta A_i)\]
-with $\mathcal{OP}$ being proportional to $\delta A_t$, and not $A_t$.
+DD follow the following: \[B_t = \mathcal{OP}(A_t) = \mathcal{OP}(\sum_{i \leq t} \delta A_i) = \sum_{i \leq t} \mathcal{OP}(\delta A_i)\]
+with $\mathcal{OP}$ being proportional to $\delta A_t$, and not $A_t$. Stateful Operators, such as the
+relational join, require more involved differentiation steps.
 
-Notably, a core premise of the canonical DD implementation, is in cleverly, and efficiently,
-maintaining $\delta B$ and $\delta A$, specifically in the context of iterative dataflows, due to $t$ being
-partially ordered.
+A core premise of the canonical DD implementation, is in cleverly, and efficiently, maintaining $\delta B$
+and $\delta A$, specifically in the context of iterative dataflows, due to $t$ being partially ordered.
 
 Let's assume that a datalog program is being evaluated, and five fact updates, labeled as $\alpha_t$ arrive. In
 regular semi-naive evaluation, even though rule application might happen in parallel, $\alpha_{t + 1}$ will only be
-evaluated after $\alpha_{t}$ is, and the data used to compute each will always consist of all extensional and
-intensional, previously inferred, facts.
+evaluated after $\alpha_{t}$'s evaluation has finished, and the data used to compute each will always consist of all
+extensional and intensional(previously inferred) facts.
 
-In contrast, program evaluation could be written as a DD dataflow with two timestamps, $t$,
-representing the time of arrival of the update, and $\langle a, b \rangle$, the product that keeps track of the
-fixpoint evaluation, with $a$ being equal to $t$, and $b$ representing the current iteration count, respecting
-the following partial order: \[\langle a_i, b_j \rangle \leq \langle c_k, d_l \rangle \iff a_i \leq c_k \wedge b_j \leq d_l\]
-
-If we treat $\alpha_0$, $\alpha_1$, $\alpha_2$, $\alpha_3$ and $\alpha_4$ as differences with the following
-respective timestamps: \[\langle 0, 0 \rangle, \langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 1, 2 \rangle\]
-it is noticeable that $\alpha_1$ and $\alpha_4$ are comparable, but both of them, and vice-versa, are
-incomparable with respect to $\alpha_2$ and $\alpha_3$. This, in turn, has two consequences in differential
-dataflow. First, that the computation of both $\alpha_3$ and $\alpha_2$ happened independent of each other,
-meaning both could have been computed in parallel, and, most importantly, that neither appeared in each other's
-computation:
+In contrast, program evaluation could be written as a DD dataflow with a (partially ordered) product order timestamp $\langle  t, a \rangle$
+with $t$ being the time of arrival of the update, and $a$ keeping track of iteration. Product order is defined as: \[\langle t_i, a_j \rangle \leq \langle c_k, d_l \rangle \iff t_i \leq c_k \wedge a_j \leq d_l\]
+\begin{table}
+	\caption{Product Order Truth Table}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		$\leq$                 & $\langle 0, 0 \rangle$ & $\langle 0, 1 \rangle$ & $\langle 0, 2 \rangle$ & $\langle 1, 1 \rangle$ & $\langle 2, 1 \rangle$ \\
+		\hline
+		$\langle 0, 0 \rangle$ & 1                      & 1                      & 1                      & 1                      & 1                      \\
+		\hline
+		$\langle 0, 1 \rangle$ & 0                      & 1                      & 1                      & 1                      & 1                      \\
+		\hline
+		$\langle 0, 2 \rangle$ & 0                      & 0                      & 1                      & 0                      & 0                      \\
+		\hline
+		$\langle 1, 1 \rangle$ & 0                      & 0                      & 0                      & 1                      & 1                      \\
+		\hline
+		$\langle 2, 1 \rangle$ & 0                      & 0                      & 0                      & 0                      & 1                      \\
+		\hline
+	\end{tabular}
+	\label{tab:prod_order}
+\end{table}
+If we treat $\alpha_0$, $\alpha_1$, $\alpha_2$, $\alpha_3$, $\alpha_4$ as differences with the following
+respective timestamps: \[\langle 0, 0 \rangle, \langle 0, 1 \rangle, \langle 0, 2 \rangle, \langle 1, 1 \rangle, \langle 2, 1 \rangle\]
+it is noticeable, from table \ref{tab:prod_order}, that neither $\alpha_2$ is visible from $\alpha_3$, nor that $\alpha_3$ is visible
+from $\alpha_2$. This, in turn, has an important consequence in differential dataflow, that the computation of both $\alpha_3$ and
+$\alpha_2$ happened independent of each other, meaning both may be computed in parallel:
 \begin{align*}
 	\alpha_2 & = \delta A_{0, 2} = A_{0, 2} - (\delta A_{0, 0} + \delta A_{0, 1} )                  \\
 	\alpha_3 & = \delta A_{1, 1} = A_{1, 1} - (\delta A_{0, 0} + \delta A_{0, 1} + \delta A_{1, 0})
@@ -406,13 +419,13 @@ computation:
 Within the context of datalog, the aforementioned evaluation semantics provide a full alternative to the way
 incremental datalog evaluation is currently done, most specifically, the practical advantage of differential
 dataflow, is that instead of using semi-naive evaluation and DRED, one can just describe the evaluation process
-as a dataflow, and have both additions and deletions handled in the same way, with automatic parallelism and
-distribution.
+as a dataflow, and have both additions and retractions handled in the same way, with efficient parallelism and
+symmetric handling of updates.
 \subsection{Differential Substitution-based Method}
 We now present a translation of algorithm I to DD, by emulating sequentially iterating over
 each rule's body with relational joins, notably, all relational algebra operators are available through a map-
 reduce-like API.
-\begin{figure} [htb!]
+\begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}[->,>=stealth,auto,node distance=6cm,
 			thick,main node/.style={circle,draw,font=\sffamily\Large\bfseries}]
@@ -483,31 +496,30 @@ reduce-like API.
 \end{figure}
 Figure \ref{fig:substitution_simple_ddflow} depicts the substitution-based method as a dataflow. Superscripts denote
 points of the dataflow that require further explanation. Furthermore, for clarity, we establish the shape of the
-data, and the \verb|Var| suffix, that both facts and substitutions eventually take up. a Variable is used to express
-recursive or iterative computations. It allows one to define iterative operations and data dependencies in the dataflow
-graph, enabling the system to track and propagate changes across iterations efficiently, with product timestamps. Each
-node either represents an operation, such as \verb|join_map|, that joins two streams and then applies a mapping function,
-and \verb|flat_map|, that maps streams of iterables and then flattens them as a single stream.
+data, and the meaning of the \verb|Var| suffix, that both facts and substitutions eventually take up. a Variable is used
+to express recursive or iterative computations. It allows one to define iterative operations and data dependencies in
+the dataflow graph, enabling the system to track and propagate changes across iterations efficiently, with product
+timestamps. Each node either represents an operation, such as \verb|join_map|, that joins indexed collections and
+then applies a mapping function to the join output, or \verb|flat_map|, that given a function that outputs an iterable, applies it over a collection, and flattens each element's output to be part of a single collection.
 
-We also note that this is a summarized description, with certain trivial, or too-implementation-oriented, parts
-having had been omitted. $\Sigma_0$ is the stream of empty substitutions indexed per rule identifier, which will
-be pre populated with one substitution, the empty one. We assume that rules have an unique identifier. Facts is
-the relation-indexed stream of facts, and rules is the stream of rules, with two indexes, created with the operations
-with superscripts $1$ and $2$.
+We also note that this is a summarized description, where certain trivial, or too-implementation-specific parts
+have been omitted. $\Sigma_0$ is the stream of empty substitutions indexed per rule identifier, which is pre-populated
+with one empty substitution per rule. We assume that rules have an unique identifier. Facts is the relation-indexed
+stream of facts, and rules is the stream of rules, with two indexes, created with the operations with superscripts $1$ and $2$.
 \begin{enumerate}
 	\item The first rule index indexes rules first by their identifier, and then by each of its body atoms, enumerating
 	      them sequentially, imposing an order of evaluation as the original algorithm.
 	\item The second rule index indexes by identifier and body size, being necessary to ensure that only the substitutions
-	      which have been exhaustively expanded ought to be considered for application on the rule head.
-	\item \verb|join_map| is an operator that joins two collections, and then applies a function. In this situation, the
-	      function that is applied, is one that applies substitutions to the input atoms, therefore either creating new
+	      which have been exhaustively expanded ought to be considered for application to the rule head.
+	\item In the first join, the function that is applied, is one that applies substitutions to the input atoms, therefore either creating new
 	      atoms, with less variables as terms, or the very same ones. This is equivalent to the necessary setup for step 1
-	      of Algorithm I to occur, making use of index $1$.
+	      of Algorithm I to occur, making use of index 1.
 	\item The next join creates new substitutions, based on the newly minted atoms. All current substitutions are attempted
-	      to be expanded further, with the ones being successful being emitted from the join.
+	      to be expanded further, with the successful ones being emitted from the join.
 	\item This is the last step of the algorithm, where all final substitutions are applied to the head of each rule, index
-	      $2$, to then create new ground facts.
+	      2, to then create new ground facts.
 \end{enumerate}
+With the dataflow being specified, over the next section we elaborate on the commonalities and differences with the other implementations.
 \section{System}
 In this section we provide a technical overview of the implemented reasoners, and what is shared between them, alongside
 a novel indexing technique for the substitution-based method, that at the cost of increased memory usage, can significantly
@@ -802,7 +814,7 @@ improvements, such as the demand-driven indexing scheme, are portable to DD.
 
 \textbf{Setup.} The experiments were run on a google-cloud-provisioned x86 machine of type e2-standard-16, with 16 intel skylake cores and 64 gigabytes of RAM. Each
 benchmark measurement was taken 70 times, with the 20 measurements of most variance removed, and averaged out.
-\begin{table*}
+\begin{table}
 	\caption{Dataset Overview}
 	\begin{tabular}{|c|c|c|}
 		\hline
@@ -816,7 +828,7 @@ benchmark measurement was taken 70 times, with the 20 measurements of most varia
 		\hline
 	\end{tabular}
 	\label{tab:datasets}
-\end{table*}
+\end{table}
 
 \textbf{Datasets.} On table \ref{tab:datasets} all datasets and program names, or acronyms, are shown. There are two areas of interest. The semantic web has very
 specific use-cases for datalog, and are the leading source of research in extending the datalog mathematical formalism, and in providing improvements to decades-old
@@ -928,7 +940,7 @@ of the data.
 The results of the previous subsection cannot be seen in an entirely positive light without there being consideration for memory usage. DD relies on multiple
 in-memory indexes to keep track of all changes, and as it was seen, it entirely failed a benchmark due to running out of memory, thus, in this section we analyze the results of
 measuring peak memory usage over the previous experiments.
-\begin{table*}
+\begin{table}
 	\caption{Memory usage experimental results}
 	\begin{center}
 		\begin{tabular}{|c|c|c|c|c|c|c|}
@@ -947,7 +959,7 @@ measuring peak memory usage over the previous experiments.
 		\end{tabular}
 	\end{center}
 	\label{tab:memorybenchmark}
-\end{table*}
+\end{table}
 Table \ref{tab:memorybenchmark} presents the peak memory usage for each of the methods and programs across different datasets. Memory usage is presented in megabytes. LUBM1
 occupies 20 megabytes of disk space, RAND-1k and RMAT-1k, respectively, 100 kilobytes.
 
