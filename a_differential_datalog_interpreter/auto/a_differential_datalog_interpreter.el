@@ -24,6 +24,7 @@
     "exsne"
     "ex6"
     "ex7"
+    "alg:one"
     "tab:prod_order"
     "fig:substitution_simple_ddflow"
     "fig:substitution_indexed_ddflow"
