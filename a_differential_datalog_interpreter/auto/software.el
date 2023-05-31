@@ -15,6 +15,7 @@
     "warded"
     "monadic"
     "datascript"
+    "shapiro"
     "opa"
     "datomic"
     "COST"
@@ -48,8 +49,6 @@
     "lubm"
     "gtgraph"
     "descr_to_dlog"
-    "nexus")
-   (LaTeX-add-environments
-    '("proof" LaTeX-env-args ["argument"] 0)))
+    "nexus"))
  '(or :bibtex :latex))
 

@@ -424,7 +424,7 @@ dataflow, is that instead of using semi-naive evaluation and DRED, one can just 
 as a dataflow, and have both additions and retractions handled in the same way, with efficient parallelism and
 symmetric handling of updates.
 \subsection{Differential Substitution-based Method}
-We now present a translation of algorithm I to DD, by emulating sequentially iterating over
+We now present a translation of algorithm \ref{alg:one} to DD, by emulating sequentially iterating over
 each rule's body with relational joins, notably, all relational algebra operators are available through a map-
 reduce-like API.
 \begin{figure}[htb!]
@@ -811,7 +811,8 @@ to evaluate the performance characteristics of DD, in isolation of virtually all
 improvements, such as the demand-driven indexing scheme, are portable to DD.
 
 \textbf{Setup.} The experiments were run on a google-cloud-provisioned x86 machine of type e2-standard-16, with 16 intel skylake cores and 64 gigabytes of RAM. Each
-benchmark measurement was taken 70 times, with the 20 measurements of most variance removed, and averaged out.
+benchmark measurement was taken 70 times, with the 20 measurements of most variance removed, and averaged out. All datasets, datalog programs and reasoner implementations
+are available online\cite{shapiro}.
 \begin{table}
 	\caption{Dataset Overview}
 	\begin{tabular}{|c|c|c|}
