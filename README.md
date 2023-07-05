@@ -1,8 +1,11 @@
 ### Papers
 
 In progress:
+1. Dsquared: A Distributed and Differential Datalog Interpreter
+2. Shapiro
+3. Indexset
+
+In Proceedings:
 1. A Differential Datalog Interpreter
 
-Next up for b2bdatalog:
-1. Polish the algorithm section (make them proper algorithms)
-2. Address kalmer's feedback
+Accepted:
